@@ -1,0 +1,16 @@
+Перевод <code>{{translation.id}}</code> удален.
+Модератор: {{issuer.nickname}} (id{{issuer.id}})
+{{#if reason}}
+    Причина: {{reason}}
+{{/if}}
+Изменено:
+{{#each diff}}
+    {{#eq @key 'url'}}
+        <code>- url: </code><a href="{{../translation.url}}">{{../translation.urlDomain}}</a> <code>-&gt;</code>
+        <a href="{{../diff.url}}">{{../diff.urlDomain}}</a>
+    {{/eq}}
+    {{#neq @key 'url'}}
+        <code>- {{@key}}: {{lookup ../translation @key}} -&gt; {{this}}</code>
+    {{/neq}}
+{{/each}}
+

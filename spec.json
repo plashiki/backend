@@ -1,0 +1,3346 @@
+{
+    "//": "This file is auto-generated, do not edit it!",
+    "endpoints": [
+        {
+            "checks": [
+                {
+                    "name": "login"
+                },
+                {
+                    "name": "user-flag",
+                    "params": {
+                        "flag": "admin",
+                        "value": true
+                    }
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                },
+                {
+                    "type": "ACCESS_DENIED",
+                    "description": "Flag not set"
+                }
+            ],
+            "name": "Statistics",
+            "description": "Receive statistics. Requires admin rights.",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/admin/statistics/",
+                    "name": "Get raw statistics",
+                    "description": "Retrieve raw statistic days for a given range.",
+                    "returns": {
+                        "type": "StatisticsDay[]",
+                        "description": "For all days in a given range <b>that have statistics info</b> an item will end up there.Order is not guaranteed."
+                    }
+                }
+            ]
+        },
+        {
+            "checks": [
+                {
+                    "name": "login"
+                },
+                {
+                    "name": "user-flag",
+                    "params": {
+                        "flag": "admin",
+                        "value": true
+                    }
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                },
+                {
+                    "type": "ACCESS_DENIED",
+                    "description": "Flag not set"
+                }
+            ],
+            "name": "Control users",
+            "description": "Admin-only features related to users.",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/admin/users/list",
+                    "name": "Get users",
+                    "description": "Get list of users",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "sort": {
+                            "type": "string"
+                        }
+                    },
+                    "returns": {
+                        "type": "User[]"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/admin/budget",
+                    "name": "Add donation/expense",
+                    "description": "Add a donation or expense. Will automatically update associated Github file.",
+                    "body": {
+                        "type": "object",
+                        "fields": {
+                            "type": {
+                                "type": "\"donation\" | \"expense\"",
+                                "description": "Whether passed entity is a donation or an expense"
+                            },
+                            "date": {
+                                "type": "string",
+                                "description": "Date of change in format: \"DD.MM.YYYY в HH:MM\"."
+                            },
+                            "amount": {
+                                "type": "number",
+                                "description": "Amount of expense/donation in rubles (RUB)"
+                            },
+                            "comment": {
+                                "type": "string",
+                                "description": "Comment for an entity. For a donation, if a user nickname is passed and user with such nickname exists, a donation will be added to their counter automatically. For expense, should be a human-readable expense destination"
+                            }
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                }
+            ]
+        },
+        {
+            "checks": [
+                {
+                    "name": "login",
+                    "params": {
+                        "via": "cookie"
+                    }
+                },
+                {
+                    "name": "login"
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_OAUTH",
+                    "description": "Trying to use not OAuth API with OAuth-based auth"
+                },
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                }
+            ],
+            "name": "OAuth applications",
+            "description": "Control your OAuth applications. Before using please read about PlaShiki OAuth flow in <b>Starting Point</b> section",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/",
+                    "name": "Get user's OAuth applications",
+                    "description": "Returns a list of current user's OAuth applications",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        }
+                    },
+                    "returns": {
+                        "type": "OAuthApp[]",
+                        "description": "Meta information about apps. Client ID & secret are not available."
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/all",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Get all OAuth applications",
+                    "description": "Returns a list of all OAuth applications. Only for admins.",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        }
+                    },
+                    "returns": {
+                        "type": "OAuthApp[]",
+                        "description": "Meta information about apps. <code>client_id</code> and <code>client_secret</code> are not available."
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/applications/",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "banned",
+                                "value": false
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "features": [
+                        {
+                            "name": "rate-limit",
+                            "params": {
+                                "requests": 1,
+                                "duration": 600
+                            }
+                        }
+                    ],
+                    "name": "Create OAuth application",
+                    "description": "Creates an OAuth application.",
+                    "returns": {
+                        "type": "OAuthApp",
+                        "description": "Newly created OAuth app. <code>client_id</code> and <code>client_secret</code> are available."
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/:id",
+                    "name": "Get OAuth application",
+                    "description": "Get a single OAuth applications. Non-admins can only get own applications.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Application ID"
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Attempt to get information for another user's application."
+                        }
+                    ],
+                    "returns": {
+                        "type": "OAuthApp | null",
+                        "description": "<code>client_id</code> and <code>client_secret</code> are only available for own apps, even for admins."
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/:id/revoke/:field",
+                    "name": "Revoke application credentials",
+                    "description": "Revoke application's <code>client_id</code> or <code>client_secret</code>. Current user must be app owner.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Application ID"
+                        },
+                        "field": {
+                            "type": "\"id\" | \"secret\" | \"both\"",
+                            "description": "Which field to revoke. <code>id</code> is for <code>client_id</code>, <code>secret</code> is for <code>client_secret.</code> and <code>both</code> is to revoke both at once."
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Application was not found"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Attempt to modify another user's application."
+                        }
+                    ],
+                    "returns": {
+                        "type": "OauthApp",
+                        "description": "Same application but with different credentials (which are always available)"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/authed",
+                    "name": "Get authorized applications",
+                    "description": "Returns list of applications that current user had given access to.",
+                    "returns": {
+                        "type": "OauthApp[]",
+                        "description": "Only meta information about apps"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/applications/:id/revoke/auth",
+                    "name": "Revoke authorization",
+                    "description": "Revoke application access to user account. Meaning that it will destroy all active current user's OAuth sessions for that application",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Application ID for which to revoke access."
+                        }
+                    },
+                    "returns": {
+                        "type": "true"
+                    }
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/applications/:id",
+                    "name": "Delete application",
+                    "description": "Deleting an application will automatically revoke all active sessions. Can only be done by app owner or admin",
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Application was not found"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Attempt to delete other user's application"
+                        }
+                    ],
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Application ID to delete."
+                        }
+                    },
+                    "returns": {
+                        "type": "true"
+                    }
+                },
+                {
+                    "method": "PATCH",
+                    "path": "/v2/applications/:id",
+                    "name": "Edit application",
+                    "description": "Update application fields. You can edit icon, name, description and redirect_uri. Also admins can edit server_scope.",
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Application was not found"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Attempt to modify other user's application"
+                        }
+                    ],
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Application ID to edit."
+                        }
+                    },
+                    "returns": {
+                        "type": "OauthApp"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Donators",
+            "description": "Fetch information about users who supported the project",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/donators/top",
+                    "name": "Top donators",
+                    "description": "Returns list of donators, sorted by donation amount (desc)",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        }
+                    },
+                    "returns": {
+                        "type": "User[]"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/donators/from",
+                    "name": "Donators from",
+                    "description": "Returns list of donators, whose id is one of given. Useful for displaying donation badges in UI",
+                    "query": {
+                        "ids": {
+                            "type": "number[]",
+                            "required": true,
+                            "description": "List of comma-delimited IDs from which to find donators. Maximum 100."
+                        },
+                        "service": {
+                            "type": "ConnectableService",
+                            "description": "If passed, list of ids will be treated as external ids."
+                        }
+                    },
+                    "returns": {
+                        "type": "User[]"
+                    }
+                }
+            ]
+        },
+        {
+            "checks": [
+                {
+                    "name": "login"
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                }
+            ],
+            "name": "Submissions & reports",
+            "description": "Control user submissions & reports",
+            "children": [
+                {
+                    "method": "POST",
+                    "path": "/v2/submit/new",
+                    "features": [
+                        {
+                            "name": "captcha",
+                            "params": {
+                                "timeout": 72000000
+                            }
+                        }
+                    ],
+                    "name": "New submission",
+                    "description": "Submit a new translation. If user is marked as <code>trusted</code> or <code>moderator</code> it will be immediately added, otherwise queued for moderators to check.",
+                    "body": {
+                        "type": "SubmitTranslationBody",
+                        "description": "Translation to be submitted. Must contain all Translation fields (except service ones like id, uploader_id, groups, status, created_at & updated_at)"
+                    },
+                    "returns": {
+                        "type": "Translation",
+                        "description": "To detect whether the translation was added, check for <code>.status</code> field. If it is <code>added</code>, then translation was added"
+                    },
+                    "throws": [
+                        {
+                            "type": "TRANSLATION_DUPLICATE_N",
+                            "description": "Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. Duplicates are detected by perfect url match"
+                        },
+                        {
+                            "type": "BANNED",
+                            "description": "User was banned from sending translations"
+                        }
+                    ]
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/submit/report",
+                    "features": [
+                        {
+                            "name": "captcha",
+                            "params": {
+                                "timeout": 7200000
+                            }
+                        }
+                    ],
+                    "name": "New report",
+                    "description": "Submit a new report. If user is marked as <code>moderator</code> and there is <code>edit</code> it will be automatically processed, otherwise queued for moderators to check.",
+                    "body": {
+                        "type": "SubmitReportBody",
+                        "description": "Translation to be submitted. Must contain all Report fields (except service ones like id, sender_id, status, created_at & updated_at)"
+                    },
+                    "returns": {
+                        "type": "Report"
+                    },
+                    "throws": [
+                        {
+                            "type": "BANNED",
+                            "description": "User was banned from sending translations"
+                        },
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Translation with given translation_id does not exist"
+                        }
+                    ]
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/submissions",
+                    "name": "Get submissions",
+                    "description": "Get a bunch of recent submissions",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "sort": {
+                            "type": "string"
+                        }
+                    },
+                    "returns": {
+                        "type": "PaginatedResponse<Translation[]>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/reports",
+                    "name": "Get reports",
+                    "description": "Get a bunch of recent reports",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        }
+                    },
+                    "returns": {
+                        "type": "PaginatedResponse<Report[]>"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/translations/:id",
+                    "name": "Update submission",
+                    "description": "Update sent submission. Will result in error if translation is already processed and user is not a moderator.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Submission id to be updated"
+                        }
+                    },
+                    "body": {
+                        "type": "Translation",
+                        "partial": true,
+                        "description": "Fields to be updated in submission"
+                    },
+                    "returns": {
+                        "type": "Translation[]"
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Submission was not found"
+                        },
+                        {
+                            "type": "ALREADY_PROCESSED",
+                            "description": "Submission was already processed"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can only update own submissions"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/reports/:id",
+                    "name": "Delete a report",
+                    "description": "Delete sent report. Will result in error if report is already resolved.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Report id to be deleted"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Report was not found"
+                        },
+                        {
+                            "type": "ALREADY_PROCESSED",
+                            "description": "Report was already processed"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can only delete own reports"
+                        }
+                    ]
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/translations/:id",
+                    "name": "Delete a submission",
+                    "description": "Delete sent submission. Will result in error if submission is already processed and user is not a moderator.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Submission id to be deleted"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Report was not found"
+                        },
+                        {
+                            "type": "ALREADY_PROCESSED",
+                            "description": "Report was already processed"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can only delete own reports"
+                        }
+                    ]
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/translations/:id/declineReason",
+                    "name": "Get decline reason",
+                    "description": "In case a submission was declined, chances are that moderator set a reason of rejection.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Submission id to be deleted"
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Translation was not found"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can only get decline reason for own submissions"
+                        },
+                        {
+                            "type": "NOT_DECLINED",
+                            "description": "This translation was not declined."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Internal",
+            "description": "Endpoints which are intended for internal usage",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/ping",
+                    "name": "Ping",
+                    "description": "Ping!",
+                    "returns": {
+                        "type": "\"Pong\""
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/internal/captcha",
+                    "features": [
+                        {
+                            "name": "rate-limit",
+                            "params": {
+                                "requests": 5,
+                                "duration": 60
+                            }
+                        }
+                    ],
+                    "name": "Captcha",
+                    "description": "Refresh user's last captcha time",
+                    "body": {
+                        "type": "object",
+                        "fields": {
+                            "token": {
+                                "type": "string",
+                                "description": "Recaptcha token"
+                            }
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "Captcha verification failed",
+                            "description": "Thrown when invalid Recaptcha token passed"
+                        }
+                    ],
+                    "returns": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/batch/add/translations",
+                    "checks": [
+                        {
+                            "name": "server-scope",
+                            "params": {
+                                "scope": "batch:add:translation"
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You did not pass a valid OAuth client_secret or your app does not have sufficient permissions"
+                        },
+                        {
+                            "type": "INVALID_TOKEN",
+                            "description": "Given Token does not match any OAuth app."
+                        }
+                    ],
+                    "name": "External batch addition",
+                    "description": "Batch addition for multiple translations at once as an external OAuth app. The only limit is bodyparser body limit (around 1mb), so with minification that's about 4k translations at once.<br />You can access extended number of parameters, including <code>groups</code><code>status</code>. Use status=pending to put items on pre-moderation, status=declined will be ignored.<br />Group <code>from-app:[your-app-id]</code> will always be added with your translations as a precaution."
+                }
+            ]
+        },
+        {
+            "name": "Mappings",
+            "description": "Information about media ID mappings",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/mappings/:type",
+                    "name": "Get mapping",
+                    "description": "Get a single media ID mapping. Query must contain 1 parameter in format: <code>?serviceName=serviceId</code>",
+                    "params": {
+                        "type": {
+                            "type": "\"anime\" | \"manga\"",
+                            "description": "Media type for mappings."
+                        }
+                    },
+                    "query": {
+                        "%serviceName%": {
+                            "type": "string | number",
+                            "required": true,
+                            "description": "Media ID in given service"
+                        }
+                    },
+                    "returns": {
+                        "type": "Mapping | null",
+                        "description": "Media mappings"
+                    }
+                }
+            ]
+        },
+        {
+            "checks": [
+                {
+                    "name": "login"
+                },
+                {
+                    "name": "user-flag",
+                    "params": {
+                        "flag": "moderator",
+                        "value": true
+                    }
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                },
+                {
+                    "type": "ACCESS_DENIED",
+                    "description": "Flag not set"
+                }
+            ],
+            "name": "Moderation",
+            "description": "Moderation-related endpoints",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/:type/recent",
+                    "name": "Recent submissions/reports",
+                    "description": "Get a bunch of recent submissions/translations",
+                    "params": {
+                        "type": {
+                            "type": "\"submissions\" | \"reports\"",
+                            "description": "Type of items to return"
+                        }
+                    },
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        }
+                    },
+                    "returns": {
+                        "type": "PaginatedResponse<Translation[]> | PaginatedResponse<Report[]>",
+                        "description": "Depending on <code>type</code> will return different items."
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/submissions/:id/:action",
+                    "name": "Process a submission",
+                    "description": "Accepts or declines a single submission",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Submission ID"
+                        },
+                        "action": {
+                            "type": "\"accept\" | \"decline\"",
+                            "description": "Action"
+                        }
+                    },
+                    "query": {
+                        "reason": {
+                            "type": "string",
+                            "description": "In case <code>action</code> is <code>decline</code> - decline reason. Optional."
+                        }
+                    },
+                    "body": {
+                        "type": "Translation",
+                        "partial": true
+                    },
+                    "throws": [
+                        {
+                            "type": "ALREADY_PROCESSED",
+                            "description": "Translation was already processed"
+                        }
+                    ],
+                    "returns": {
+                        "type": "Translation",
+                        "description": "Updated translation"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/reports/:id",
+                    "name": "Get report",
+                    "description": "Get a single report",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Report ID"
+                        }
+                    },
+                    "returns": {
+                        "type": "Report | null",
+                        "description": "Requested report or null if it does not exist"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/reports/:id/:action",
+                    "name": "Process a report",
+                    "description": "Resolve a single report",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Submission ID"
+                        },
+                        "action": {
+                            "type": "\"discard\" | \"resolve\" | \"delete\"",
+                            "description": "Action. If <code>discard</code> then report will me marked as discarded and nothing will happen. If <code>delete</code> then report will be marked as resolved and corresponding translation will be deleted. If <code>resolve</code> then report will be marked as resolved and corresponding translation will be updated from body."
+                        }
+                    },
+                    "body": {
+                        "type": "Translation",
+                        "partial": true
+                    },
+                    "throws": [
+                        {
+                            "type": "ALREADY_PROCESSED",
+                            "description": "Report was already processed"
+                        }
+                    ],
+                    "returns": {
+                        "type": "boolean"
+                    }
+                },
+                {
+                    "method": "PATCH",
+                    "path": "/v2/translations",
+                    "name": "Batch update translations",
+                    "description": "Update multiple translations' fields at once. Note that URLs and groups can't be changed here. Status can be changed, however, to batch hide translations without deleting them",
+                    "query": {
+                        "ids": {
+                            "type": "number[]",
+                            "description": "Comma-separated list of translation ids"
+                        },
+                        "groups": {
+                            "type": "string[]",
+                            "description": "Comma-separated list of translation groups"
+                        }
+                    },
+                    "returns": {
+                        "type": "object"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/translations/inGroup/:group",
+                    "name": "Get translations in group",
+                    "description": "Returns all translations that belong to a given group",
+                    "params": {
+                        "group": {
+                            "type": "string",
+                            "description": "Group from which to receive translations."
+                        }
+                    },
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "sort": {
+                            "type": "string"
+                        }
+                    },
+                    "returns": {
+                        "type": "PaginatedResponse<Translation>"
+                    }
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/translations",
+                    "name": "Batch delete translations",
+                    "description": "Delete multiple translations at once",
+                    "query": {
+                        "ids": {
+                            "type": "number[]",
+                            "description": "Comma-separated list of translation ids"
+                        },
+                        "groups": {
+                            "type": "string[]",
+                            "description": "Comma-separated list of translation groups"
+                        }
+                    },
+                    "returns": {
+                        "type": "object"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/moderation/statistics",
+                    "name": "Get moderation statistics",
+                    "description": "Get number of accepted/declined translations and processed reports",
+                    "query": {
+                        "id": {
+                            "type": "number",
+                            "description": "User id to get statistics for. By default is current user. Usage requires Admin."
+                        }
+                    },
+                    "returns": {
+                        "type": "object",
+                        "description": "Object with fields: <code>accepted, declined, reports</code>, each maps to a single number."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Notifications",
+            "description": "Notification-related endpoints",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/subscribe",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        }
+                    ],
+                    "name": "Subscribe",
+                    "description": "Subscribes current user to a list of given topics",
+                    "query": {
+                        "topics": {
+                            "type": "string[]",
+                            "required": true,
+                            "description": "Comma-delimited list of topics to subscribe to. Topics are case-insensitive."
+                        }
+                    },
+                    "returns": {
+                        "type": "string[]",
+                        "description": "List of topics that user is currently subscribed to"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/unsubscribe",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        }
+                    ],
+                    "name": "Unsubscribe",
+                    "description": "Unsubscribes current user from a list of given topics",
+                    "query": {
+                        "topics": {
+                            "type": "string[]",
+                            "required": true,
+                            "description": "Comma-delimited list of topics to unsubscribe form. Topics are case-insensitive."
+                        }
+                    },
+                    "returns": {
+                        "type": "string[]",
+                        "description": "List of topics that user is currently subscribed to"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/mytopics",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        }
+                    ],
+                    "name": "Get topics",
+                    "description": "Get current user's subscriptions",
+                    "returns": {
+                        "type": "string[]",
+                        "description": "List of topics that user is currently subscribed to"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/missed",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        }
+                    ],
+                    "name": "Missed notifications",
+                    "description": "Get missed notifications. Note that notifications are stored server-side for 1 week",
+                    "query": {
+                        "since": {
+                            "type": "number",
+                            "required": true,
+                            "description": "Unix timestamp of last synchronization"
+                        }
+                    },
+                    "returns": {
+                        "type": "Notification[]",
+                        "description": "List of topics that user is currently subscribed to"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/addFirebaseToken",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "INVALID_FIREBASE_TOKEN",
+                            "description": "Given Firebase token is invalid"
+                        }
+                    ],
+                    "name": "Add Firebase token",
+                    "description": "Adds a Firebase token to current user, which will be used to notify user while he is offline.",
+                    "query": {
+                        "token": {
+                            "type": "string",
+                            "required": true,
+                            "description": "Firebase token"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/removeFirebaseToken",
+                    "name": "Remove Firebase token",
+                    "description": "Removes a Firebase token from database. Does not require auth.",
+                    "query": {
+                        "token": {
+                            "type": "string",
+                            "required": true,
+                            "description": "Firebase token"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                }
+            ]
+        },
+        {
+            "name": "OAuth",
+            "description": "Not exactly OAuth, we have much more simple and straightforward flow similar to OAuth, so let's call it OAuth. More in OAuth section",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/oauth/authorize",
+                    "features": [
+                        {
+                            "name": "raw-response"
+                        }
+                    ],
+                    "checks": [
+                        {
+                            "name": "login",
+                            "params": {
+                                "via": "cookie"
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_OAUTH",
+                            "description": "Trying to use not OAuth API with OAuth-based auth"
+                        },
+                        {
+                            "type": "NO_SUCH_APP",
+                            "description": "Provided client_id string is not associated with any app"
+                        }
+                    ],
+                    "name": "Start implicit flow",
+                    "description": "This endpoint returns a plain HTML page containing form where user will accept or decline grant.",
+                    "params": {
+                        "client_id": {
+                            "type": "string",
+                            "required": true,
+                            "description": "Client ID to which the token should be issued."
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Parsers",
+            "description": "Advanced low-level and high-trusted endpoints that interact directly with server internal entities called <a href=\"/entities/#enitity-parser\">Parsers</a>. All of these require a specific <a href=\"/#protected-resources\">server scope</a>. ",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/run/:uid",
+                    "name": "Run a Parser",
+                    "description": "Run a parser using given parameters. Requires <code>parsers:run:$UID</code> server scope, where <code>$UID</code> is a parser UID. Note that result of a parser will not be interpreted internally. So, Importers will either return <code>{}</code> (in case of a generator) or array of items, and they WILL NOT be actually imported",
+                    "params": {
+                        "uid": {
+                            "type": "string",
+                            "description": "UID of a Parser"
+                        }
+                    },
+                    "query": {
+                        "$key": {
+                            "type": "any",
+                            "description": "All query parameters will be passed as-is to the Parser"
+                        }
+                    },
+                    "checks": [
+                        {
+                            "name": "server_scope",
+                            "params": {
+                                "scope": "parsers:run:$UID"
+                            }
+                        }
+                    ],
+                    "returns": {
+                        "type": "any",
+                        "description": "A parser can contain anything, so return type is unknown"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/parsers/pull",
+                    "checks": [
+                        {
+                            "name": "server-scope",
+                            "params": {
+                                "scope": "parsers:pull"
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You did not pass a valid OAuth client_secret or your app does not have sufficient permissions"
+                        },
+                        {
+                            "type": "INVALID_TOKEN",
+                            "description": "Given Token does not match any OAuth app."
+                        }
+                    ],
+                    "name": "Pull parsers",
+                    "description": "Get parsers difference since last pull.",
+                    "body": {
+                        "type": "ParsersPullBody",
+                        "description": "Parser revisions (hashes) that are already present."
+                    },
+                    "returns": {
+                        "type": "Parser[]"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/parsers/push",
+                    "checks": [
+                        {
+                            "name": "server-scope",
+                            "params": {
+                                "scope": "parsers:push"
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You did not pass a valid OAuth client_secret or your app does not have sufficient permissions"
+                        },
+                        {
+                            "type": "INVALID_TOKEN",
+                            "description": "Given Token does not match any OAuth app."
+                        }
+                    ],
+                    "name": "Push parsers",
+                    "description": "Update parsers on server. Note that client should do caching and push only parsers that were actually changed. Not like its required, but it'll probably greatly reduce server load",
+                    "body": {
+                        "type": "ParsersPushBody",
+                        "description": "Parser updates. Hashes will be calculated automatically, source code will be gzipped automatically as well"
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Translations",
+            "description": "Fetch information about currently available translations",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": [
+                        "/v2/translations/:type/:id/parts/:part",
+                        "/v2/translations/:type/:id"
+                    ],
+                    "name": "Get media translations",
+                    "description": "Get media translations by media ID, type and optionally part number.",
+                    "params": {
+                        "type": {
+                            "type": "\"anime\" | \"manga\"",
+                            "description": "Media type"
+                        },
+                        "id": {
+                            "type": "number",
+                            "description": "Media ID (MAL)"
+                        },
+                        "part": {
+                            "type": "number",
+                            "description": "Part number"
+                        }
+                    },
+                    "query": {
+                        "kind": {
+                            "description": "Kind of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "sub",
+                                            "dub",
+                                            "scan",
+                                            "off",
+                                            "raw"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "description": "Language of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "en",
+                                            "ru",
+                                            "by",
+                                            "ua",
+                                            "jp",
+                                            "fr",
+                                            "de",
+                                            "cn",
+                                            "ko",
+                                            "other"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "hq": {
+                            "description": "If true then only HQ translations will be returned",
+                            "type": "boolean"
+                        },
+                        "raw": {
+                            "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                            "type": "boolean"
+                        },
+                        "external": {
+                            "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "page",
+                                            "proto"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "needUploader": {
+                            "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[] | TranslationQueryResult",
+                        "description": "List of matching translations. If <code>raw</code> is passed then <code>Translation[]</code> will be returned, otherwise <code>TranslationQueryResult</code>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/translations/:type/recent",
+                    "name": "Get recent translations",
+                    "description": "Get translations that were recently added. Has a hard limit of 15 items.",
+                    "params": {
+                        "type": {
+                            "type": "\"anime\" | \"manga\"",
+                            "description": "Media type"
+                        }
+                    },
+                    "query": {
+                        "kind": {
+                            "description": "Kind of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "sub",
+                                            "dub",
+                                            "scan",
+                                            "off",
+                                            "raw"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "description": "Language of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "en",
+                                            "ru",
+                                            "by",
+                                            "ua",
+                                            "jp",
+                                            "fr",
+                                            "de",
+                                            "cn",
+                                            "ko",
+                                            "other"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "hq": {
+                            "description": "If true then only HQ translations will be returned",
+                            "type": "boolean"
+                        },
+                        "raw": {
+                            "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                            "type": "boolean"
+                        },
+                        "external": {
+                            "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "page",
+                                            "proto"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "needUploader": {
+                            "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[]",
+                        "description": "List of recent translations."
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/translations",
+                    "name": "Get translations",
+                    "description": "Get translations by ids",
+                    "query": {
+                        "ids": {
+                            "type": "number[]",
+                            "description": "Comma-separated list of translation ids"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[]",
+                        "description": "List of requested translations. Note that if some translations do not exist it will silently fail."
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": [
+                        "/v2/translations/:type/:id/parts",
+                        "/anime/:id/episodes",
+                        "/anime/v2/:id/episodes",
+                        "/v2/anime/:id/episodes"
+                    ],
+                    "name": "Get available media parts",
+                    "description": "Returns list of available media parts (ones that have at least one translation).",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Anime ID (MAL)"
+                        }
+                    },
+                    "returns": {
+                        "type": "number[]",
+                        "description": "List of available media parts"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "(/v2)?/anime/(query)?",
+                    "deprecated": true,
+                    "name": "Query anime translations",
+                    "description": "Query anime translations by parameters. Deprecated in favor of v2 translations API.",
+                    "query": {
+                        "kind": {
+                            "description": "Kind of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "sub",
+                                            "dub",
+                                            "scan",
+                                            "off",
+                                            "raw"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "description": "Language of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "en",
+                                            "ru",
+                                            "by",
+                                            "ua",
+                                            "jp",
+                                            "fr",
+                                            "de",
+                                            "cn",
+                                            "ko",
+                                            "other"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "hq": {
+                            "description": "If true then only HQ translations will be returned",
+                            "type": "boolean"
+                        },
+                        "raw": {
+                            "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                            "type": "boolean"
+                        },
+                        "external": {
+                            "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "page",
+                                            "proto"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "needUploader": {
+                            "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        },
+                        "formatted": {
+                            "type": "presence",
+                            "description": "Opposite of <code>raw</code>"
+                        },
+                        "anime": {
+                            "type": "string | string[]",
+                            "checks": [
+                                {
+                                    "name": "count",
+                                    "params": {
+                                        "max": 10
+                                    }
+                                }
+                            ],
+                            "description": "Anime id or ids (comma-separated)"
+                        },
+                        "target": {
+                            "type": "string | string[]",
+                            "description": "Same as <code>anime</code>"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[] | TranslationQueryResult",
+                        "description": "List of matching translations. If <code>formatted</code> is passed then <code>TranslationQueryResult</code> will be returned, otherwise <code>Translation[]</code>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": [
+                        "/anime/v2/:id",
+                        "/v2/anime/:id"
+                    ],
+                    "deprecated": true,
+                    "name": "Get anime translations by anime ID",
+                    "description": "Get anime translations by anime ID. Deprecated in favor of v2 translations API.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Anime ID (MAL)"
+                        }
+                    },
+                    "query": {
+                        "kind": {
+                            "description": "Kind of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "sub",
+                                            "dub",
+                                            "scan",
+                                            "off",
+                                            "raw"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "description": "Language of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "en",
+                                            "ru",
+                                            "by",
+                                            "ua",
+                                            "jp",
+                                            "fr",
+                                            "de",
+                                            "cn",
+                                            "ko",
+                                            "other"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "hq": {
+                            "description": "If true then only HQ translations will be returned",
+                            "type": "boolean"
+                        },
+                        "raw": {
+                            "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                            "type": "boolean"
+                        },
+                        "external": {
+                            "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "page",
+                                            "proto"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "needUploader": {
+                            "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[] | TranslationQueryResult",
+                        "description": "List of matching translations. If <code>raw</code> is passed then <code>Translation[]</code> will be returned, otherwise <code>TranslationQueryResult</code>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": [
+                        "/anime/v2/:id/episode(s)?/:episode",
+                        "/v2/anime/:id/episode(s)?/:episode"
+                    ],
+                    "deprecated": true,
+                    "name": "Get anime translations by anime ID and episode",
+                    "description": "Get anime translations by anime ID and episode number. Deprecated in favor of v2 translations API.",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Anime ID (MAL)"
+                        },
+                        "episode": {
+                            "type": "number",
+                            "description": "Episode number (starts from 1)"
+                        }
+                    },
+                    "query": {
+                        "kind": {
+                            "description": "Kind of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "sub",
+                                            "dub",
+                                            "scan",
+                                            "off",
+                                            "raw"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "lang": {
+                            "description": "Language of translations to be returned.",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "en",
+                                            "ru",
+                                            "by",
+                                            "ua",
+                                            "jp",
+                                            "fr",
+                                            "de",
+                                            "cn",
+                                            "ko",
+                                            "other"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "hq": {
+                            "description": "If true then only HQ translations will be returned",
+                            "type": "boolean"
+                        },
+                        "raw": {
+                            "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                            "type": "boolean"
+                        },
+                        "external": {
+                            "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                            "type": "string",
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "page",
+                                            "proto"
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "needUploader": {
+                            "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation[] | TranslationQueryResult",
+                        "description": "List of matching translations. If <code>raw</code> is passed then <code>Translation[]</code> will be returned, otherwise <code>TranslationQueryResult</code>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": [
+                        "/translations/:id",
+                        "/translation/:id",
+                        "/v2/translations/:id",
+                        "/v2/translation/:id"
+                    ],
+                    "name": "Get translation",
+                    "description": "Get a single translation",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Translation ID"
+                        }
+                    },
+                    "query": {
+                        "needUploader": {
+                            "type": "presence",
+                            "description": "If present, uploader object will be added to result."
+                        }
+                    },
+                    "returns": {
+                        "type": "Translation | null",
+                        "description": "Requested translation or null if it does not exist"
+                    }
+                }
+            ]
+        },
+        {
+            "features": [
+                {
+                    "name": "alias",
+                    "params": {
+                        "at": ":id",
+                        "from": "@me",
+                        "to": "%current user id%"
+                    }
+                }
+            ],
+            "throws": [
+                {
+                    "type": "UNKNOWN_USER",
+                    "description": "Trying to use @me alias without authorization"
+                }
+            ],
+            "name": "Users",
+            "description": "User related endpoints",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/users/:id",
+                    "name": "Get user",
+                    "description": "Get one user by ID",
+                    "query": {
+                        "withStat": {
+                            "type": "boolean",
+                            "description": "If present, user will have additional <code>added</code> field, containing number of added translations by that user"
+                        }
+                    },
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "User ID"
+                        }
+                    },
+                    "returns": {
+                        "type": "User | null",
+                        "description": "Requested user if exists, null otherwise. Note that <code>sub</code> and <code>service</code> fields will only be available for current user"
+                    }
+                },
+                {
+                    "method": "PATCH",
+                    "path": "/v2/users/:id",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can not edit one of fields that were passed in body."
+                        },
+                        {
+                            "type": "NO_EDIT",
+                            "description": "Body does not contain any fields"
+                        },
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Target user was not found"
+                        },
+                        {
+                            "type": "NOT_CONNECTED",
+                            "description": "You are trying to change service, but user does not have connected account there."
+                        }
+                    ],
+                    "name": "Patch a user",
+                    "description": "Change user information.",
+                    "body": {
+                        "type": "PatchUserBody"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/users/:id/lang",
+                    "checks": [
+                        {
+                            "name": "current-user"
+                        },
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Trying to access other user's API"
+                        },
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "INVALID_LANG",
+                            "description": "Given language is unknown. Currently supported locales can be found in <b>Starting Point</b>"
+                        }
+                    ],
+                    "name": "Control user language",
+                    "description": "Get or set user language, which will be used in server-side i18n.",
+                    "params": {
+                        "new": {
+                            "type": "string",
+                            "description": "Optional. New language to set to user"
+                        }
+                    },
+                    "returns": {
+                        "type": "string",
+                        "description": "User language"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/users/:id/disconnect",
+                    "checks": [
+                        {
+                            "name": "current-user"
+                        },
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Trying to access other user's API"
+                        },
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "LAST_SERVICE",
+                            "description": "You are trying to disconnect last connected service, which is not possible"
+                        },
+                        {
+                            "type": "NOT_CONNECTED",
+                            "description": "You are trying to disconnect a service, which user has no connection to"
+                        }
+                    ],
+                    "name": "Disconnect user service",
+                    "description": "Removes connection to a given service for a user. User must have at least one active connection though.",
+                    "params": {
+                        "service": {
+                            "type": "ConnectableService",
+                            "description": "Service to disconnect"
+                        }
+                    },
+                    "returns": {
+                        "type": "User",
+                        "description": "User"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/users/",
+                    "name": "Get user by parameters",
+                    "description": "Get one user by ID on external service or nickname",
+                    "query": {
+                        "shikiId": {
+                            "type": "number",
+                            "description": "User's connected Shikimori ID"
+                        },
+                        "nickname": {
+                            "type": "string",
+                            "description": "User's nickname"
+                        },
+                        "withStat": {
+                            "type": "boolean",
+                            "description": "If present, user will have additional <code>added</code> field, containing number of added translations by that user"
+                        }
+                    },
+                    "returns": {
+                        "type": "User | null"
+                    }
+                }
+            ]
+        },
+        {
+            "checks": [
+                {
+                    "name": "login"
+                }
+            ],
+            "throws": [
+                {
+                    "type": "NO_AUTH",
+                    "description": "Not logged in"
+                }
+            ],
+            "name": "User rates",
+            "description": "User rates (aka user lists) related endpoints. Note that we do not store any user rates. Instead, we proxy them to selected user's provider and normalize into universal UserRate object.",
+            "children": [
+                {
+                    "method": "GET",
+                    "path": "/v2/user_rates/",
+                    "name": "Get user rates",
+                    "description": "Get user rates by parameters. Overall logic is common, but results may vary between providers",
+                    "query": {
+                        "user_id": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "target_id": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "target_type": {
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "anime",
+                                            "manga"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "type": "object"
+                        },
+                        "status": {
+                            "checks": [
+                                {
+                                    "name": "enum",
+                                    "params": {
+                                        "values": [
+                                            "planned",
+                                            "in_progress",
+                                            "completed",
+                                            "on_hold",
+                                            "dropped"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "type": "object"
+                        }
+                    },
+                    "returns": {
+                        "type": "UserRate[]"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/user_rates/:rateId",
+                    "name": "Get single user rate",
+                    "description": "Get user rate by ID. ID format may vary between providers",
+                    "params": {
+                        "rateId": {
+                            "type": "number",
+                            "description": "User rate ID"
+                        }
+                    },
+                    "returns": {
+                        "type": "UserRate"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/user_rates/",
+                    "name": "Create a user rate",
+                    "description": "Create user rate by common params.",
+                    "body": {
+                        "type": "UserRate",
+                        "partial": true
+                    },
+                    "returns": {
+                        "type": "UserRate"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/user_rates/:rateId",
+                    "name": "Update a user rate",
+                    "description": "Update user rate.",
+                    "body": {
+                        "type": "UserRate",
+                        "partial": true
+                    },
+                    "params": {
+                        "rateId": {
+                            "type": "number",
+                            "description": "User rate ID"
+                        }
+                    },
+                    "returns": {
+                        "type": "UserRate"
+                    }
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/user_rates/:rateId",
+                    "name": "Delete a user rate",
+                    "description": "Delete a single user rate. Actual action may vary between providers.",
+                    "params": {
+                        "rateId": {
+                            "type": "number",
+                            "description": "User rate ID"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                }
+            ]
+        }
+    ],
+    "entities": [
+        {
+            "type": "User",
+            "fields": {
+                "id": {
+                    "type": "number"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "avatar": {
+                    "type": "string | null",
+                    "checks": [
+                        {
+                            "name": "url"
+                        }
+                    ]
+                },
+                "admin": {
+                    "type": "boolean"
+                },
+                "moderator": {
+                    "type": "boolean"
+                },
+                "trusted": {
+                    "type": "boolean"
+                },
+                "banned": {
+                    "type": "boolean"
+                },
+                "donated": {
+                    "type": "number"
+                },
+                "external_ids": {
+                    "type": "object"
+                },
+                "service": {
+                    "type": "string",
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "S"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "sub": {
+                    "type": "string[]"
+                }
+            }
+        },
+        {
+            "type": "OauthApp",
+            "fields": {
+                "id": {
+                    "type": "number"
+                },
+                "client_id": {
+                    "type": "string"
+                },
+                "client_secret": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "number | null"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "redirect_uri": {
+                    "type": "string"
+                },
+                "server_scope": {
+                    "type": "string[]"
+                },
+                "owner": {}
+            }
+        },
+        {
+            "type": "OauthSession",
+            "fields": {
+                "token": {
+                    "type": "string"
+                },
+                "app_id": {
+                    "type": "number | null"
+                },
+                "user_id": {
+                    "type": "number | null"
+                },
+                "captcha": {
+                    "type": "number"
+                },
+                "app": {},
+                "user": {}
+            }
+        },
+        {
+            "type": "Notification",
+            "fields": {
+                "id": {
+                    "type": "number"
+                },
+                "progress": {
+                    "type": "number"
+                },
+                "for_users": {
+                    "type": "number[] | null"
+                },
+                "deleted": {
+                    "type": "boolean"
+                },
+                "topics": {
+                    "type": "string[]"
+                },
+                "payload": {
+                    "type": "object | null"
+                }
+            }
+        },
+        {
+            "type": "FirebaseToken",
+            "fields": {
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "number"
+                },
+                "user": {}
+            }
+        },
+        {
+            "type": "StatisticsDay",
+            "fields": {
+                "day": {
+                    "type": "Date"
+                },
+                "data": {
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "Translation",
+            "description": "A single translation/submission (technically they are the same)",
+            "fields": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique translation/submission ID."
+                },
+                "target_id": {
+                    "type": "number",
+                    "description": "Target media ID of the translation. Currently uses MAL IDs."
+                },
+                "target_type": {
+                    "type": "string",
+                    "description": "Target media type of the translation. Currently uses <code>anime, manga</code> like MAL."
+                },
+                "part": {
+                    "type": "number",
+                    "description": "Part number of the translation. Specifically, episode for anime and chapter for manga."
+                },
+                "kind": {
+                    "type": "string",
+                    "description": "Translation kind. Anime translation can be <code>sub</code>bed and <code>dub</code>bed, manga translations can be <code>scan</code>lations and <code>off</code>ficial, and both can be <code>raw</code>"
+                },
+                "lang": {
+                    "type": "string",
+                    "description": "Translation language. Currently support <code>en, ru, by, ua, jp, fr, de, cn, ko</code> and <code>other</code>, but list may expand at some time."
+                },
+                "hq": {
+                    "type": "boolean",
+                    "description": "Whether the translation is HQ (exact definition may vary, but usually it means 720p or more for anime and hi-res scans for manga)"
+                },
+                "author": {
+                    "type": "string",
+                    "description": "Translation author. Can contain studio name (like <code>AniDUB</code>), author names (like <code>Anku, mutagenb</code>), both (like <code>AniDUB (Anku, mutagenb)</code>) or basically anything else that can be used to describe an author. There's no strict format. Edge case is an empty <code>author</code>, which should be interpreted as Unknown author."
+                },
+                "uploader_id": {
+                    "type": "number",
+                    "description": "ID of user that added this translation. <code>null</code> if added by Parser or External batch addition"
+                },
+                "status": {
+                    "type": "string",
+                    "description": "Translation status. Differentiates submissions and actual translations. Only available in Moderation or Submission APIs."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "URL to translation iframe. Is a <code>https://</code> link (or <code>http://</code> for external translations). If <code>?external=proto</code>, then may be a <code>ehttp://</code> or <code>ehttps://</code> link, which means this translation is external and can't be displayed in a iframe. Remove preceding e to get actual link.",
+                    "checks": [
+                        {
+                            "name": "url",
+                            "params": {
+                                "protocols": [
+                                    "https"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "groups": {
+                    "description": "Translation grouping. Used to do batch operations with ease. Mainly used for Parsers like <code>parser:[parser-uid]</code> and External batch addition like <code>from-app:[app-id]</code>Only visible to moderators."
+                },
+                "created_at": {
+                    "type": "Date",
+                    "description": "Translation creation time"
+                },
+                "updated_at": {
+                    "type": "Date",
+                    "description": "Translation last update time"
+                },
+                "uploader": {
+                    "type": "object",
+                    "description": "Information about user that added this translation. Only present with <code>?needUploader</code> param, only <code>id, nickname, avatar</code> fields are present."
+                }
+            }
+        },
+        {
+            "type": "Parser",
+            "description": "Parser is a piece of JS code + meta information for some actions, whose method of handling may change at all times. We use them to store (currently) 3 types of parsers -- Importers, Cleaners and Mappers. <br><br><b>Importers</b> are scripts that run every so often (on a schedule) and which task is to grab some translations from some services and import them all to our DB. They should contain a <code>function(){...}</code> expression, where the returned function should return an async iterable (or compatible) of <code>Translation</code><br><br><b>Cleaners</b> are scripts that remove old and banned players from database. They should contain a<code>function(){}</code> expression, where the returned function should return an async iterable (or compatible) of integers, ids of translations to be removed. In params, they have access to TypeORM Translation entity (<code>ctx.params.Translation</code>)<br><br><b>Mappers</b> are scripts that grab external websites' media ids and try to map them with MAL ids, which are used by PlaShiki. They should contain a <code>function(){...}</code> expression, where the returned function should return <code>ExternalServiceMappings</code> or <code>Promise&lt;ExternalServiceMappings&gt;</code><br><br>All of them receive a <code>ParserContext</code> object as an argument, which is described in types/ctx.ts at <a href=\"//github.com/plashiki/plashiki-parsers\">plashiki-parsers</a> repository.",
+            "fields": {
+                "uid": {
+                    "type": "string",
+                    "description": "Uid of a parser. Is globally unique. Importers' uid start with <code>importers/</code>, Cleaners' uid start with <code>cleaners/</code> and Mappers' uid start with <code>mappers/</code>. "
+                },
+                "provide": {
+                    "type": "string[]",
+                    "description": "Dependencies of a parser. A parser can contain some dependencies, for example to abstract parsing logic of a single platform but keep different parsers for different authors. Nested dependencies are supported, circular are not"
+                },
+                "disabled": {
+                    "type": "boolean",
+                    "description": "When a parser is disabled, it will not be started on schedule (in case of an Importer/Mapper) This WILL NOT disable importing it as a dependency."
+                },
+                "cri": {
+                    "type": "boolean",
+                    "description": "Constantly running importer. If true then this importer will be running all the time while server is up in a worker thread. (however it wont be restarted after worker is dead, i.e. function returns). Only applicable to Importers."
+                },
+                "code": {
+                    "type": "string",
+                    "description": "JavaScript code"
+                },
+                "source": {
+                    "type": "string",
+                    "description": "Original source code of a file. GZipped. Used only for pulling."
+                },
+                "hash": {
+                    "type": "string",
+                    "description": "MD5 hash of a parser. Calculated as follows: <br><code>md5(p.uid + '\\n\\n' + p.provide.sort().join(',') + '\\n\\n' + p.code)</code>. <br>Used to keep track of changed parsers when pushing/pulling them"
+                }
+            }
+        },
+        {
+            "type": "Report",
+            "description": "A single report.",
+            "fields": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique report ID"
+                },
+                "translation_id": {
+                    "type": "number",
+                    "description": "Translation ID which is reported. Translation with this ID may not exist in case it was deleted after report was created. "
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Report type"
+                },
+                "comment": {
+                    "type": "string",
+                    "description": "Report comment"
+                },
+                "sender_id": {
+                    "type": "number",
+                    "description": "Report sender ID"
+                },
+                "status": {
+                    "type": "enum"
+                },
+                "edit": {
+                    "type": "object | null"
+                },
+                "sender": {
+                    "description": "Report sender object. Only available in Moderation API -> Get single report"
+                }
+            }
+        },
+        {
+            "type": "Mapping",
+            "description": "A single media ID mapping",
+            "fields": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique mapping ID"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Target media type"
+                },
+                "external": {
+                    "type": "object",
+                    "description": "Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types.ts</code> file of backend, line 60",
+                    "fields": {
+                        "%ExternalService%": {
+                            "type": "string",
+                            "description": "Media ID in a given ExternalService."
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Paginated",
+            "fields": {
+                "limit": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "offset": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                }
+            }
+        },
+        {
+            "type": "PaginatedSorted",
+            "fields": {
+                "limit": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "offset": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "sort": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "UserRate",
+            "fields": {
+                "id": {
+                    "type": "number"
+                },
+                "target_id": {
+                    "type": "number"
+                },
+                "target_type": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "anime",
+                                    "manga"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "status": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "planned",
+                                    "in_progress",
+                                    "completed",
+                                    "on_hold",
+                                    "dropped"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "parts": {
+                    "type": "number"
+                },
+                "partsVolumes": {
+                    "type": "number"
+                },
+                "repeats": {
+                    "type": "number"
+                },
+                "user_id": {
+                    "type": "object"
+                },
+                "ctx": {
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "PerformApiCallOptions",
+            "fields": {
+                "path": {
+                    "type": "string"
+                },
+                "method": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "GET",
+                                    "POST",
+                                    "PUT",
+                                    "PATCH",
+                                    "DELETE"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "string"
+                },
+                "body": {
+                    "checks": [
+                        {
+                            "name": "object",
+                            "params": {
+                                "canBeArray": true
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "query": {
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "CreateApplicationBody",
+            "fields": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "checks": [
+                        {
+                            "name": "length",
+                            "params": {
+                                "max": 1000
+                            }
+                        }
+                    ],
+                    "type": "string"
+                },
+                "icon": {
+                    "checks": [
+                        {
+                            "name": "url"
+                        }
+                    ],
+                    "type": "string"
+                },
+                "redirect_uri": {
+                    "checks": [
+                        {
+                            "name": "url"
+                        }
+                    ],
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "PatchApplicationBody",
+            "fields": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "checks": [
+                        {
+                            "name": "length",
+                            "params": {
+                                "max": 1000
+                            }
+                        }
+                    ],
+                    "type": "string"
+                },
+                "icon": {
+                    "checks": [
+                        {
+                            "name": "url"
+                        }
+                    ],
+                    "type": "string"
+                },
+                "redirect_uri": {
+                    "checks": [
+                        {
+                            "name": "url"
+                        }
+                    ],
+                    "type": "string"
+                },
+                "server_scope": {
+                    "type": "string[]"
+                }
+            }
+        },
+        {
+            "type": "ShikimoriLoginBody",
+            "fields": {
+                "code": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "ShikimoriProxyBody",
+            "fields": {
+                "endpoint": {
+                    "type": "string"
+                },
+                "httpMethod": {
+                    "type": "string"
+                },
+                "params": {
+                    "checks": [
+                        {
+                            "name": "object",
+                            "params": {
+                                "canBeArray": false
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "query": {
+                    "checks": [
+                        {
+                            "name": "object",
+                            "params": {
+                                "canBeArray": false
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "body": {
+                    "checks": [
+                        {
+                            "name": "object",
+                            "params": {
+                                "canBeArray": false
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "api": {
+                    "type": "boolean"
+                }
+            }
+        },
+        {
+            "type": "RunCleanerBody",
+            "fields": {
+                "provide": {
+                    "type": "string[]"
+                },
+                "code": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "GetTranslationsParameters",
+            "fields": {
+                "kind": {
+                    "description": "Kind of translations to be returned.",
+                    "type": "string",
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "sub",
+                                    "dub",
+                                    "scan",
+                                    "off",
+                                    "raw"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "lang": {
+                    "description": "Language of translations to be returned.",
+                    "type": "string",
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "en",
+                                    "ru",
+                                    "by",
+                                    "ua",
+                                    "jp",
+                                    "fr",
+                                    "de",
+                                    "cn",
+                                    "ko",
+                                    "other"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "hq": {
+                    "description": "If true then only HQ translations will be returned",
+                    "type": "boolean"
+                },
+                "raw": {
+                    "description": "If passed then items will not be sorted and classified, and returned as a raw array of objects",
+                    "type": "boolean"
+                },
+                "external": {
+                    "description": "How to handle translations with external (non-embeddable) players. By default it will just return a link to it. <br/>If <code>?external=page</code>, then will return a special page that will ask user to open it in a new page<br/>If <code>?external=proto</code>, then external players will have a protocol <code>ehttp:// or ehttps://</code>, so you can handle them manually",
+                    "type": "string",
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "page",
+                                    "proto"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "needUploader": {
+                    "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                    "type": "boolean"
+                }
+            }
+        },
+        {
+            "type": "SubmitTranslationBody",
+            "fields": {
+                "target_id": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "target_type": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "anime",
+                                    "manga"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "part": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 1,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "kind": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "sub",
+                                    "dub",
+                                    "scan",
+                                    "off",
+                                    "raw"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "lang": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "en",
+                                    "ru",
+                                    "by",
+                                    "ua",
+                                    "jp",
+                                    "fr",
+                                    "de",
+                                    "cn",
+                                    "ko",
+                                    "other"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "hq": {
+                    "type": "boolean"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "url": {
+                    "checks": [
+                        {
+                            "name": "url",
+                            "params": {
+                                "protocols": [
+                                    "https"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "SubmitReportBody",
+            "fields": {
+                "translation_id": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "type": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "invalid_media",
+                                    "invalid_part",
+                                    "invalid_meta",
+                                    "broken_link",
+                                    "legal_issue",
+                                    "other"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "comment": {
+                    "checks": [
+                        {
+                            "name": "length",
+                            "params": {
+                                "max": 1000
+                            }
+                        }
+                    ],
+                    "type": "string"
+                },
+                "edit": {
+                    "type": "SubmitTranslationBody"
+                }
+            }
+        },
+        {
+            "type": "CaptchaRefreshBody",
+            "fields": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "ExternalBatchAdditionItem",
+            "fields": {
+                "groups": {
+                    "type": "string[]"
+                },
+                "status": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "pending",
+                                    "added",
+                                    "declined"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "url": {
+                    "checks": [
+                        {
+                            "name": "url",
+                            "params": {
+                                "protocols": [
+                                    "https",
+                                    "ehttp",
+                                    "ehttps"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "ExternalBatchAdditionBody",
+            "fields": {
+                "translations": {
+                    "type": "ExternalBatchAdditionItem[]"
+                }
+            }
+        },
+        {
+            "type": "BatchPatchTranslationBody",
+            "fields": {
+                "status": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "pending",
+                                    "added",
+                                    "declined"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "ParsersPullBody",
+            "fields": {
+                "hashes": {
+                    "type": "string[]"
+                }
+            }
+        },
+        {
+            "type": "ParsersPushBody",
+            "fields": {
+                "upsert": {
+                    "type": "Parser[]"
+                },
+                "delete": {
+                    "type": "string[]"
+                }
+            }
+        },
+        {
+            "type": "GetTranslationsParametersCompat",
+            "fields": {
+                "formatted": {
+                    "type": "object"
+                },
+                "anime": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "type": "GetUserParams",
+            "fields": {
+                "nickname": {
+                    "type": "string"
+                },
+                "shikiId": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "withStat": {
+                    "type": "object"
+                }
+            }
+        },
+        {
+            "type": "PatchUserBody",
+            "fields": {
+                "admin": {
+                    "description": "Toggles user's admin status. Only available to admins.",
+                    "type": "boolean"
+                },
+                "moderator": {
+                    "description": "Toggles user's moderator status. Only available to admins.",
+                    "type": "boolean"
+                },
+                "trusted": {
+                    "description": "Toggles user's trusted status. Only available to admins and moderators.",
+                    "type": "boolean"
+                },
+                "banned": {
+                    "description": "Toggles user's banned status. Only available to admins and moderators.",
+                    "type": "boolean"
+                },
+                "nickname": {
+                    "description": "Changes user's nickname. Value must be a spare nickname. Available for current user and for admins.",
+                    "type": "string"
+                },
+                "avatar": {
+                    "description": "Changes user's avatar. Value must be a URL to image or null. Available for current user and for admins.",
+                    "type": "object"
+                },
+                "service": {
+                    "description": "Changes user's user rate service. Value must exist in <code>external_ids</code> object. Only available for current user",
+                    "type": "string",
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "S"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "GetUserRatesParams",
+            "fields": {
+                "user_id": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "target_id": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "target_type": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "anime",
+                                    "manga"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                },
+                "status": {
+                    "checks": [
+                        {
+                            "name": "enum",
+                            "params": {
+                                "values": [
+                                    "planned",
+                                    "in_progress",
+                                    "completed",
+                                    "on_hold",
+                                    "dropped"
+                                ]
+                            }
+                        }
+                    ],
+                    "type": "object"
+                }
+            }
+        }
+    ]
+}

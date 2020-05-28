@@ -1,0 +1,7 @@
+.env
+.idea
+dist
+node_modules
+*.log
+private
+*.pg
