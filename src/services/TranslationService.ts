@@ -11,7 +11,7 @@ import {
 } from './TranslationService.types'
 import { In } from 'typeorm'
 import { AnyKV, AtLeast, MediaType, numericToNumber, PaginatedResponse, PaginatedSorted } from '@/types'
-import { chunks, dropUndefined, uniqueBy } from '@/helpers/object-utils'
+import { chunks, dropUndefined, strip, uniqueBy } from '@/helpers/object-utils'
 import { TranslationNotifierQueue } from '@/data/queues'
 import { rowsToColumns } from '@/helpers/utils'
 import { externalRedirectPage } from '@/config'
@@ -27,7 +27,7 @@ export class TranslationService {
 
         let opts = {
             status: 'added',
-            ...params
+            ...strip({ ...params }, ['raw', 'external', 'needUploader', 'renameAsAnime'], true)
         } as any
 
 
