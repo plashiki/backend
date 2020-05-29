@@ -21,8 +21,12 @@ export const connectionOptions: ConnectionOptions = {
     namingStrategy: new TheNamingStrategy()
 }
 
-export default async function typeOrmLoader (connOptions: Partial<ConnectionOptions> = {}): Promise<void> {
+export default async function typeOrmLoader (connOptions: Partial<ConnectionOptions> = {}, sync = false): Promise<void> {
     const conn = await createConnection(merge(clone(connectionOptions), connOptions))
+
+    if (sync) {
+        await conn.synchronize()
+    }
 
     await conn.runMigrations()
 

@@ -6,7 +6,7 @@ import { Translation, TranslationKind, TranslationLanguage, TranslationStatus } 
 import { StatisticsDay } from '@/models/StatisticsDay'
 import { clearProgress, log, renderProgress } from '@/workers/mapping-importers/common'
 import { MediaType } from '@/types'
-import { chunks, createIndex } from '@/helpers/object-utils'
+import { createIndex } from '@/helpers/object-utils'
 import { normalizeUrl } from '@/helpers/utils'
 
 const UNSHORTEN_MAP = {
@@ -32,7 +32,7 @@ async function main (): Promise<void> {
 
     await typeOrmLoader({
         logging: ['schema', 'error', 'warn', 'info', 'log', 'migration']
-    })
+    }, true)
 
     log('Getting users')
     const users = await pool.query('select * from users where shiki_id is not null order by id asc')
@@ -75,71 +75,87 @@ async function main (): Promise<void> {
     let count = 0
     const total = merged.length
     const chunkSize = 5000
+    const tormItems: Partial<Translation>[] = []
 
-    for (const part of chunks(merged, chunkSize)) {
-        const tormItems: Partial<Translation>[] = []
+    for (const tr of merged) {
+        tr.url = normalizeUrl(unshorten(tr.url))
 
-        for (const tr of part) {
-            tr.url = unshorten(tr.url)
+        if (existent.has(tr.url)) {
+            continue
+        }
+        existent.add(tr.url)
 
-            if (existent.has(tr.url)) {
-                continue
-            }
-            existent.add(tr.url)
+        const obj: Partial<Translation> = {
+            target_id: tr.anime_id,
+            target_type: MediaType.anime,
+            part: tr.episode,
+            kind: [
+                TranslationKind.Original,
+                TranslationKind.Subtitles,
+                TranslationKind.Dubbed
+            ][tr.kind],
+            lang: [
+                TranslationLanguage.Russian,
+                TranslationLanguage.English,
+                TranslationLanguage.Japanese,
+                TranslationLanguage.Other
+            ][tr.lang],
+            hq: tr.kind === 1,
+            author: tr.author,
+            url: tr.url,
+            status: [
+                TranslationStatus.Pending,
+                TranslationStatus.Added,
+                TranslationStatus.Declined
+            ][tr.state]
+        }
 
-            const obj: Partial<Translation> = {
-                target_id: tr.anime_id,
-                target_type: MediaType.anime,
-                part: tr.episode,
-                kind: [
-                    TranslationKind.Original,
-                    TranslationKind.Subtitles,
-                    TranslationKind.Dubbed
-                ][tr.kind],
-                lang: [
-                    TranslationLanguage.Russian,
-                    TranslationLanguage.English,
-                    TranslationLanguage.Japanese,
-                    TranslationLanguage.Other
-                ][tr.lang],
-                hq: tr.kind === 1,
-                author: tr.author,
-                url: normalizeUrl(tr.url),
-                status: [
-                    TranslationStatus.Pending,
-                    TranslationStatus.Added,
-                    TranslationStatus.Declined
-                ][tr.state]
-            }
+        if (!obj.target_id || !obj.part || !obj.kind || !obj.lang || !obj.status) continue
 
-            if (!obj.target_id || !obj.part || !obj.kind || !obj.lang || !obj.status) continue
-
-            if (tr.uploader) {
-                if (typeof tr.uploader === 'number') {
-                    tr.uploader = usersById[tr.uploader]
-                    if (tr.uploader) {
-                        tr.uploader = tr.uploader.nickname
-                    }
-                }
-
-                let user: number | undefined = undefined
+        if (tr.uploader) {
+            if (typeof tr.uploader === 'number') {
+                tr.uploader = usersById[tr.uploader]
                 if (tr.uploader) {
-                    if (tr.uploader in insertedUsersByNickname) {
-                        user = insertedUsersByNickname[tr.uploader].id
-                    }
-                    obj.uploader_id = user
+                    tr.uploader = tr.uploader.nickname
                 }
             }
 
-            tormItems.push(obj)
+            let user: number | undefined = undefined
+            if (tr.uploader) {
+                if (tr.uploader in insertedUsersByNickname) {
+                    user = insertedUsersByNickname[tr.uploader].id
+                }
+                obj.uploader_id = user
+            }
         }
-        if (tormItems.length > 0) {
-            // see https://github.com/typeorm/typeorm/issues/3111
-            await Translation.createQueryBuilder().insert().values(tormItems).execute()
+
+        tormItems.push(obj)
+
+        if (tormItems.length >= chunkSize) {
+            await Translation.createQueryBuilder()
+                .insert()
+                .values(tormItems)
+                .onConflict('(url) do nothing')
+                .execute()
+
+            count += tormItems.length
+            tormItems.length = 0
+
+            renderProgress(count, total)
         }
-        count += chunkSize
-        renderProgress(count, total)
     }
+
+    if (tormItems.length >= 0) {
+        await Translation.createQueryBuilder()
+            .insert()
+            .values(tormItems)
+            .onConflict('(url) do nothing')
+            .execute()
+        tormItems.length = 0
+    }
+
+    count += chunkSize
+    renderProgress(count, total)
     clearProgress()
     log('Getting stats')
     const stats = await pool.query('select * from stats')
