@@ -96,6 +96,8 @@ export default async function sessionMiddleware (ctx: Context, next: Function): 
         return next()
     }
 
+    ctx.cookies.secure = isProduction
+
     let session = new Session()
     ctx.session = session
 
