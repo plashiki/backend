@@ -1,12 +1,9 @@
 import _debug, { Debugger } from 'debug'
-import { isProduction } from '@/config'
 
 const _debugPrefix = 'api'
 const _debuggers: Record<string, Debugger> = {}
 
-if (!isProduction) {
-    _debug.enable([...(process.env.DEBUG?.split(',') || []), _debugPrefix + ':*'].join(','))
-}
+_debug.enable([...(process.env.DEBUG?.split(',') || []), _debugPrefix + ':*'].join(','))
 
 export const getDebugger = function (name: string): Debugger {
     if (!(name in _debuggers)) {
