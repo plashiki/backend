@@ -14,8 +14,11 @@ import websocketMiddleware from '@/middlewares/03_websocket'
 import { defaultValidatorOptions } from '@/helpers/api-validate'
 
 import fixValidation from '@/helpers/fix-validation'
-import { DEBUG } from '@/helpers/debug'
+import { createServer } from 'http'
+import { Socket } from 'net'
 import Koa = require('koa')
+import { chmodSync, unlinkSync } from 'fs'
+import { DEBUG } from '@/helpers/debug'
 
 fixValidation()
 
@@ -54,6 +57,36 @@ export default async function koaLoader (noStart = false): Promise<void> {
     }
 
     if (!noStart) {
-        app.listen(port, () => DEBUG.boot(`Listening on ${port}`))
+        const server = createServer(app.callback())
+
+        const onListening = (): void => {
+            chmodSync(port, 0o777)
+            DEBUG.boot('Listening on unix socket %s', port)
+        }
+
+        // taken from https://stackoverflow.com/a/16502680
+        server.on('error', (e: any) => {
+            if (e.code == 'EADDRINUSE') {
+                if (!isNaN(parseInt(port))) {
+                    console.error(e)
+                    process.exit(1)
+                }
+
+                let clientSocket = new Socket()
+                clientSocket.on('error', (e: any) => { // handle error trying to talk to server
+                    if (e.code == 'ECONNREFUSED') {  // No other server listening
+                        unlinkSync(port)
+                        server.listen(port, onListening)
+                    }
+                })
+
+                clientSocket.connect({ path: port }, function () {
+                    DEBUG.boot('Server running, giving up...')
+                    process.exit()
+                })
+            }
+        })
+
+        server.listen(port, onListening)
     }
 }
