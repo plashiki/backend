@@ -5,7 +5,7 @@ import { Notification } from '@/models/Notification'
 import { Report } from '@/models/Report'
 import { Translation } from '@/models/Translation'
 import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types'
-import { DeleteResult, In, LessThanOrEqual, UpdateResult } from 'typeorm'
+import { DeleteResult, In, MoreThanOrEqual, UpdateResult } from 'typeorm'
 import { dropUndefined } from '@/helpers/object-utils'
 import { KeyValue } from '@/models/KeyValue'
 import { StatisticsDay } from '@/models/StatisticsDay'
@@ -62,7 +62,7 @@ export class ModerationService {
         return Translation.createQueryBuilder('tr')
             .where({
                 // only return last week so queries are faster (we dont need to count all tr-s)
-                updated_at: LessThanOrEqual(Date.now() - 604800000)
+                updated_at: MoreThanOrEqual(Date.now() - 604800000)
             })
             .leftJoin('tr.uploader', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
