@@ -60,8 +60,10 @@ export default async function koaLoader (noStart = false): Promise<void> {
         const server = createServer(app.callback())
 
         const onListening = (): void => {
-            chmodSync(port, 0o777)
-            DEBUG.boot('Listening on unix socket %s', port)
+            if (isNaN(parseInt(port))) {
+                chmodSync(port, 0o777)
+            }
+            DEBUG.boot('Listening on %s', port)
         }
 
         // taken from https://stackoverflow.com/a/16502680
