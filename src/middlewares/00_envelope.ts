@@ -88,9 +88,10 @@ export default async function envelopeMiddleware (ctx: Context, next: Next): Pro
 
         if (!isProduction) {
             output.stack = error.stack
-            if (!(error instanceof ApiError)) {
-                console.error(error)
-            }
+        }
+
+        if (!(error instanceof ApiError)) {
+            console.error(error)
         }
     } else {
         output.result = result
