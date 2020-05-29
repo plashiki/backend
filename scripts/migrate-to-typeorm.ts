@@ -78,7 +78,12 @@ async function main (): Promise<void> {
     const tormItems: Partial<Translation>[] = []
 
     for (const tr of merged) {
-        tr.url = normalizeUrl(unshorten(tr.url))
+        try {
+            tr.url = unshorten(tr.url)
+            tr.url = normalizeUrl(tr.url)
+        } catch (e) {
+            continue
+        }
 
         if (existent.has(tr.url)) {
             continue
@@ -100,7 +105,7 @@ async function main (): Promise<void> {
                 TranslationLanguage.Japanese,
                 TranslationLanguage.Other
             ][tr.lang],
-            hq: tr.kind === 1,
+            hq: tr.quality === 1,
             author: tr.author,
             url: tr.url,
             status: [
