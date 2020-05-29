@@ -7,7 +7,7 @@ import { Context } from 'koa'
 import { Endpoint } from '@/decorators/docs'
 
 export async function verifyCaptcha (response: string, secret = recaptcha): Promise<boolean> {
-    return fetch(' https://hcaptcha.com/siteverify ', {
+    return fetch('https://www.google.com/recaptcha/api/siteverify', {
         body: stringify({
             secret,
             response
