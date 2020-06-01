@@ -121,15 +121,27 @@ Authorization: Bearer TOKEN
 
 
 ## WebSocket
-### Notifications
 To deliver real-time stuff like notifications we use a WebSocket. 
 It is available at `/api/ws`.
 
 You can pass your `Authorization` header as normal - no need in additional authorization
 inside a WebSocket, server will recognize you. However, in case of bad token you'll end up
 with a plain HTTP response (`200 OK` but with error inside) instead 
-of `101 Switching Protocols`
+of `101 Switching Protocols`.
 
+
+### KeepAlive
+Since we use CloudFlare for proxying, it has a limit of 100 seconds for a WebSocket to idle.
+This way, you have two options: send keep-alive packets or reconnect every time.
+
+To keep things simple™ and to reduce bandwidth, to a keep-alive message is 
+nothing more than a message containing `KA`. That's it, just `KA`. 
+In response, server will send `KAACK` (keep-alive acknowledgement).
+
+> `KAACK` is sent as a plain-text, and only sent in response to `KA`. So, if you don't send
+> `KA` packets, you don't need to handle `KAACK`.
+
+### Notifications
 Once connected, your client may just idle - it will receive notifications in no time. 
 A notification will be sent like this:
 
