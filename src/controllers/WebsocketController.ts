@@ -95,6 +95,10 @@ export default class WebsocketController {
 
             ws.on('message', (data) => {
                 if (typeof data === 'string') {
+                    if (data === 'KA') {
+                        return ws.send('KAACK')
+                    }
+
                     let json
                     try {
                         json = JSON.parse(data)
