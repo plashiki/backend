@@ -1,7 +1,7 @@
 @echo off
 set cwd=%cd%
 
-npm run build:docs
+call npm run build:docs
 
 cd docs/.vuepress/dist
 
