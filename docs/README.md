@@ -134,7 +134,7 @@ of `101 Switching Protocols`.
 Since we use CloudFlare for proxying, it has a limit of 100 seconds for a WebSocket to idle.
 This way, you have two options: send keep-alive packets or reconnect every time.
 
-To keep things simple™ and to reduce bandwidth, to a keep-alive message is 
+To keep things simple™ and to reduce bandwidth, a keep-alive message is 
 nothing more than a message containing `KA`. That's it, just `KA`. 
 In response, server will send `KAACK` (keep-alive acknowledgement).
 
