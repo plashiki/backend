@@ -82,7 +82,11 @@ export class TranslationService {
     async getAvailableParts (targetId: number, targetType: MediaType): Promise<number[]> {
         const builder = Translation.createQueryBuilder()
             .distinctOn(['part'])
-            .where({ target_id: targetId, target_type: targetType })
+            .where({
+                target_id: targetId,
+                target_type: targetType,
+                status: TranslationStatus.Added
+            })
             .select('part')
             .orderBy('part', 'ASC')
         const translations = await builder.execute()
