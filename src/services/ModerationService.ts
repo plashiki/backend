@@ -62,7 +62,7 @@ export class ModerationService {
         return Translation.createQueryBuilder('tr')
             .where({
                 // only return last week so queries are faster (we dont need to count all tr-s)
-                updated_at: MoreThanOrEqual(Date.now() - 604800000)
+                updated_at: MoreThanOrEqual(new Date(Date.now() - 604800000))
             })
             .leftJoin('tr.uploader', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
