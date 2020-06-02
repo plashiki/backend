@@ -13,6 +13,7 @@ import * as fuzz from 'fuzzball'
 import { normalizeUrl } from '@/helpers/utils'
 import fetchRetry from '@/helpers/fetch-retry'
 import { RelationsParser } from '@/helpers/relations'
+import Mapping from '@/models/Mapping'
 
 export type DynamicOptions<T, I> = {
     [key in keyof T]?: T[key] | ((item: I) => Promise<T[key]> | T[key])
@@ -35,6 +36,7 @@ export const libs = {
     PB,
     anitomy,
     relations: RelationsParser.instance,
+    mappings: Mapping,
 
     // util functions
     sleep: (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms)),
