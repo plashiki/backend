@@ -6,14 +6,27 @@ import { join } from 'path'
 import { writeFileSync } from 'fs'
 import { camelCase } from 'typeorm/util/StringUtils'
 import { connectionOptions } from '@/init/00_typeorm-loader'
+import { createInterface } from 'readline'
 
 const capitalize = (s: string): string => s[0].toUpperCase() + s.substr(1)
 
+const input = (s: string): Promise<string> => {
+    return new Promise(resolve => {
+        const rl = createInterface({
+            input: process.stdin,
+            output: process.stdout
+        })
+        rl.question(s, (res) => {
+            rl.close()
+            resolve(res)
+        })
+    })
+}
+
 async function main (): Promise<void> {
-    const name = process.argv[2]
+    let name = process.argv[2]
     if (!name) {
-        console.log('Usage: ' + process.argv[1] + ' <migration-name>')
-        return
+        name = await input('Migration name > ')
     }
 
     const conn = await createConnection({
