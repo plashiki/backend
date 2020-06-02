@@ -43,7 +43,11 @@ export enum TranslationLanguage {
 export enum TranslationStatus {
     Pending = 'pending',
     Added = 'added',
-    Declined = 'declined'
+    Declined = 'declined',
+
+    // translation was added by parser, but we don't
+    // yet know MAL id for its target.
+    Mapping = 'mapping'
 }
 
 @EntityConstructor({
