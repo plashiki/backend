@@ -69,6 +69,7 @@ export type ExternalService =
     | 'fansubs'      // FanSubs.ru
     | 'crunchyroll'  // CrunchyRoll.net
     | 'kp'           // KinoPoisk.ru
+    | 'imdb'         // IMDb.com
     | 'mangaupdates' // MangaUpdates.com
     | 'thetvdb'      // TheTVDB.com
     | 'trakt'        // Trakt.TV
