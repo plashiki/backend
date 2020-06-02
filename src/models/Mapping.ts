@@ -65,4 +65,14 @@ export default class Mapping extends BaseEntity {
         old.type = type
         await old.save()
     }
+
+    static async findFull (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping | null> {
+        return this.createQueryBuilder()
+            .where({
+                type
+            })
+            .andWhere('external @> :mapping', { mapping })
+            .getOne()
+            .then(i => i || null)
+    }
 }
