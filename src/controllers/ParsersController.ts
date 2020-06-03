@@ -104,7 +104,16 @@ export default class ParsersController {
             )
         }
 
-        return this.service.executeParser(parser, params)
+        const runtime = this.service.getContextFor(parser, params)
+        const result = await this.service.executeParser(parser, undefined, runtime)
+        if (runtime.raw) ctx.raw = true
+        if (runtime.headers) {
+            for (let [key, value] of Object.entries(runtime.headers)) {
+                ctx.set(key, value + '')
+            }
+        }
+
+        return result
     }
 
     @Endpoint({
