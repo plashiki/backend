@@ -62,6 +62,19 @@ export class Parser extends BaseEntity {
     disabled: boolean
 
     @Expose()
+    @IsString()
+    @EntityField({
+        description: 'When a parser is public, anyone can run it. '
+            + 'Possible values: <code>\'\'</code> (empty string) = non-public'
+            + '<code>true</code> = public'
+            + '<code>N,M</code> = public with rate-limit: N requests every M seconds'
+    })
+    @Column({
+        default: ''
+    })
+    public: string
+
+    @Expose()
     @IsBoolean()
     @EntityField({
         description: 'Constantly running importer. If true then this importer will ' +

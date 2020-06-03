@@ -1,12 +1,14 @@
-import { Body, Controller, Get, Param, Post, QueryParams, Session } from 'routing-controllers'
+import { Body, Controller, Ctx, Get, Param, Post, QueryParams, Session } from 'routing-controllers'
 import { Endpoint } from '@/decorators/docs'
 import { ParsersService } from '@/services/ParsersService'
-import { AnyKV } from '@/types'
+import { AnyKV, ApiError } from '@/types'
 import { RequireServerScope, requireServerScope } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
 import { Expose, Type } from 'class-transformer'
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator'
 import { Parser } from '@/models/Parser'
+import rateLimitMiddleware from '@/middlewares/rate-limit'
+import { Context } from 'koa'
 
 
 class ParsersPullBody {
@@ -47,7 +49,7 @@ export default class ParsersController {
     @Endpoint({
         name: 'Run a Parser',
         description: 'Run a parser using given parameters. Requires <code>parsers:run:$UID</code> ' +
-            'server scope, where <code>$UID</code> is a parser UID. Note that result of a parser will not be ' +
+            'server scope, where <code>$UID</code> is a parser UID for non-public parsers. Note that result of a parser will not be ' +
             'interpreted internally. So, Importers will either return <code>{}</code> (in case of a generator) or ' +
             'array of items, and they WILL NOT be actually imported',
         params: {
@@ -70,6 +72,12 @@ export default class ParsersController {
                 }
             }
         ],
+        throws: [
+            {
+                type: 'NOT_FOUND',
+                description: 'Parser was not found'
+            }
+        ],
         returns: {
             type: 'any',
             description: 'A parser can contain anything, so return type is unknown'
@@ -79,11 +87,24 @@ export default class ParsersController {
     async runParser (
         @Param('uid') uid: string,
         @QueryParams() params: AnyKV,
-        @Session() session: ISession
+        @Session() session: ISession,
+        @Ctx() ctx: Context
     ) {
-        await requireServerScope(session, `parsers:run:${uid.replace(/\//g, ':')}`)
+        const parser = await this.service.getParserAndLoadDependencies(uid)
+        if (!parser) ApiError.e('NOT_FOUND')
 
-        return this.service.executeParserByUid(uid, params)
+        if (!parser.public) {
+            await requireServerScope(session, `parsers:run:${uid.replace(/\//g, ':')}`)
+        } else if (parser.public !== 'true') {
+            let [requests, duration] = parser.public.split(',')
+            await new Promise(
+                (resolve, reject) => Promise.resolve()
+                    .then(() => rateLimitMiddleware(parseInt(requests), parseInt(duration), `parsers:${uid}//`)(ctx, resolve as any))
+                    .catch(reject)
+            )
+        }
+
+        return this.service.executeParser(parser, params)
     }
 
     @Endpoint({

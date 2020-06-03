@@ -179,7 +179,7 @@ export class ParsersService {
 
         await this.loadParsers([rootUid])
 
-        return this.cacheParsers[rootUid]
+        return this.cacheParsers[rootUid] ?? null
     }
 
     async loadParsers (uids: string[]): Promise<void> {
