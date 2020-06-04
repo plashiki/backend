@@ -4,7 +4,6 @@ import typeOrmLoader from '@/init/00_typeorm-loader'
 import { User } from '@/models/User'
 import { Translation, TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
 import { StatisticsDay } from '@/models/StatisticsDay'
-import { clearProgress, log, renderProgress } from '@/workers/mapping-importers/common'
 import { MediaType } from '@/types'
 import { createIndex } from '@/helpers/object-utils'
 import { normalizeUrl } from '@/helpers/utils'
@@ -22,6 +21,35 @@ const UNSHORTEN_MAP = {
 const unshorten = (url: string): string => (
     UNSHORTEN_MAP[url[0]] ? UNSHORTEN_MAP[url[0]] + url.substr(1) : url
 )
+
+export function strFill (char: string, size: number): string {
+    const r: string[] = []
+    for (let i = 0; i < size; i++) {
+        r[i] = char
+    }
+    return r.join('')
+}
+
+export function padLeft (text: string, length: number, char = ' '): string {
+    if (text.length >= length) return text
+    const d = length - text.length
+    return strFill(char, d) + text
+}
+
+
+export function renderProgress (current: number, total: number): void {
+    const part = current / total
+    const pbs = process.stdout.columns - total.toString(10).length * 2 - 6
+    const w = Math.round(part * pbs)
+    process.stdout.write(`[${strFill('#', w)}${strFill('-', pbs - w)}] ` +
+        `${padLeft(current.toString(10), total.toString(10).length)}/${total}\r`)
+}
+
+export function clearProgress (): void {
+    process.stdout.write(strFill(' ', process.stdout.columns) + '\r')
+}
+
+export const log = (...args): void => console.log('[i]', ...args)
 
 
 async function main (): Promise<void> {
