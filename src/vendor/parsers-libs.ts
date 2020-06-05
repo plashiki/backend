@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 import * as objectUtils from '../helpers/object-utils'
 import FormData from 'form-data'
 import * as iconv from 'iconv-lite'
+import * as vm from 'vm'
 import { KeyValue } from '@/models/KeyValue'
 import WebSocket from 'ws'
 import * as qs from 'querystring'
@@ -23,6 +24,7 @@ export const libs = {
     cheerio,
     fetch: fetchRetry,
     objectUtils,
+    vm,
     fuzz,
     FormData,
     iconv,
