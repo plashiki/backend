@@ -64,6 +64,7 @@ export class TranslationService {
 
                     i.episode = i.part
                     i.part = undefined
+                    i.quality = i.hq ? 'bd' : 'tv'
 
                     return i
                 }) as any
@@ -255,13 +256,17 @@ export class TranslationService {
             }
 
             // adding translation in ret.
-            index[fullTag].translations.push({
+            let item = {
                 id: tr.id,
                 name: playerHost,
                 url: tr.url,
                 hq: tr.hq,
                 uploader: tr.uploader
-            })
+            }
+            if ('quality' in tr) {
+                (item as any).quality = (tr as any).quality
+            }
+            index[fullTag].translations.push(item)
         })
 
         return ret

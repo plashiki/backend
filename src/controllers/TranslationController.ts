@@ -205,6 +205,9 @@ export default class TranslationController {
         params.target_type = MediaType.anime
         params.renameAsAnime = true
 
+        delete params.target
+        delete params.anime
+
         return this.service.getTranslations(params)
     }
 
