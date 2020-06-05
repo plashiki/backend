@@ -60,7 +60,7 @@ async function main (): Promise<void> {
 
     await typeOrmLoader({
         logging: ['schema', 'error', 'warn', 'info', 'log', 'migration']
-    }, true)
+    })
 
     log('Getting users')
     const users = await pool.query('select * from users where shiki_id is not null order by id asc')
