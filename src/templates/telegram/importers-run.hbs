@@ -2,7 +2,7 @@
 Добавлено {{total}} переводов.<br />
 Статистика:
 <pre>
-    {{#each perParserEfficiency}}
-        {{@key}}: {{lookup ../perParserTotal @key}}/{{lookup ../perParserItems @key}}={{this}}
-    {{/each}}
+{{#each perParserEfficiency}}
+{{@key}}: {{lookup ../perParserTotal @key}}/{{lookup ../perParserItems @key}}={{this}}
+{{/each}}
 </pre>
