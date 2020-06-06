@@ -302,6 +302,35 @@ export default class ModerationController {
     }
 
     @Endpoint({
+        name: 'Get player meta information',
+        description: 'Returns player meta information like title & page with player from some websites',
+        params: {
+            id: {
+                type: 'number',
+                description: 'Translation ID'
+            }
+        },
+        throws: [
+            {
+                type: 'NOT_FOUND',
+                description: 'Translation was not found'
+            }
+        ],
+        returns: {
+            type: 'PlayerMeta'
+        }
+    })
+    @Get('/translations/:id(\\d+)/playerMeta')
+    async getPlayerMeta (
+        @Param('id') id: number
+    ) {
+        const tr = await this.translationService.getSingleTranslation(id)
+        if (!tr) ApiError.e('NOT_FOUND')
+
+        return this.moderationService.getPlayerMeta(tr.url)
+    }
+
+    @Endpoint({
         name: 'Batch delete translations',
         description: 'Delete multiple translations at once',
         query: {

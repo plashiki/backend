@@ -9,6 +9,7 @@ import { DeleteResult, In, MoreThanOrEqual, Not, UpdateResult } from 'typeorm'
 import { dropUndefined } from '@/helpers/object-utils'
 import { KeyValue } from '@/models/KeyValue'
 import { StatisticsDay } from '@/models/StatisticsDay'
+import { resolveMeta, PlayerMeta } from '@/helpers/meta-resolvers'
 
 export class ModerationService {
     async fixCommonUrlMistakes (url: string): Promise<string> {
@@ -52,6 +53,10 @@ export class ModerationService {
             // bruh...
             return url
         }
+    }
+
+    async getPlayerMeta (url: string): Promise<PlayerMeta | null> {
+        return resolveMeta(url)
     }
 
     async getModerators (): Promise<number[]> {
