@@ -40,7 +40,7 @@ export class KeyValue extends BaseEntity {
     }
 
     static async set<T> (key: string, value: T): Promise<void> {
-        let str = JSON.stringify(value)
+        let str = JSON.stringify(value) ?? 'null'
         await this.query('insert into "key_value" (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value',
             [key, str])
     }
