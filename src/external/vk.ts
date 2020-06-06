@@ -9,6 +9,9 @@ export class VkApiError extends Error {
 export function vkApi<T = any> (method: string, params: AnyKV): Promise<T> {
     return fetchRetry(`https://api.vk.com/method/${method}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
         body: stringify({
             v: 5.92,
             access_token: vk,
