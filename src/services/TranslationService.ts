@@ -76,6 +76,15 @@ export class TranslationService {
 
             return items as any
         } else {
+            if (params.renameAsAnime) {
+                // compat with anime api v1/v2
+                items = items.map((i: AnyKV) => {
+                    i.quality = i.hq ? 'bd' : 'tv'
+
+                    return i
+                }) as any
+            }
+
             return this.processTranslations(items, params.external) as any
         }
     }
