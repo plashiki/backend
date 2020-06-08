@@ -6,7 +6,7 @@ export default class Mutex {
         let _mutex = mutex ?? new Mutex()
 
         return async function (...args) {
-            await _mutex.aquire()
+            await _mutex.acquire()
             let ret
             try {
                 ret = await func.apply(thisArg, args)
@@ -19,7 +19,7 @@ export default class Mutex {
         } as any
     }
 
-    async aquire (): Promise<void> {
+    async acquire (): Promise<void> {
         if (this.__promise) {
             await this.__promise
         }
