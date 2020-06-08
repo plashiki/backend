@@ -1,4 +1,4 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Brackets, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 import { ExternalServiceMappings, MediaType } from '@/types'
 import { merge } from '@/helpers/object-utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
@@ -40,12 +40,16 @@ export default class Mapping extends BaseEntity {
     static async extend (type: MediaType, mapping: ExternalServiceMappings): Promise<void> {
         // find anything that relates
         const builder = this.createQueryBuilder()
-        for (let key of Object.keys(mapping)) {
-            mapping[key] = mapping[key] + '' // enforcing strings
-            builder.orWhere(`external->>'${key}' = :${key}`, {
-                [key]: mapping[key]
-            })
-        }
+        const brackets = new Brackets((qb) => {
+            for (let key of Object.keys(mapping)) {
+                mapping[key] = mapping[key] + '' // enforcing strings
+                qb.orWhere(`external->>'${key}' = :${key}`, {
+                    [key]: mapping[key]
+                })
+            }
+        })
+        builder.where(brackets)
+        builder.andWhere('type = :type', { type })
         const olds = await builder.getMany()
         const old = olds[0] ?? this.create({
             external: {}
