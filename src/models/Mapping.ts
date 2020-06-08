@@ -37,7 +37,7 @@ export default class Mapping extends BaseEntity {
     })
     external: ExternalServiceMappings
 
-    static async extend (type: MediaType, mapping: ExternalServiceMappings): Promise<void> {
+    static async extend (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping> {
         // find anything that relates
         const builder = this.createQueryBuilder()
         const brackets = new Brackets((qb) => {
@@ -67,7 +67,7 @@ export default class Mapping extends BaseEntity {
         // finally mixing in given mappings
         merge(old.external, mapping)
         old.type = type
-        await old.save()
+        return old.save()
     }
 
     static async findFull (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping | null> {

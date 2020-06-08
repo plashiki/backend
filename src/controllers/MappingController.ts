@@ -1,7 +1,8 @@
-import { Controller, Get, Param, QueryParams } from 'routing-controllers'
-import { ApiValidationError, ExternalServiceMappings, MediaType } from '@/types'
+import { Body, Controller, Get, Param, QueryParams, Post } from 'routing-controllers'
+import { AnyKV, ApiValidationError, ExternalServiceMappings, MediaType } from '@/types'
 import { MappingService } from '@/services/MappingService'
 import { Endpoint } from '@/decorators/docs'
+import { RequireServerScope } from '@/decorators/auth-decorators'
 
 @Endpoint({
     name: 'Mappings',
@@ -42,5 +43,23 @@ export default class MappingController {
         }
 
         return this.service.findFullMappings(type, params)
+    }
+
+    @Endpoint({
+        name: 'Extend mappings',
+        body: {
+            type: 'ExternalServiceMappings'
+        },
+        returns: {
+            type: 'Mapping'
+        }
+    })
+    @RequireServerScope('mappings:extend')
+    @Post('/extend/:type(anime|manga)')
+    async extendMapping (
+        @Param('type') type: MediaType,
+        @Body() body: AnyKV
+    ) {
+        return this.service.extendMapping(type, body)
     }
 }
