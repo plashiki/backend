@@ -1,4 +1,4 @@
-import { BaseEntity, Brackets, Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { BaseEntity, Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn, Transaction } from 'typeorm'
 import { ExternalServiceMappings, MediaType } from '@/types'
 import { merge } from '@/helpers/object-utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
@@ -38,36 +38,38 @@ export default class Mapping extends BaseEntity {
     external: ExternalServiceMappings
 
     static async extend (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping> {
-        // find anything that relates
-        const builder = this.createQueryBuilder()
-        const brackets = new Brackets((qb) => {
-            for (let key of Object.keys(mapping)) {
-                mapping[key] = mapping[key] + '' // enforcing strings
-                qb.orWhere(`external->>'${key}' = :${key}`, {
-                    [key]: mapping[key]
-                })
-            }
-        })
-        builder.where(brackets)
-        builder.andWhere('type = :type', { type })
-        const olds = await builder.getMany()
-        const old = olds[0] ?? this.create({
-            external: {}
-        })
+        return getConnection().transaction('SERIALIZABLE', async em => {
+            // find anything that relates
+            const builder = em.getRepository(Mapping).createQueryBuilder()
+            const brackets = new Brackets((qb) => {
+                for (let key of Object.keys(mapping)) {
+                    mapping[key] = mapping[key] + '' // enforcing strings
+                    qb.orWhere(`external->>'${key}' = :${key}`, {
+                        [key]: mapping[key]
+                    })
+                }
+            })
+            builder.where(brackets)
+            builder.andWhere('type = :type', { type })
+            const olds = await builder.getMany()
+            const old = olds[0] ?? this.create({
+                external: {}
+            })
 
-        // merging with others if needed
-        if (olds.length > 1) {
-            for (let i = 1; i < olds.length; i++) {
-                const it = olds[i]
-                merge(old.external, it.external)
-                await it.remove()
+            // merging with others if needed
+            if (olds.length > 1) {
+                for (let i = 1; i < olds.length; i++) {
+                    const it = olds[i]
+                    merge(old.external, it.external)
+                    await em.remove(it)
+                }
             }
-        }
 
-        // finally mixing in given mappings
-        merge(old.external, mapping)
-        old.type = type
-        return old.save()
+            // finally mixing in given mappings
+            merge(old.external, mapping)
+            old.type = type
+            return em.save(old)
+        })
     }
 
     static async findFull (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping | null> {
