@@ -156,7 +156,7 @@ async function runImporters (): Promise<void> {
     let perParserEfficiency = {}
     const today = await StatisticsDay.today()
     Object.keys(perParserItems).forEach((uid) => {
-        let efficiency = perParserItems[uid] / perParserTotal[uid]
+        let efficiency = perParserTotal[uid] / perParserItems[uid]
         if (perParserTotal[uid] === 0) {
             efficiency = 1 // weird flex but ok
         }
