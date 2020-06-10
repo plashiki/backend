@@ -47,7 +47,8 @@ export default class Mapping extends BaseEntity {
     external: ExternalServiceMappings
 
     static async extend (type: MediaType, mapping: ExternalServiceMappings, force = false): Promise<Mapping> {
-        return getConnection().transaction('SERIALIZABLE', async em => {
+        return getConnection().transaction(async em => {
+            await em.query('lock table mappings in exclusive mode')
             // find anything that relates
             const builder = em.getRepository(Mapping).createQueryBuilder()
             const brackets = new Brackets((qb) => {
