@@ -194,8 +194,12 @@ async function runMappers (): Promise<void> {
         parsers, async (ctx, uid, { type, mappings: item }) => {
             if (!Object.keys(item)) return
 
-            await Mapping.extend(type, item)
-            total += 1
+            try {
+                await Mapping.extend(type, item)
+                total += 1
+            } catch (e) {
+                DEBUG.parsers('conflicting mappings: %s %o', type, item)
+            }
         }
     )
 
