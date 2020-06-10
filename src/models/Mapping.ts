@@ -1,7 +1,16 @@
-import { BaseEntity, Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn, Transaction } from 'typeorm'
-import { ExternalServiceMappings, MediaType } from '@/types'
+import { BaseEntity, Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn } from 'typeorm'
+import { ApiError, ExternalServiceMappings, MediaType } from '@/types'
 import { merge } from '@/helpers/object-utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+
+
+function checkConflict (old: ExternalServiceMappings, item: ExternalServiceMappings): void {
+    for (let key of Object.keys(item)) {
+        if (key in old && old[key] !== item[key]) {
+            ApiError.e('CONFLICTING_MAPPING')
+        }
+    }
+}
 
 @EntityConstructor({
     description: 'A single media ID mapping'
@@ -37,7 +46,7 @@ export default class Mapping extends BaseEntity {
     })
     external: ExternalServiceMappings
 
-    static async extend (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping> {
+    static async extend (type: MediaType, mapping: ExternalServiceMappings, force = false): Promise<Mapping> {
         return getConnection().transaction('SERIALIZABLE', async em => {
             // find anything that relates
             const builder = em.getRepository(Mapping).createQueryBuilder()
@@ -60,9 +69,18 @@ export default class Mapping extends BaseEntity {
             if (olds.length > 1) {
                 for (let i = 1; i < olds.length; i++) {
                     const it = olds[i]
+
+                    if (!force) {
+                        checkConflict(old.external, it.external)
+                    }
+
                     merge(old.external, it.external)
                     await em.remove(it)
                 }
+            }
+
+            if (!force) {
+                checkConflict(old.external, mapping)
             }
 
             // finally mixing in given mappings

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, QueryParams, Post } from 'routing-controllers'
+import { Body, Controller, Get, Param, QueryParams, Post, QueryParam } from 'routing-controllers'
 import { AnyKV, ApiValidationError, ExternalServiceMappings, MediaType } from '@/types'
 import { MappingService } from '@/services/MappingService'
 import { Endpoint } from '@/decorators/docs'
@@ -47,6 +47,18 @@ export default class MappingController {
 
     @Endpoint({
         name: 'Extend mappings',
+        query: {
+            force: {
+                type: 'boolean',
+                description: 'Whether to ignore conflicts'
+            }
+        },
+        throws: [
+            {
+                type: 'CONFLICTING_MAPPING',
+                description: 'There\'s a conflict when merging mappings.'
+            }
+        ],
         body: {
             type: 'ExternalServiceMappings'
         },
@@ -58,8 +70,9 @@ export default class MappingController {
     @Post('/extend/:type(anime|manga)')
     async extendMapping (
         @Param('type') type: MediaType,
+        @QueryParam('force') force: boolean,
         @Body() body: AnyKV
     ) {
-        return this.service.extendMapping(type, body)
+        return this.service.extendMapping(type, body, force)
     }
 }

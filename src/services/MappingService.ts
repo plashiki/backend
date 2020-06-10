@@ -6,7 +6,7 @@ export class MappingService {
         return Mapping.findFull(type, mapping)
     }
 
-    async extendMapping (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping> {
-        return Mapping.extend(type, mapping)
+    async extendMapping (type: MediaType, mapping: ExternalServiceMappings, force = false): Promise<Mapping> {
+        return Mapping.extend(type, mapping, force)
     }
 }
