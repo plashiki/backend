@@ -11,6 +11,7 @@ import { Expose } from 'class-transformer'
 import { Context } from 'koa'
 import { In } from 'typeorm'
 import { Endpoint } from '@/decorators/docs'
+import { IsNumeric } from '@/helpers/validators'
 
 
 class GetTranslationsParametersCompat extends GetTranslationsParameters {
@@ -22,6 +23,11 @@ class GetTranslationsParametersCompat extends GetTranslationsParameters {
     @IsString()
     @IsOptional()
     anime?: string
+
+    @Expose()
+    @IsNumeric()
+    @IsOptional()
+    episode?: string
 
     @Expose()
     @IsString()
@@ -196,10 +202,14 @@ export default class TranslationController {
         @QueryParams() params: GetTranslationsParametersCompat
     ) {
         params.raw = !('formatted' in params)
-        params.target_id = (params.target ?? params.anime!).split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
+        params.target_id = (params.target ?? params.anime ?? '').split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
 
-        if (params.target_id.length > 10) {
+        if (params.target_id.length > 10 || params.target_id.length === 0) {
             ApiValidationError.e('you can specify no more that 10 anime ids.')
+        }
+
+        if (params.episode) {
+            params.part = params.episode
         }
 
         params.target_type = MediaType.anime
@@ -207,6 +217,7 @@ export default class TranslationController {
 
         delete params.target
         delete params.anime
+        delete params.episode
 
         return this.service.getTranslations(params)
     }
