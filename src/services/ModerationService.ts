@@ -17,11 +17,11 @@ export class ModerationService {
             let m
 
             // vk - video link instead of embed link
-            m = url.match(/^https?:\/\/vk\.com\/(?:.*?[?&]z=)?video(-?\d+?)_(\d+)(?:$|[?&])/)
+            m = url.match(/^https?:\/\/vk\.com\/(?:.*?[?&]z=)?video(-?\d+?_\d+)(?:$|[?&])/)
             if (m) {
                 const d = await vkApi('video.get', {
                     count: 1,
-                    videos: m[0] + '_' + m[1]
+                    videos: m[1]
                 })
                 if (d.count === 1) {
                     return normalizeUrl(d.items[0].player, {
