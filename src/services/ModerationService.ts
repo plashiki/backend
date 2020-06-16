@@ -70,6 +70,7 @@ export class ModerationService {
                 updated_at: MoreThanOrEqual(new Date(Date.now() - 604800000)),
                 status: Not(TranslationStatus.Mapping)
             })
+            .andWhere('tr.uploader_id is not null')
             .leftJoin('tr.uploader', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
             .paginate(pagination, 50)
