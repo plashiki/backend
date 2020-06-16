@@ -319,11 +319,15 @@ export default class SubmissionController {
 
         await translation.save()
 
-        if (user.moderator) {
+        if (user.moderator && translation.uploader_id !== session.userId) {
             TLoggerQueue.add('update', {
                 translation,
                 issuerId: session.userId,
                 diff: body
+            })
+
+            StatisticsQueue.add('stat-event', {
+                name: `tr-edit:${session.userId}`
             })
         }
 

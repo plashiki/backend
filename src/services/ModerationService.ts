@@ -218,11 +218,15 @@ export class ModerationService {
             .where('data->>(\'moder-accept:\' || :id) is not null', { id: userId })
             .orWhere('data->>(\'moder-decline:\' || $1) is not null')
             .orWhere('data->>(\'rep-proc:\' || $1) is not null')
+            .orWhere('data->>(\'tr-rem:user-\' || $1) is not null')
+            .orWhere('data->>(\'tr-edit:\' || $1) is not null')
             .getMany()
         let ret = {
             accepted: 0,
             declined: 0,
-            reports: 0
+            reports: 0,
+            deleted: 0,
+            edited: 0
         }
 
         d.forEach((day) => {
@@ -235,6 +239,12 @@ export class ModerationService {
                 }
                 if (key === 'rep-proc:' + userId) {
                     ret.reports += day.data[key]
+                }
+                if (key === 'tr-rem:user-' + userId) {
+                    ret.deleted += day.data[key]
+                }
+                if (key === 'tr-edit:' + userId) {
+                    ret.edited += day.data[key]
                 }
 
             })
