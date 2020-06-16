@@ -15,6 +15,7 @@ import { normalizeUrl } from '@/helpers/utils'
 import fetchRetry from '@/helpers/fetch-retry'
 import { RelationsParser } from '@/helpers/relations'
 import Mapping from '@/models/Mapping'
+import { AbortController, AbortSignal } from 'abort-controller'
 
 export type DynamicOptions<T, I> = {
     [key in keyof T]?: T[key] | ((item: I) => Promise<T[key]> | T[key])
@@ -39,6 +40,8 @@ export const libs = {
     anitomy,
     relations: RelationsParser.instance,
     mappings: Mapping,
+    AbortController,
+    AbortSignal,
 
     // util functions
     sleep: (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms)),
