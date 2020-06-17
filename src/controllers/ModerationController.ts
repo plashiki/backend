@@ -14,6 +14,7 @@ import { Endpoint } from '@/decorators/docs'
 import { IsEnum, IsOptional } from 'class-validator'
 import { Expose } from 'class-transformer'
 import { UserService } from '@/services/UserService'
+import { UpdateResult } from 'typeorm'
 
 class BatchPatchTranslationBody extends SubmitTranslationBody {
     @Expose()
@@ -265,16 +266,25 @@ export default class ModerationController {
     @Patch('/translations')
     async updateBatch (
         @Body(PartialBody) body: BatchPatchTranslationBody,
-        @QueryParams() params: AnyKV
+        @QueryParams() params: AnyKV,
+        @Session() session: ISession
     ) {
         body = strip(body, ['url', 'groups'])
+        let result: UpdateResult
         if ('ids' in params) {
             let ids = params.ids.split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
-            return this.moderationService.updateTranslations(ids, body)
+            result = await this.moderationService.updateTranslations(ids, body)
         } else if ('groups' in params) {
             let groups = params.groups.split(',').map(i => i.toLowerCase())
-            return this.moderationService.updateTranslationsInGroup(groups, body)
+            result = await this.moderationService.updateTranslationsInGroup(groups, body)
         } else ApiValidationError.e('invalid query')
+
+        StatisticsQueue.add('stat-event', {
+            name: 'tr-edit:' + session.userId!,
+            count: result.affected
+        })
+
+        return result
     }
 
     @Endpoint({
@@ -349,14 +359,15 @@ export default class ModerationController {
     })
     @Delete('/translations')
     async removeBatch (
-        @QueryParams() params: AnyKV
+        @QueryParams() params: AnyKV,
+        @Session() session: ISession
     ) {
         if ('ids' in params) {
             let ids = params.ids.split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
             const result = await this.moderationService.deleteTranslations(ids)
 
             StatisticsQueue.add('stat-event', {
-                name: 'tr-rem:batch',
+                name: 'tr-rem:user-' + session.userId!,
                 count: result.affected
             })
 
