@@ -52,9 +52,9 @@ export default class ShikimoriApi {
         // morr plz leave this as a feature, lol
 
         if (params.query) {
-            url += '?' + qs.stringify(params.query) + '&__=/autocomplete'
+            url += '?' + qs.stringify(params.query) + '&__/autocomplete'
         } else {
-            url += '?__=/autocomplete'
+            url += '?__/autocomplete'
         }
 
         const headers: AnyKV = {
