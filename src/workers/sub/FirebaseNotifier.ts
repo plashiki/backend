@@ -15,6 +15,11 @@ import { DEBUG } from '@/helpers/debug'
 const shikimoriApi = ShikimoriApi.instance
 
 new Worker('FirebaseNotifier', async ({ name, data }) => {
+    if (name === 'del-tag') {
+        await PushService.instance.deleteNotificationsWithTag(data.tag)
+        return
+    }
+
     if (name === 'notify') {
         const { notificationId, targets } = data as {
             notificationId: number

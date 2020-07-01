@@ -11,7 +11,7 @@ import { User } from '@/models/User'
 
 export type PushEventListener = (
     data: NotificationMeta,
-    notification: Notification
+    notification: Notification | null
 ) => void
 
 export interface NotificationMeta {
@@ -31,9 +31,9 @@ export interface NotificationMeta {
     t: string[]
 
     /**
-     * Notification ID (in db) or actual notification (for real-time)
+     * Notification ID(s) (in db) or actual notification (for real-time)
      */
-    i: number | Partial<Notification>
+    i: number | number[] | Partial<Notification>
 
     /**
      * Notification targets (user IDs)
@@ -178,6 +178,48 @@ export class PushService {
         })
     }
 
+    async deleteNotificationsWithTag (tag: string): Promise<void> {
+        let all = await Notification.find({
+            where: {
+                tag
+            },
+            select: ['id', 'topics', 'for_users']
+        })
+        let targets = new Set<number>()
+        let topicsCache: Record<string, number[]> = {}
+        for (let notification of all) {
+            let currentTargets: number[]
+            if (notification.for_users) {
+                currentTargets = notification.for_users
+            } else {
+                let topicsString = notification.topics.sort().join(';')
+                if (topicsString in topicsCache) {
+                    currentTargets = topicsCache[topicsString]
+                } else {
+                    currentTargets = topicsCache[topicsString] = await User.findSubTargets(notification.topics)
+                }
+            }
+            currentTargets.forEach(it => targets.add(it))
+
+            notification.deleted = true
+
+            await notification.save()
+        }
+
+        return PushService.__spreadMeta({
+            u: 'D',
+            i: all.map(i => i.id),
+            t: [],
+            k: [...targets]
+        })
+    }
+
+    deleteNotificationsWithTagDeferred (tag: string): void {
+        FirebaseNotifierQueue.add('del-tag', {
+            tag
+        })
+    }
+
     async getMissedNotifications (since: Date, topics: string[], userId: number): Promise<Notification[]> {
         return Notification.createQueryBuilder('notif')
             .where('time >= :since', { since })
@@ -224,9 +266,12 @@ export class PushService {
     }
 
     private async __deliverNotification (msg: NotificationMeta): Promise<void> {
-        const notification = typeof msg.i === 'number' ? await Notification.findOne({ id: msg.i }) : msg.i
+        const notification = typeof msg.i === 'number' ?
+            await Notification.findOne({ id: msg.i }) :
+            Array.isArray(msg.i) && msg.u === 'D' ? null :
+            msg.i
 
-        if (!notification) {
+        if (notification === undefined) {
             // weird flex, silently fail
             return
         }
@@ -234,7 +279,7 @@ export class PushService {
         for (let target of msg.k) {
             if (target in this.__registry) {
                 for (let listener of this.__registry[target]) {
-                    listener(msg, notification as Notification)
+                    listener(msg, notification as Notification | null)
                 }
             }
         }

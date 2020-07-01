@@ -83,8 +83,8 @@ export default class WebsocketController {
                     type: ev.u,
                     topics: ev.t,
                     progress: ev.p,
-                    id: notif.id,
-                    data: notif.payload
+                    id: notif?.id ?? ev.i,
+                    data: notif?.payload
                 })
             }) as PushEventListener
 
