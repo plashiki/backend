@@ -13,7 +13,7 @@
         "test:dirty": "mocha dist/tests/**/*.spec.js",
         "dev": "nodemon",
         "dev:docs": "vuepress dev docs",
-        "generate-docs": "yarn build:ts && node dist/scripts/generate-docs.js",
+        "generate-spec": "yarn build:ts && node dist/scripts/generate-spec.js",
         "lint": "eslint src/**/*.ts",
         "build": "yarn run build:ts && yarn run build:static",
         "build:ts": "tsc --project tsconfig.json && yarn build:paths",
