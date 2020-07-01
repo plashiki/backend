@@ -15,6 +15,16 @@ export class Notification extends BaseEntity {
     id: number
 
     @EntityField({
+        description: 'Notification tag containing brief meta info about notification for quick removal. '
+            + 'Example: <code>mod-tr:123</code> = new translation on moderation with id 123.<br>'
+    })
+    @Column({
+        select: false,
+        default: ''
+    })
+    tag: string
+
+    @EntityField({
         description: 'Time when notification was last updated'
     })
     @UpdateDateColumn()
