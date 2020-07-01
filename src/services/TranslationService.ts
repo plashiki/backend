@@ -10,7 +10,7 @@ import {
     TranslationQueryResultCompat
 } from './TranslationService.types'
 import { In } from 'typeorm'
-import { AnyKV, AtLeast, MediaType, numericToNumber, PaginatedResponse, PaginatedSorted } from '@/types'
+import { AnyKV, ApiError, AtLeast, MediaType, numericToNumber, PaginatedResponse, PaginatedSorted } from '@/types'
 import { chunks, dropUndefined, strip, uniqueBy } from '@/helpers/object-utils'
 import { TranslationNotifierQueue } from '@/data/queues'
 import { rowsToColumns } from '@/helpers/utils'
@@ -190,6 +190,11 @@ export class TranslationService {
             .getOne()
 
         return it?.id ?? null
+    }
+
+    async assertNoDuplicates (url: string): Promise<void> {
+        const duplicateId = await this.findTranslationWithSimilarUrl(url)
+        if (duplicateId) ApiError.e(`TRANSLATION_DUPLICATE_${duplicateId}`, `Given translation seems to be a duplicate of ${duplicateId}`)
     }
 
     processTranslations (translations: Translation[], returnUrlType?: TranslationQueryExternalType): TranslationQueryResult {

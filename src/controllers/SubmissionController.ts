@@ -131,10 +131,7 @@ export default class SubmissionController {
         })
         body.url = url
 
-        let existent = await this.translationService.findTranslationWithSimilarUrl(url)
-        if (existent !== null) {
-            ApiError.e('TRANSLATION_DUPLICATE_' + existent, 'Given translation seems to be a duplicate of ' + existent)
-        }
+        await this.translationService.assertNoDuplicates(body.url)
 
         let translation = await this.translationService.addATranslation({
             ...body,
@@ -313,6 +310,11 @@ export default class SubmissionController {
         let ignoredFields = ['id', 'uploader_id', 'status']
         if (!user.moderator) {
             ignoredFields.push('groups')
+        }
+
+        // check for duplicates if url changed
+        if (body.url) {
+            await this.translationService.assertNoDuplicates(body.url)
         }
 
         shallowMerge(translation, body, ignoredFields)

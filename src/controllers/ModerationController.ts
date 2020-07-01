@@ -89,6 +89,11 @@ export default class ModerationController {
         },
         throws: [
             {
+                type: 'TRANSLATION_DUPLICATE_N',
+                description: 'Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. '
+                    + 'Duplicates are detected by perfect url match'
+            },
+            {
                 type: 'ALREADY_PROCESSED',
                 description: 'Translation was already processed'
             }
@@ -111,6 +116,11 @@ export default class ModerationController {
             ApiError.e('ALREADY_PROCESSED', 'Translation was already processed')
 
         // we dont auto-fix urls here coz i trust moderators more than script
+
+        // check for duplicates if url changed
+        if (body.url) {
+            await this.translationService.assertNoDuplicates(body.url)
+        }
 
         if (action === 'accept') {
             merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
@@ -177,6 +187,11 @@ export default class ModerationController {
         },
         throws: [
             {
+                type: 'TRANSLATION_DUPLICATE_N',
+                description: 'Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. '
+                    + 'Duplicates are detected by perfect url match'
+            },
+            {
                 type: 'ALREADY_PROCESSED',
                 description: 'Report was already processed'
             }
@@ -207,6 +222,11 @@ export default class ModerationController {
         }
 
         if (action === 'resolve') {
+            // check for duplicates if url changed
+            if (body.url) {
+                await this.translationService.assertNoDuplicates(body.url)
+            }
+
             merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
 
             await translation.save()
