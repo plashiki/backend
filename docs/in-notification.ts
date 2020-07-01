@@ -5,9 +5,9 @@ export interface InNotification {
     act: 'push'
 
     /**
-     * Notification ID
+     * Notification ID (or IDs)
      */
-    id: number
+    id: number | number[]
 
     /**
      * Action type: C - create, U - update, D - delete
