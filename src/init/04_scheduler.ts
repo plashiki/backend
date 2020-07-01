@@ -2,6 +2,7 @@ import schedule from 'node-schedule'
 import { RelationsParser } from '@/helpers/relations'
 import { ParsersService } from '@/services/ParsersService'
 import { isProduction } from '@/config'
+import { vacuumDatabase } from '@/workers/vacuum'
 
 export default function scheduler (): void {
     if (!isProduction) return
@@ -26,5 +27,10 @@ export default function scheduler (): void {
         // update relations cache
         await RelationsParser.instance.load()
         await RelationsParser.instance.saveToFile('relations.json')
+    })
+
+    // At 00:00 every day
+    schedule.scheduleJob('0 0 * * *', async () => {
+        await vacuumDatabase()
     })
 }
