@@ -101,6 +101,7 @@ export class ModerationService {
 
         Notification.create({
             for_users: targets,
+            tag: `mod-tr:${translation.id}`,
             payload: {
                 type: 'push',
                 title: 'MOD_NEW_TR',
@@ -125,6 +126,7 @@ export class ModerationService {
 
         Notification.create({
             for_users: targets,
+            tag: `mod-rp:${report.id}`,
             payload: {
                 type: 'push',
                 title: 'MOD_NEW_REP',

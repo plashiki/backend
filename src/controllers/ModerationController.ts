@@ -15,6 +15,7 @@ import { IsEnum, IsOptional } from 'class-validator'
 import { Expose } from 'class-transformer'
 import { UserService } from '@/services/UserService'
 import { UpdateResult } from 'typeorm'
+import { PushService } from '@/services/PushService'
 
 class BatchPatchTranslationBody extends SubmitTranslationBody {
     @Expose()
@@ -142,6 +143,8 @@ export default class ModerationController {
             name: `moder-${action}:${session.userId}`
         })
 
+        PushService.instance.deleteNotificationsWithTagDeferred(`mod-tr:${translation.id}`)
+
         return translation
     }
 
@@ -261,6 +264,9 @@ export default class ModerationController {
         })
 
         await report.save()
+
+        PushService.instance.deleteNotificationsWithTagDeferred(`mod-rp:${report.id}`)
+
         return true
     }
 
