@@ -108,7 +108,7 @@ export default class NotificationController {
 
     @Endpoint({
         name: 'Missed notifications',
-        description: 'Get missed notifications. Note that notifications are stored server-side for 1 week',
+        description: 'Get missed notifications. Note that notifications are stored server-side for 60 days',
         query: {
             since: {
                 type: 'number',
@@ -135,7 +135,7 @@ export default class NotificationController {
         let delta = now - since
 
         if (delta < 0) return []
-        if (delta > 604800000) since = now - 604800000 // 7 days
+        if (delta > 5184000000) since = now - 5184000000 // 60 days
 
         return PushService.instance.getMissedNotifications(
             new Date(since),
