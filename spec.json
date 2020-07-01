@@ -854,6 +854,45 @@
                         "type": "Mapping | null",
                         "description": "Media mappings"
                     }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/mappings/extend/:type",
+                    "checks": [
+                        {
+                            "name": "server-scope",
+                            "params": {
+                                "scope": "mappings:extend"
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You did not pass a valid OAuth client_secret or your app does not have sufficient permissions"
+                        },
+                        {
+                            "type": "INVALID_TOKEN",
+                            "description": "Given Token does not match any OAuth app."
+                        },
+                        {
+                            "type": "CONFLICTING_MAPPING",
+                            "description": "There's a conflict when merging mappings."
+                        }
+                    ],
+                    "name": "Extend mappings",
+                    "query": {
+                        "force": {
+                            "type": "boolean",
+                            "description": "Whether to ignore conflicts"
+                        }
+                    },
+                    "body": {
+                        "type": "ExternalServiceMappings"
+                    },
+                    "returns": {
+                        "type": "Mapping"
+                    }
                 }
             ]
         },
@@ -952,6 +991,10 @@
                     },
                     "throws": [
                         {
+                            "type": "TRANSLATION_DUPLICATE_N",
+                            "description": "Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. Duplicates are detected by perfect url match"
+                        },
+                        {
                             "type": "ALREADY_PROCESSED",
                             "description": "Translation was already processed"
                         }
@@ -997,6 +1040,10 @@
                         "partial": true
                     },
                     "throws": [
+                        {
+                            "type": "TRANSLATION_DUPLICATE_N",
+                            "description": "Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. Duplicates are detected by perfect url match"
+                        },
                         {
                             "type": "ALREADY_PROCESSED",
                             "description": "Report was already processed"
@@ -1067,6 +1114,27 @@
                     },
                     "returns": {
                         "type": "PaginatedResponse<Translation>"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/translations/:id/playerMeta",
+                    "name": "Get player meta information",
+                    "description": "Returns player meta information like title & page with player from some websites",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Translation ID"
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Translation was not found"
+                        }
+                    ],
+                    "returns": {
+                        "type": "PlayerMeta"
                     }
                 },
                 {
@@ -1202,7 +1270,7 @@
                         }
                     ],
                     "name": "Missed notifications",
-                    "description": "Get missed notifications. Note that notifications are stored server-side for 1 week",
+                    "description": "Get missed notifications. Note that notifications are stored server-side for 60 days",
                     "query": {
                         "since": {
                             "type": "number",
@@ -1314,7 +1382,7 @@
                     "method": "GET",
                     "path": "/v2/parsers/run/:uid",
                     "name": "Run a Parser",
-                    "description": "Run a parser using given parameters. Requires <code>parsers:run:$UID</code> server scope, where <code>$UID</code> is a parser UID. Note that result of a parser will not be interpreted internally. So, Importers will either return <code>{}</code> (in case of a generator) or array of items, and they WILL NOT be actually imported",
+                    "description": "Run a parser using given parameters. Requires <code>parsers:run:$UID</code> server scope, where <code>$UID</code> is a parser UID for non-public parsers. Note that result of a parser will not be interpreted internally. So, Importers will either return <code>{}</code> (in case of a generator) or array of items, and they WILL NOT be actually imported",
                     "params": {
                         "uid": {
                             "type": "string",
@@ -1329,10 +1397,16 @@
                     },
                     "checks": [
                         {
-                            "name": "server_scope",
+                            "name": "server-scope",
                             "params": {
                                 "scope": "parsers:run:$UID"
                             }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Parser was not found"
                         }
                     ],
                     "returns": {
@@ -2381,6 +2455,9 @@
                 "id": {
                     "type": "number"
                 },
+                "tag": {
+                    "type": "string"
+                },
                 "progress": {
                     "type": "number"
                 },
@@ -2512,6 +2589,10 @@
                     "type": "boolean",
                     "description": "When a parser is disabled, it will not be started on schedule (in case of an Importer/Mapper) This WILL NOT disable importing it as a dependency."
                 },
+                "public": {
+                    "type": "string",
+                    "description": "When a parser is public, anyone can run it. Possible values: <code>''</code> (empty string) = non-public<code>true</code> = public<code>N,M</code> = public with rate-limit: N requests every M seconds"
+                },
                 "cri": {
                     "type": "boolean",
                     "description": "Constantly running importer. If true then this importer will be running all the time while server is up in a worker thread. (however it wont be restarted after worker is dead, i.e. function returns). Only applicable to Importers."
@@ -2527,6 +2608,30 @@
                 "hash": {
                     "type": "string",
                     "description": "MD5 hash of a parser. Calculated as follows: <br><code>md5(p.uid + '\\n\\n' + p.provide.sort().join(',') + '\\n\\n' + p.code)</code>. <br>Used to keep track of changed parsers when pushing/pulling them"
+                }
+            }
+        },
+        {
+            "type": "Mapping",
+            "description": "A single media ID mapping",
+            "fields": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique mapping ID"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Target media type"
+                },
+                "external": {
+                    "type": "object",
+                    "description": "Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types.ts</code> file of backend, line 60",
+                    "fields": {
+                        "%ExternalService%": {
+                            "type": "string",
+                            "description": "Media ID in a given ExternalService."
+                        }
+                    }
                 }
             }
         },
@@ -2562,30 +2667,6 @@
                 },
                 "sender": {
                     "description": "Report sender object. Only available in Moderation API -> Get single report"
-                }
-            }
-        },
-        {
-            "type": "Mapping",
-            "description": "A single media ID mapping",
-            "fields": {
-                "id": {
-                    "type": "number",
-                    "description": "Unique mapping ID"
-                },
-                "type": {
-                    "type": "string",
-                    "description": "Target media type"
-                },
-                "external": {
-                    "type": "object",
-                    "description": "Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types.ts</code> file of backend, line 60",
-                    "fields": {
-                        "%ExternalService%": {
-                            "type": "string",
-                            "description": "Media ID in a given ExternalService."
-                        }
-                    }
                 }
             }
         },
@@ -3134,7 +3215,8 @@
                                 "values": [
                                     "pending",
                                     "added",
-                                    "declined"
+                                    "declined",
+                                    "mapping"
                                 ]
                             }
                         }
@@ -3177,7 +3259,8 @@
                                 "values": [
                                     "pending",
                                     "added",
-                                    "declined"
+                                    "declined",
+                                    "mapping"
                                 ]
                             }
                         }
@@ -3213,6 +3296,17 @@
                 },
                 "anime": {
                     "type": "string"
+                },
+                "episode": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
                 },
                 "target": {
                     "type": "string"
