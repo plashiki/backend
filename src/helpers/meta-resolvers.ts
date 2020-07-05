@@ -3,6 +3,7 @@ import { decode } from 'iconv-lite'
 import { load } from 'cheerio'
 import { parse } from 'querystring'
 import { vkApi } from '@/external/vk'
+import qs from 'querystring'
 
 export interface PlayerMeta {
     title?: string
@@ -129,5 +130,33 @@ reg({
             }
         }
         return null
+    }
+})
+
+reg({
+    regex: /^https?:\/\/plashiki\.su\/player\/anilibria\?(.*)(?:$|#)/i,
+    async resolve (_, query): Promise<PlayerMeta | null> {
+        let params = qs.parse(query)
+        let data = await fetchRetry('https://www.anilibria.tv/public/api/index.php', {
+            method: 'POST',
+            body: qs.stringify({
+                query: 'release',
+                id: params.rid,
+                filter: 'code,names,voices'
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(i => i.json())
+        if (!data.status) {
+            return {
+                error: data.error.message
+            }
+        }
+        return {
+            title: `${data.data.names.join(' / ')} (эпизод ${params.eid})`,
+            description: 'Озвучено: ' + data.data.voices.join(', '),
+            url: `https://www.anilibria.tv/release/${data.data.code}.html`
+        }
     }
 })
