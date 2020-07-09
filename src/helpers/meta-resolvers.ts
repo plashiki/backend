@@ -134,6 +134,24 @@ reg({
 })
 
 reg({
+    regex: /^https?:\/\/sovetromantica\.(?:com|moe)\/embed\/episode_(\d+)_(\d+)-(subtitles|dubbed)/,
+    resolve: async (url, animeId, episode, kind) => {
+        const json = await fetchRetry(`https://service.sovetromantica.com/v1/anime/${animeId}`).then(i => i.json())
+        if (json.code) {
+            return {
+                error: 'Not found'
+            }
+        }
+        let [anime] = json
+        return {
+            title: `${anime.anime_name} / ${anime.anime_name_russian} (эпизод ${episode})`,
+            description: `${kind === 'subtitles' ? 'Субтитры' : 'Озвучка'} от SovetRomantica. ID на Шикимори: ${anime.anime_shikimori}`,
+            url: `https://sovetromantica.com/anime/${animeId}-${anime.anime_folder}`
+        }
+    }
+})
+
+reg({
     regex: /^https?:\/\/plashiki\.su\/player\/anilibria\?(.*)(?:$|#)/i,
     async resolve (_, query): Promise<PlayerMeta | null> {
         let params = qs.parse(query)
