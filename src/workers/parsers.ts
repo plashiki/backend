@@ -83,6 +83,15 @@ async function getRunnableParsers (kind: string): Promise<string[]> {
     return uids
 }
 
+function isValidUrl (url: string): boolean {
+    try {
+        let a = new URL(url)
+        return !!a.protocol.match(/(ehttps?|https):/i)
+    } catch (e) {
+        return false
+    }
+}
+
 async function runImporters (): Promise<void> {
     const parsers = await getRunnableParsers('importers')
     let items: Partial<Translation>[] = []
@@ -101,6 +110,7 @@ async function runImporters (): Promise<void> {
                 || !item.target_type
                 || !item.part
                 || !item.url
+                || !isValidUrl(item.url)
                 || !item.kind
                 || !item.lang
             ) {
