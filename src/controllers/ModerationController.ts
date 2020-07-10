@@ -95,8 +95,8 @@ export default class ModerationController {
                     + 'Duplicates are detected by perfect url match'
             },
             {
-                type: 'ALREADY_PROCESSED',
-                description: 'Translation was already processed'
+                type: 'NOT_FOUND',
+                description: 'Translation was not found'
             }
         ],
         returns: {
@@ -113,8 +113,8 @@ export default class ModerationController {
         @Session() session: ISession
     ) {
         const translation = await this.translationService.getSingleTranslation(submissionId, { full: true })
-        if (translation?.status !== TranslationStatus.Pending)
-            ApiError.e('ALREADY_PROCESSED', 'Translation was already processed')
+        if (!translation)
+            ApiError.e('NOT_FOUND')
 
         // we dont auto-fix urls here coz i trust moderators more than script
 
