@@ -527,6 +527,10 @@
                             "description": "Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. Duplicates are detected by perfect url match"
                         },
                         {
+                            "type": "TRANSLATION_DUPLICATE_REP_N",
+                            "description": "Given translation is a duplicate of translation with id N, and report was automatically generated."
+                        },
+                        {
                             "type": "BANNED",
                             "description": "User was banned from sending translations"
                         }
@@ -995,8 +999,8 @@
                             "description": "Given translation is a duplicate of translation with id N. It may be in <code>pending</code> state. Duplicates are detected by perfect url match"
                         },
                         {
-                            "type": "ALREADY_PROCESSED",
-                            "description": "Translation was already processed"
+                            "type": "NOT_FOUND",
+                            "description": "Translation was not found"
                         }
                     ],
                     "returns": {
@@ -2653,7 +2657,7 @@
                 },
                 "comment": {
                     "type": "string",
-                    "description": "Report comment"
+                    "description": "Report comment. Value <code>AUTO_REPORT_DESCRIPTION</code> means that report was created automatically in response to user trying to add duplicate translation with different meta"
                 },
                 "sender_id": {
                     "type": "number",
