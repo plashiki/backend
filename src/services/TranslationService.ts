@@ -192,6 +192,15 @@ export class TranslationService {
         return it?.id ?? null
     }
 
+    async findFullTranslationWithSimilarUrl (url: string): Promise<Translation | null> {
+        const it = await Translation.createQueryBuilder('t')
+            .addSelectHidden()
+            .where({ url }) // like/regex queries are extremely slow (5s or so, lol)
+            .getOne()
+
+        return it ?? null
+    }
+
     async assertNoDuplicates (url: string): Promise<void> {
         const duplicateId = await this.findTranslationWithSimilarUrl(url)
         if (duplicateId) ApiError.e(`TRANSLATION_DUPLICATE_${duplicateId}`, `Given translation seems to be a duplicate of ${duplicateId}`)

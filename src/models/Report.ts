@@ -56,7 +56,9 @@ export class Report extends BaseEntity {
     type: ReportType
 
     @EntityField({
-        description: 'Report comment'
+        description: 'Report comment. Value <code>AUTO_REPORT_DESCRIPTION</code> means '
+            + 'that report was created automatically in response to user trying to add duplicate '
+            + 'translation with different meta'
     })
     @Column()
     comment: string

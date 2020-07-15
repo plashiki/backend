@@ -11,7 +11,7 @@ import { TranslationKind, TranslationLanguage, TranslationStatus } from '@/model
 import normalizeUrl from 'normalize-url'
 import { ModerationService } from '@/services/ModerationService'
 import { ReportStatus, ReportType } from '@/models/Report'
-import { merge, shallowMerge } from '@/helpers/object-utils'
+import { merge, shallowDiff, shallowMerge } from '@/helpers/object-utils'
 import { PartialBody } from '@/helpers/api-validate'
 import { Expose, Type } from 'class-transformer'
 import { StatisticsQueue, TLoggerQueue } from '@/data/queues'
@@ -106,6 +106,10 @@ export default class SubmissionController {
                     + 'Duplicates are detected by perfect url match'
             },
             {
+                type: 'TRANSLATION_DUPLICATE_REP_N',
+                description: 'Given translation is a duplicate of translation with id N, and report was automatically generated.'
+            },
+            {
                 type: 'BANNED',
                 description: 'User was banned from sending translations'
             }
@@ -131,7 +135,47 @@ export default class SubmissionController {
         })
         body.url = url
 
-        await this.translationService.assertNoDuplicates(body.url)
+        const duplicate = await this.translationService.findFullTranslationWithSimilarUrl(body.url)
+        if (duplicate) {
+            let reportCreated = false
+
+            if (duplicate.status === TranslationStatus.Added && (
+                duplicate.target_type !== body.target_type
+                || duplicate.target_id !== body.target_id
+                || duplicate.part !== body.part
+                || duplicate.kind !== body.kind
+                || duplicate.lang !== body.lang
+            )) {
+                let type: ReportType
+                if (
+                    duplicate.target_type !== body.target_type
+                    || duplicate.target_id !== body.target_id
+                ) {
+                    type = ReportType.InvalidMedia
+                } else if (duplicate.part !== body.part) {
+                    type = ReportType.InvalidPart
+                } else if (
+                    duplicate.kind !== body.kind
+                    || duplicate.lang !== body.lang
+                ) {
+                    type = ReportType.InvalidMeta
+                } else {
+                    type = ReportType.Other
+                }
+
+                await this.moderationService.createReport({
+                    translation_id: duplicate.id,
+                    type,
+                    sender_id: user.id,
+                    edit: shallowDiff(duplicate, body),
+                    status: ReportStatus.Pending,
+                    comment: 'AUTO_REPORT_DESCRIPTION'
+                })
+                reportCreated = true
+            }
+
+            throw ApiError.e(`TRANSLATION_DUPLICATE_${reportCreated ? 'REP_' : ''}${duplicate.id}`, `Given translation seems to be a duplicate of ${duplicate.id}`)
+        }
 
         let translation = await this.translationService.addATranslation({
             ...body,
@@ -195,6 +239,11 @@ export default class SubmissionController {
 
         const tran = await this.translationService.getSingleTranslation(body.translation_id)
         if (!tran) ApiError.e('NOT_FOUND', 'Translation does not exist')
+
+        // prevent abuse :p
+        if (body.comment === 'AUTO_REPORT_DESCRIPTION') {
+            body.comment = ''
+        }
 
         const report = await this.moderationService.createReport({
             sender_id: session.userId!,
