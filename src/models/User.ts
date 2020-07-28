@@ -106,6 +106,16 @@ export class User extends BaseEntity {
     })
     sub: string[]
 
+    @EntityField({
+        description: 'User\'s preferred language. Only available for current user.'
+            + 'When <code>null</code> user hasn\'t set its preferred language yet, so use system-defined.'
+    })
+    @Column('text', {
+        default: null,
+        nullable: true
+    })
+    language?: string | null
+
     static findSubTargets (topics: string[], params: Partial<User> = {}): Promise<number[]> {
         if (!topics.length) return Promise.resolve([])
         return this.createQueryBuilder('u')

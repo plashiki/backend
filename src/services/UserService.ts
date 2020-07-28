@@ -56,12 +56,22 @@ export class UserService {
             .then(it => it ?? null)
     }
 
-    async setUserLanguage (lang: string, userId: number): Promise<void> {
-        return KeyValue.set(`user:${userId}:lang`, lang)
+    async setUserLanguage (lang: string | null, userId: number): Promise<void> {
+        return User.createQueryBuilder('u')
+            .update()
+            .set({ language: lang })
+            .where({ id: userId })
+            .execute()
+            .then()
     }
 
-    async getUserLanguage (userId: number): Promise<string> {
-        return KeyValue.get(`user:${userId}:lang`, 'ru')
+    async getUserLanguage (userId: number): Promise<string | null> {
+        return User.findOne({
+            where: {
+                id: userId
+            },
+            select: ['language']
+        }).then(i => i?.language ?? null)
     }
 
     async isModerator (userId: number): Promise<boolean> {

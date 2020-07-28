@@ -112,8 +112,8 @@ export default class UserController {
         },
         returns: {
             type: 'User | null',
-            description: 'Requested user if exists, null otherwise. Note that <code>sub</code> and <code>service</code> '
-                + 'fields will only be available for current user'
+            description: 'Requested user if exists, null otherwise. Note that <code>sub</code>, <code>service</code> '
+                + 'and <code>language</code> fields will only be available for current user'
         }
     })
     @Get('/:id(\\d+|@me)')
@@ -134,7 +134,7 @@ export default class UserController {
             return user
         }
 
-        return strip(user, ['sub', 'service'])
+        return strip(user, ['sub', 'service', 'language'])
     }
 
     @Endpoint({
