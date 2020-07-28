@@ -1,6 +1,6 @@
 import { stringify } from 'querystring'
 import fetch from 'node-fetch'
-import { recaptcha } from '@/config'
+import { isProduction, recaptcha } from '@/config'
 import { ApiError } from '@/types'
 import { UseBefore } from 'routing-controllers'
 import { Context } from 'koa'
@@ -36,6 +36,8 @@ export function CaptchaProtected (timeout: number): Function {
             }
         ]
     }, UseBefore((ctx: Context, next) => {
+        if (!isProduction) return next()
+
         const now = Date.now()
 
         if (ctx.session.$type === 'cookie') {
