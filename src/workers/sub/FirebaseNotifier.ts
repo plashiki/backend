@@ -11,6 +11,7 @@ import { Notification } from '@/models/Notification'
 import { $t } from '@/i18n'
 import ShikimoriApi from '@/external/shikimori/api'
 import { DEBUG } from '@/helpers/debug'
+import { User } from '@/models/User'
 
 const shikimoriApi = ShikimoriApi.instance
 
@@ -38,12 +39,18 @@ new Worker('FirebaseNotifier', async ({ name, data }) => {
         const translated: Partial<Record<SupportedLanguage, Notification>> = {}
 
         if (/* needTranslation */ notification.payload.type === 'push') {
-            langs = {
-                ...langs,
-                ...(await KeyValue.getMany<SupportedLanguage>(
-                    targets.map(i => `user:${i}:lang`), key => key.split(':')[1]
-                ))
-            }
+            const users = await User.find({
+                where: {
+                    id: In(targets)
+                },
+                select: ['id', 'language']
+            })
+            users.forEach(i => {
+                if (i.language) {
+                    langs[i.id] = i.language as SupportedLanguage
+                }
+            })
+
             if (notification.payload.body === 'NEW_TRANSLATION_BODY' || notification.payload.body === 'MOD_NEW_TR_BODY') {
                 const media = await shikimoriApi.getBriefMedia(
                     notification.payload.format.mediaType,
