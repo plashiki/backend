@@ -71,6 +71,62 @@ export const strings: Record<SupportedLanguage, Record<string, string | ((fmt?: 
         },
         MOD_NEW_REP: 'Новая жалоба',
         MOD_NEW_REP_BODY: 'Жалоба на перевод №$id от $sender - $type'
+    },
+    en: {
+        META_ensub: 'English subtitles',
+        META_rusub: 'Russian subtitles',
+        META_bysub: 'Belorussian subtitles',
+        META_uasub: 'Ukrainian subtitles',
+        META_jpsub: 'Japanese subtitles',
+        META_frsub: 'French subtitles',
+        META_desub: 'German subtitles',
+        META_cnsub: 'Chinese subtitles',
+        META_kosub: 'Korean subtitles',
+        META_othersub: 'Subtitles in other language',
+        META_endub: 'English voiceover',
+        META_rudub: 'Russian voiceover',
+        META_bydub: 'Belorussian voiceover',
+        META_uadub: 'Ukrainian voiceover',
+        META_jpdub: 'Japanese voiceover',
+        META_frdub: 'French voiceover',
+        META_dedub: 'German voiceover',
+        META_cndub: 'Chinese voiceover',
+        META_kodub: 'Korean voiceover',
+        META_otherdub: 'Dubbed in other language',
+        META_enraw: 'English raw',
+        META_ruraw: 'Russian raw',
+        META_byraw: 'Belorussian raw',
+        META_uaraw: 'Ukrainian raw',
+        META_jpraw: 'Japanese raw',
+        META_frraw: 'French raw',
+        META_deraw: 'German raw',
+        META_cnraw: 'Chinese raw',
+        META_koraw: 'Korean raw',
+        META_otherraw: 'Raw in other language',
+
+        NEW_TRANSLATION: 'New translation',
+        $meta (fmt: AnyKV): string {
+            let tran = $t('en', 'META_' + fmt.lang + fmt.kind)
+            if (fmt.kind === TranslationKind.Subtitles || fmt.kind === TranslationKind.Dubbed) {
+                return 'with ' + tran
+            } else {
+                return tran
+            }
+        },
+        NEW_TRANSLATION_BODY (fmt: AnyKV): string {
+            if (fmt.mediaType === 'anime') {
+                // $episode episode of «$animeName» $meta is available!
+
+                return `${fmt.part} episode of «${fmt.name}» ${$t('en', '$meta', fmt)} is available!`
+            }
+            return 'UNSUPPORTED, PLEASE REPORT ERROR 1'
+        },
+        MOD_NEW_TR: 'New translation on moderation',
+        MOD_NEW_TR_BODY (fmt: AnyKV): string {
+            return `${fmt.part} episode of «${fmt.name}» ${$t('en', '$meta', fmt)}. Sent by ${fmt.sender}`
+        },
+        MOD_NEW_REP: 'New report',
+        MOD_NEW_REP_BODY: 'Translation #$id by $sender - $type'
     }
 }
 

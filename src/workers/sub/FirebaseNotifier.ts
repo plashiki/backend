@@ -32,7 +32,7 @@ new Worker('FirebaseNotifier', async ({ name, data }) => {
         if (!notification) return
         let langs: Record<number, SupportedLanguage> = {
             // default fallback
-            0: 'ru'
+            0: 'en'
         }
 
         // pre-format notifications because service workers suck

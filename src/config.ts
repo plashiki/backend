@@ -62,5 +62,5 @@ export const github = {
     donationsFile: env.GITHUB_DONATIONS_FILE
 }
 
-export const supportedLanguages = ['ru'] as const
+export const supportedLanguages = ['ru', 'en'] as const
 export type SupportedLanguage = typeof supportedLanguages[number]

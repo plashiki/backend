@@ -178,7 +178,8 @@ to the one seen before, but with additional `id` field to map with original requ
 PlaShiki tries to be as open as possible, so if you can't
 find your language, PRs are welcome :)  
 Currently we support these locales:
- - `ru` for Russian (default)
+ - `en` for English (default)
+ - `ru` for Russian
 
 
 
