@@ -74,6 +74,7 @@ export type ExternalService =
     | 'thetvdb'      // TheTVDB.com
     | 'trakt'        // Trakt.TV
     | 'mydramalist'  // MyDramaList.com
+    | 'anime365'     // anime365.ru
 
 export enum MediaType {
     anime = 'anime',
