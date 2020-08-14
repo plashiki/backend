@@ -10,11 +10,9 @@ import fetchRetry from '@/helpers/fetch-retry'
 import { isProduction, shikimori } from '@/config'
 import { AnyKV, ApiError, ConnectableService, MediaType } from '@/types'
 import { isPojo } from '@/helpers/object-utils'
-import _debug from 'debug'
 import { AuthData } from '@/models/AuthData'
 import ShikimoriAuth from '@/external/shikimori/auth'
-
-const debug = _debug('shiki-api')
+import { DEBUG } from '@/helpers/debug'
 
 export class ShikimoriApiError extends ApiError {
     constructor (code: number | string, message?: string) {
@@ -99,7 +97,7 @@ export default class ShikimoriApi {
 
             dbg = `${params.httpMethod ?? 'GET'}${
                 params.asUser ? ' ** as id' + params.asUser + ' **' : ''} ${url} ${params.body || '%empty body%'}`
-            debug(dbg)
+            DEBUG.shikiApi(dbg)
         }
 
         let r = await fetchRetry(url, {
@@ -111,7 +109,7 @@ export default class ShikimoriApi {
             sleep: 600
         }).then(i => i.text()).then(i => {
             if (!isProduction) {
-                debug(dbg + '\n' + i)
+                DEBUG.shikiApi(dbg + '\n' + i)
             }
             return i
         })

@@ -18,7 +18,8 @@ const debuggers = [
     'notify',
     'relations',
     'parsers',
-    'telegram'
+    'telegram',
+    'shikiApi'
 ] as const
 type DebuggerName = typeof debuggers[number]
 
