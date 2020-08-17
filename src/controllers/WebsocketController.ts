@@ -37,6 +37,11 @@ class PerformApiCallOptions {
     query: AnyKV
 }
 
+interface ExtendedWebsocket extends WebSocket {
+    session: ISession
+    pushHandler: PushEventListener
+}
+
 export default class WebsocketController {
     emptyBuffer = Buffer.alloc(0)
 
@@ -74,10 +79,10 @@ export default class WebsocketController {
     }
 
     upgrade (ctx: Context) {
-        this.server.handleUpgrade(ctx.req, ctx.socket, this.emptyBuffer, (ws) => {
-            (ws as any).session = ctx.session;
+        this.server.handleUpgrade(ctx.req, ctx.socket, this.emptyBuffer, (ws: ExtendedWebsocket) => {
+            ws.session = ctx.session
 
-            (ws as any).pushHandler = ((ev, notif) => {
+            ws.pushHandler = ((ev, notif) => {
                 this.send(ws, {
                     act: 'push',
                     type: ev.u,
@@ -86,11 +91,11 @@ export default class WebsocketController {
                     id: notif?.id ?? ev.i,
                     data: notif?.payload
                 })
-            }) as PushEventListener
+            })
 
-            let u = (ws as any).session.userId
+            let u = ws.session.userId
             if (u) {
-                PushService.instance.register(u, (ws as any).pushHandler)
+                PushService.instance.register(u, ws.pushHandler)
             }
 
             ws.on('message', (data) => {
@@ -113,12 +118,12 @@ export default class WebsocketController {
             })
 
             ws.on('close', () => {
-                PushService.instance.unregister((ws as any).session.userId, (ws as any).pushHandler)
+                PushService.instance.unregister(ws.session.userId!, ws.pushHandler)
             })
         })
     }
 
-    async handleJson (ws: WebSocket, json: AnyKV | AnyKV[], isNested = false): Promise<any> {
+    async handleJson (ws: ExtendedWebsocket, json: AnyKV | AnyKV[], isNested = false): Promise<any> {
         if (Array.isArray(json)) {
             if (isNested) {
                 ApiError.e('NESTED_ARR')
@@ -149,8 +154,8 @@ export default class WebsocketController {
         this.send(ws, data)
     }
 
-    async performApiCall (json: AnyKV, ws: WebSocket): Promise<any> {
-        const session: ISession = (ws as any).session
+    async performApiCall (json: AnyKV, ws: ExtendedWebsocket): Promise<any> {
+        const session = ws.session
         const options = await apiValidate(PerformApiCallOptions, json)
 
         // holy fuck
@@ -207,11 +212,11 @@ export default class WebsocketController {
         if (newUser !== oldUser) {
             // login/register/logout
             if (oldUser) {
-                PushService.instance.unregister(oldUser, (ws as any).pushHandler)
+                PushService.instance.unregister(oldUser, ws.pushHandler)
             }
 
             if (newUser) {
-                PushService.instance.register(newUser, (ws as any).pushHandler)
+                PushService.instance.register(newUser, ws.pushHandler)
             }
         }
 
