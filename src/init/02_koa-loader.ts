@@ -18,7 +18,7 @@ import { createServer } from 'http'
 import { Socket } from 'net'
 import Koa = require('koa')
 import { chmodSync, unlinkSync } from 'fs'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 
 fixValidation()
 
@@ -63,7 +63,7 @@ export default async function koaLoader (noStart = false): Promise<void> {
             if (isNaN(parseInt(port))) {
                 chmodSync(port, 0o777)
             }
-            DEBUG.boot('Listening on %s', port)
+            LOG.boot.info('Listening on %s', port)
         }
 
         // taken from https://stackoverflow.com/a/16502680
@@ -83,7 +83,7 @@ export default async function koaLoader (noStart = false): Promise<void> {
                 })
 
                 clientSocket.connect({ path: port }, function () {
-                    DEBUG.boot('Server running, giving up...')
+                    LOG.boot.error('Server running, giving up...')
                     process.exit()
                 })
             }

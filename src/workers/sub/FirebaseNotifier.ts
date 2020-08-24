@@ -6,11 +6,10 @@ import fetch from 'node-fetch'
 import { firebaseToken, SupportedLanguage } from '@/config'
 import { StatisticsQueue } from '@/data/queues'
 import { PushService } from '@/services/PushService'
-import { KeyValue } from '@/models/KeyValue'
 import { Notification } from '@/models/Notification'
 import { $t } from '@/i18n'
 import ShikimoriApi from '@/external/shikimori/api'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 import { User } from '@/models/User'
 
 const shikimoriApi = ShikimoriApi.instance
@@ -99,7 +98,7 @@ new Worker('FirebaseNotifier', async ({ name, data }) => {
         const sent: FirebaseToken[] = []
         for (let [lang, toks] of Object.entries(tokensLangs)) {
             for (let part of chunks(toks, 1000)) {
-                DEBUG.notify('Firebase sending to %d tokens', toks.length)
+                LOG.notify.verbose('Firebase sending to %d tokens', toks.length)
                 proms.push(fetch('https://fcm.googleapis.com/fcm/send', {
                     method: 'POST',
                     body: JSON.stringify({
@@ -133,7 +132,7 @@ new Worker('FirebaseNotifier', async ({ name, data }) => {
         }
 
         if (cleanup.length > 0) {
-            DEBUG.notify('Removing %d dead tokens', cleanup.length)
+            LOG.notify.verbose('Removing %d dead tokens', cleanup.length)
             await FirebaseToken.delete({
                 token: In(cleanup)
             })

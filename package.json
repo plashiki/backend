@@ -28,7 +28,6 @@
         "cheerio": "^1.0.0-rc.3",
         "class-transformer": "^0.3.1",
         "class-validator": "https://registry.npmjs.org/@teidesu/class-validator/-/class-validator-0.11.0.tgz#a5ed62a15206b9d9972f636f437211a45b8fbc09",
-        "debug": "^4.1.1",
         "dotenv": "^8.2.0",
         "escape-string-regexp": "^4.0.0",
         "form-data": "^3.0.0",
@@ -58,13 +57,14 @@
         "typeorm": "^0.2.24",
         "typescript": "^3.7.3",
         "validator": "^12.1.0",
+        "winston": "^3.3.3",
+        "winston-daily-rotate-file": "^4.5.0",
         "ws": "^7.2.1",
         "puppeteer": "^5.2.1"
     },
     "devDependencies": {
         "@types/chai": "^4.2.7",
         "@types/cheerio": "^0.22.15",
-        "@types/debug": "^4.1.5",
         "@types/escape-html": "^0.0.20",
         "@types/glob": "^7.1.1",
         "@types/handlebars": "^4.1.0",

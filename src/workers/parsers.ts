@@ -1,4 +1,4 @@
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 import { Parser } from '@/models/Parser'
 import { In, Like, MoreThanOrEqual } from 'typeorm'
 import { MapperResult, ParsersService } from '@/services/ParsersService'
@@ -49,7 +49,7 @@ async function batchRunIterableParsers<T> (
                     await callback(ctx, uid, it)
                 }
             } catch (e) {
-                DEBUG.parsers('Error while running %s: %s', uid, e)
+                LOG.parsers.error('Error while running %s: %s', uid, e)
             }
         }))
     }
@@ -114,7 +114,7 @@ async function runImporters (): Promise<void> {
                 || !item.kind
                 || !item.lang
             ) {
-                DEBUG.parsers('incomplete translation encountered at %s: %o', uid, item)
+                LOG.parsers.warn('Incomplete translation encountered at %s: %o', uid, item)
                 return
             }
 
@@ -208,7 +208,7 @@ async function runMappers (): Promise<void> {
                 await Mapping.extend(type, item)
                 total += 1
             } catch (e) {
-                DEBUG.parsers('conflicting mappings: %s %o', type, item)
+                LOG.parsers.warn('Conflicting mappings: %s %o', type, item)
             }
         }
     )
@@ -329,21 +329,21 @@ process.on('message', function onMessage (e) {
 
     if (e.act === 'run-importers' && !importersRunning) {
         importersRunning = true
-        runImporters().catch(DEBUG.parsers).then(() => {
+        runImporters().catch(LOG.parsers.error).then(() => {
             importersRunning = false
         })
     }
 
     if (e.act === 'run-mappers' && !mappersRunning) {
         mappersRunning = true
-        runMappers().catch(DEBUG.parsers).then(() => {
+        runMappers().catch(LOG.parsers.error).then(() => {
             mappersRunning = false
         })
     }
 
     if (e.act === 'run-cleaners' && !cleanersRunning) {
         cleanersRunning = true
-        runCleaners().catch(DEBUG.parsers).then(() => {
+        runCleaners().catch(LOG.parsers.error).then(() => {
             cleanersRunning = false
         })
     }

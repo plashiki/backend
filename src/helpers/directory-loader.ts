@@ -1,6 +1,6 @@
 import glob from 'glob'
 import path from 'path'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 
 const modulePath = Symbol('module-path')
 
@@ -18,12 +18,12 @@ export default function directoryLoader<T, R = LoadedModule<T>> (folder: string,
         folder = folder.replace(/\\/g, '/')
     }
     return async (...args: any[]): Promise<R[]> => {
-        DEBUG.boot('Bootstrapping ' + path.basename(folder))
+        LOG.boot.verbose('Bootstrapping %s', path.basename(folder))
 
         const ret: R[] = []
 
         const res = glob.sync(path.join(folder, '/**/*.{js,ts}'))
-        DEBUG.boot(`Found ${res.length} modules.`)
+        LOG.boot.verbose(`Found %d modules.`, res.length)
 
         for (const mod of res) {
             let modPath: string | null = null
@@ -43,7 +43,7 @@ export default function directoryLoader<T, R = LoadedModule<T>> (folder: string,
                 modPath = modPath.substr(0, modPath.length - 3)
             }
 
-            DEBUG.boot(`  - ${modPath}...`)
+            LOG.boot.debug(`  - ${modPath}...`)
 
             const imported = await import(mod)
             imported[modulePath] = modPath
@@ -51,7 +51,7 @@ export default function directoryLoader<T, R = LoadedModule<T>> (folder: string,
             ret.push(await initializer(imported, ...args))
         }
 
-        DEBUG.boot('Bootstrapping ' + path.basename(folder) + ' OK')
+        LOG.boot.info('Bootstrapping %s OK', path.basename(folder))
 
         return ret
     }

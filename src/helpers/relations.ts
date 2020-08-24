@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import * as fs from 'fs'
 import { join } from 'path'
-import { DEBUG } from './debug'
+import { LOG } from '@/helpers/logging'
 import { merge } from '@/helpers/object-utils'
 
 type RelationIdSource = 'mal' | 'kitsu' | 'anilist'
@@ -70,7 +70,7 @@ export class RelationsParser {
             if (fromEpisodesTo === '?') {
                 if (toRange) {
                     if (toEpisodesTo !== '?') {
-                        DEBUG.relations('Unexpected variable mapping: N-? -> M-%d', toEpisodesTo)
+                        LOG.relations.warn('Unexpected variable mapping: N-? -> M-%d', toEpisodesTo)
                     }
 
                     obj['?'] = {
@@ -92,7 +92,7 @@ export class RelationsParser {
                 let to = parseInt(fromEpisodesTo!)
                 let diff = to - from
                 if (diff < 0) {
-                    DEBUG.relations('Unexpected negative difference: %d-%d', from, to)
+                    LOG.relations.warn('Unexpected negative difference: %d-%d', from, to)
                 }
                 let toStart = toRange ? parseInt(toEpisodesFrom!) : parseInt(toEpisodes)
                 for (let i = 0; i <= diff; i++) {
@@ -104,7 +104,7 @@ export class RelationsParser {
             }
         } else {
             if (toRange) {
-                DEBUG.relations('Unexpected mapping single to range: %s -> %s', fromEpisodes, toEpisodes)
+                LOG.relations.warn('Unexpected mapping single to range: %s -> %s', fromEpisodes, toEpisodes)
             }
             obj[fromEpisodes] = {
                 id: toIds,

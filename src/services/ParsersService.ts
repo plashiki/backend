@@ -2,7 +2,7 @@ import IORedis from 'ioredis'
 import { Parser } from '@/models/Parser'
 import { AnyKV, AtLeast, ExternalServiceMappings, MediaType } from '@/types'
 import { libs } from '@/vendor/parsers-libs'
-import { getDebugger } from '@/helpers/debug'
+import { getLogger } from '@/helpers/logging'
 import * as config from '@/config'
 import redis from '@/data/redis'
 import { In, Not } from 'typeorm'
@@ -113,7 +113,7 @@ export class ParsersService {
             __stat: 0,
             params,
             libs,
-            log: getDebugger(`parser:${(parent ?? parser).uid}`),
+            log: getLogger(`parser:${(parent ?? parser).uid}`),
             debug: () => {
                 // no-op //
             },

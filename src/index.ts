@@ -1,6 +1,6 @@
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 import init from './init'
 
-DEBUG.boot('Bootstrapping API')
+LOG.boot.info('Bootstrapping API')
 
 init().catch(console.error)

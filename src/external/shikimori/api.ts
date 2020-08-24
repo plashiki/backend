@@ -12,7 +12,7 @@ import { AnyKV, ApiError, ConnectableService, MediaType } from '@/types'
 import { isPojo } from '@/helpers/object-utils'
 import { AuthData } from '@/models/AuthData'
 import ShikimoriAuth from '@/external/shikimori/auth'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 
 export class ShikimoriApiError extends ApiError {
     constructor (code: number | string, message?: string) {
@@ -97,7 +97,7 @@ export default class ShikimoriApi {
 
             dbg = `${params.httpMethod ?? 'GET'}${
                 params.asUser ? ' ** as id' + params.asUser + ' **' : ''} ${url} ${params.body || '%empty body%'}`
-            DEBUG.shikiApi(dbg)
+            LOG.shikiApi.debug(dbg)
         }
 
         let r = await fetchRetry(url, {
@@ -109,7 +109,7 @@ export default class ShikimoriApi {
             sleep: 600
         }).then(i => i.text()).then(i => {
             if (!isProduction) {
-                DEBUG.shikiApi(dbg + '\n' + i)
+                LOG.shikiApi.debug(dbg + '\n' + i)
             }
             return i
         })

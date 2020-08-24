@@ -10,7 +10,7 @@ import { EntityConstructor } from '@/decorators/docs'
 import { ParsersService } from '@/services/ParsersService'
 import { TLoggerQueue } from '@/data/queues'
 import { Parser } from '@/models/Parser'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 import { Expose } from 'class-transformer'
 import { IsArray, IsString } from 'class-validator'
 import { Translation } from '@/models/Translation'
@@ -182,7 +182,7 @@ export default class DebugController {
         ctx.debug = ctx.log
 
         for await (let id of ParsersService.instance.executeParser(parser, undefined, ctx)) {
-            DEBUG.parsers('About to delete translation %d', id)
+            LOG.parsers.info('About to delete translation %d', id)
         }
 
         delete ParsersService.instance.cacheFunctions[dummyUid]

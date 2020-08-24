@@ -3,7 +3,7 @@ import { isProduction, telegram } from '@/config'
 import fetchRetry from '@/helpers/fetch-retry'
 import FormData from 'form-data'
 import { isPojo } from '@/helpers/object-utils'
-import { DEBUG } from '@/helpers/debug'
+import { LOG } from '@/helpers/logging'
 
 const API_PREFIX = 'https://api.telegram.org/bot' + telegram.token + '/'
 let httpAgent = undefined
@@ -69,7 +69,7 @@ export function sendTelegramMessage (chatId: number | string, text: string): Pro
 
 export function sendTelegramMessageToMainChannel (text: string): Promise<any> {
     if (!isProduction) {
-        DEBUG.telegram('Sending message: %s', text)
+        LOG.telegram.debug('Sending message: %s', text)
     }
     return sendTelegramMessage(telegram.channel, text)
 }
