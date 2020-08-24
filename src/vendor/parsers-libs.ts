@@ -16,6 +16,7 @@ import fetchRetry from '@/helpers/fetch-retry'
 import { RelationsParser } from '@/helpers/relations'
 import Mapping from '@/models/Mapping'
 import { AbortController, AbortSignal } from 'abort-controller'
+import puppeteer from 'puppeteer'
 
 export type DynamicOptions<T, I> = {
     [key in keyof T]?: T[key] | ((item: I) => Promise<T[key]> | T[key])
@@ -36,6 +37,7 @@ export const libs = {
     qs,
     crypto,
     JSDOM,
+    puppeteer,
     PB,
     anitomy,
     relations: RelationsParser.instance,
