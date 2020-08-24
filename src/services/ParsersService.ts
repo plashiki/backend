@@ -109,11 +109,12 @@ export class ParsersService {
 
     // no type because i dont feel like copying it from other repo.
     getContextFor (parser: Parser, params?: AnyKV, parent?: Parser, rootCtx?: any): any {
+        const logger = getLogger(`parser:${(parent ?? parser).uid}`)
         const ctx = {
             __stat: 0,
             params,
             libs,
-            log: getLogger(`parser:${(parent ?? parser).uid}`),
+            log: logger.info.bind(logger),
             debug: () => {
                 // no-op //
             },
