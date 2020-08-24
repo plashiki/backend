@@ -17,6 +17,7 @@ import { RelationsParser } from '@/helpers/relations'
 import Mapping from '@/models/Mapping'
 import { AbortController, AbortSignal } from 'abort-controller'
 import puppeteer from 'puppeteer'
+import MediaPart from '@/models/MediaPart'
 
 export type DynamicOptions<T, I> = {
     [key in keyof T]?: T[key] | ((item: I) => Promise<T[key]> | T[key])
@@ -42,6 +43,7 @@ export const libs = {
     anitomy,
     relations: RelationsParser.instance,
     mappings: Mapping,
+    mediaParts: MediaPart,
     AbortController,
     AbortSignal,
 
