@@ -31,8 +31,8 @@ export const getLogger = (name: string): Logger => {
             transports: isProduction ? [
                 new transports.Console({ level: 'info' }),
                 new DailyRotateFile({
-                    filename: `${name}-%DATE%.log`,
-                    dirname: `logs/${name}`,
+                    filename: `%DATE%.log`,
+                    dirname: `logs/${name.replace(/:/g, '/')}`,
                     maxSize: '10m',
                     maxFiles: '7d',
                     level: 'silly'
