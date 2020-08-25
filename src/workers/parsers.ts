@@ -120,22 +120,27 @@ async function runImporters (): Promise<void> {
 
             if (typeof item.target_id === 'object') {
                 let target = item.target_id as ExternalId
-                let mapping = await Mapping.findFull(item.target_type, {
-                    [target.service]: target.id
-                })
 
-                if (mapping && mapping.external.mal) {
-                    item.target_id = parseInt(mapping.external.mal)
+                if (target.service === 'mal') {
+                    item.target_id = parseInt(target.id as string)
                 } else {
-                    item.url = 'map:?' + qs.stringify({
-                        st: item.status,
-                        u: item.url,
-                        se: target.service,
-                        id: target.id
+                    let mapping = await Mapping.findFull(item.target_type, {
+                        [target.service]: target.id
                     })
-                    item.groups!.push('mapping')
-                    item.status = TranslationStatus.Mapping
-                    item.target_id = -1
+
+                    if (mapping && mapping.external.mal) {
+                        item.target_id = parseInt(mapping.external.mal)
+                    } else {
+                        item.url = 'map:?' + qs.stringify({
+                            st: item.status,
+                            u: item.url,
+                            se: target.service,
+                            id: target.id
+                        })
+                        item.groups!.push('mapping')
+                        item.status = TranslationStatus.Mapping
+                        item.target_id = -1
+                    }
                 }
             } else {
                 let redirection = RelationsParser.instance.findRelation(item.target_id, 'mal', item.part)
