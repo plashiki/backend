@@ -53,7 +53,8 @@ const loggers = [
     'relations',
     'parsers',
     'telegram',
-    'shikiApi'
+    'shikiApi',
+    'workers'
 ] as const
 type LoggerName = typeof loggers[number]
 

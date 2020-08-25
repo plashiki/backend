@@ -2,6 +2,7 @@ import { Notification } from '@/models/Notification'
 import { LessThan, Not } from 'typeorm'
 import { Translation, TranslationStatus } from '@/models/Translation'
 import { Report, ReportStatus } from '@/models/Report'
+import { LOG } from '@/helpers/logging'
 
 export async function vacuumDatabase (): Promise<void> {
     // delete deleted (lol) notifications after a week
@@ -32,4 +33,6 @@ export async function vacuumDatabase (): Promise<void> {
         updated_at: LessThan(new Date(Date.now() - 1209600000)),
         status: Not(ReportStatus.Pending)
     })
+
+    LOG.workers.info('DB vacuumed!')
 }
