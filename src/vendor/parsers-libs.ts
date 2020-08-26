@@ -18,6 +18,7 @@ import Mapping from '@/models/Mapping'
 import { AbortController, AbortSignal } from 'abort-controller'
 import puppeteer from 'puppeteer'
 import MediaPart from '@/models/MediaPart'
+import { asyncPool } from '@/helpers/async-pool'
 
 export type DynamicOptions<T, I> = {
     [key in keyof T]?: T[key] | ((item: I) => Promise<T[key]> | T[key])
@@ -46,6 +47,7 @@ export const libs = {
     mediaParts: MediaPart,
     AbortController,
     AbortSignal,
+    asyncPool,
 
     // util functions
     sleep: (ms: number): Promise<void> => new Promise((res) => setTimeout(res, ms)),
