@@ -7758,10 +7758,10 @@ promise-inflight@^1.0.1:
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz#98472870bf228132fcbdd868129bad12c3c029e3"
   integrity sha1-mEcocL8igTL8vdhoEputEsPAKeM=
 
-protoflex@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/protoflex/-/protoflex-0.1.1.tgz#9f6410bddf277bdab4e1c753f418be2395a7503e"
-  integrity sha512-abmOAIBQSGPst0o2gCy+jG97dCjB8RIV4TVERKN+8jZABSRuzau0YEcvoRkEEgVVEDWTiu6XLsX6MOKtV+aedA==
+protoflex@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/protoflex/-/protoflex-0.2.1.tgz#ea6151f44689f863bdba6bfd36361c31ce646d1c"
+  integrity sha512-x/Why2pcmP68h1ssh451TO3hdoIAAvZM4s4coMZoP9OmC7wLdh7FduLkWC36Vdur8ulmcTGnhrZe0f7NiuvfcQ==
   dependencies:
     "@types/long" "^4.0.0"
     long "^4.0.0"
