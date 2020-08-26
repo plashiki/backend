@@ -13,7 +13,8 @@ function checkConflict (old: ExternalServiceMappings, item: ExternalServiceMappi
 }
 
 @EntityConstructor({
-    description: 'A single media ID mapping'
+    description: 'A single media ID mapping. Daily dumps (gzipped JSON) are available '
+        + 'at <a href="https://plashiki.su/static/mappings.json.gz">https://plashiki.su/static/mappings.json.gz</a>'
 })
 @Entity('mappings')
 export default class Mapping extends BaseEntity {
