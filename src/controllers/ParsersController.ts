@@ -1,7 +1,7 @@
 import { Body, Controller, Ctx, Get, Param, Post, QueryParams, Session } from 'routing-controllers'
 import { Endpoint } from '@/decorators/docs'
 import { ParsersService } from '@/services/ParsersService'
-import { AnyKV, ApiError } from '@/types'
+import { AnyKV, ApiError, PaginatedSorted } from '@/types'
 import { RequireFlag, RequireServerScope, requireServerScope } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
 import { Expose, Type } from 'class-transformer'
@@ -213,13 +213,18 @@ export default class ParsersController {
     @Endpoint({
         name: 'List parsers',
         description: 'Get list of parsers',
+        query: {
+            $extends: 'PaginatedSorted'
+        },
         returns: {
             type: 'Parser[]',
         }
     })
     @RequireFlag('admin')
     @Get('/list')
-    async getParsers () {
-        return ParsersService.instance.getAllParsers()
+    async getParsers (
+        @QueryParams() pagination: PaginatedSorted
+    ) {
+        return ParsersService.instance.getAllParsers(pagination)
     }
 }

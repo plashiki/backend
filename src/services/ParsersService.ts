@@ -1,6 +1,6 @@
 import IORedis from 'ioredis'
 import { Parser } from '@/models/Parser'
-import { AnyKV, AtLeast, ExternalServiceMappings, MediaType } from '@/types'
+import { AnyKV, AtLeast, ExternalServiceMappings, MediaType, PaginatedResponse, PaginatedSorted } from '@/types'
 import { libs } from '@/vendor/parsers-libs'
 import { getLogger } from '@/helpers/logging'
 import * as config from '@/config'
@@ -280,10 +280,12 @@ export class ParsersService {
         }) as any
     }
 
-    getAllParsers (): Promise<Parser[]> {
-        return Parser.find({
-            select: ['uid', 'provide', 'disabled', 'public', 'cri']
-        })
+    getAllParsers (pagination: PaginatedSorted): Promise<PaginatedResponse<Parser>> {
+        return Parser.createQueryBuilder('p')
+            .paginate(pagination, 50)
+            .sort(pagination, (s) => s.orderBy('uid'))
+            .select(['p.uid', 'p.provide', 'p.disabled', 'p.public', 'p.cri'])
+            .getManyPaginated()
     }
 
     async deleteParsers (uids: string[]): Promise<void> {
