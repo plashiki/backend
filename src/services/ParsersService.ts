@@ -280,9 +280,14 @@ export class ParsersService {
         }) as any
     }
 
-    getAllParsers (pagination: PaginatedSorted): Promise<PaginatedResponse<Parser>> {
-        return Parser.createQueryBuilder('p')
+    getAllParsers (pagination: PaginatedSorted, search: string): Promise<PaginatedResponse<Parser>> {
+        let b = Parser.createQueryBuilder('p')
             .paginate(pagination, 50)
+        if (search) {
+            search = `%${search.toLowerCase().replace(/\*/g, '%')}%`
+            b.where('lower(p.uid) like :search', { search })
+        }
+        return b
             .sort(pagination, (s) => s.orderBy('uid'))
             .select(['p.uid', 'p.provide', 'p.disabled', 'p.public', 'p.cri'])
             .getManyPaginated()

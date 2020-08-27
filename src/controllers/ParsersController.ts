@@ -214,7 +214,11 @@ export default class ParsersController {
         name: 'List parsers',
         description: 'Get list of parsers',
         query: {
-            $extends: 'PaginatedSorted'
+            $extends: 'PaginatedSorted',
+            search: {
+                type: 'string',
+                description: 'Search by UID. Supports star patterns (ex. <code>importers/*</code>)'
+            }
         },
         returns: {
             type: 'Parser[]',
@@ -223,8 +227,9 @@ export default class ParsersController {
     @RequireFlag('admin')
     @Get('/list')
     async getParsers (
-        @QueryParams() pagination: PaginatedSorted
+        @QueryParams() pagination: PaginatedSorted,
+        @QueryParam('search') search: string
     ) {
-        return ParsersService.instance.getAllParsers(pagination)
+        return ParsersService.instance.getAllParsers(pagination, search)
     }
 }
