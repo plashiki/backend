@@ -280,6 +280,12 @@ export class ParsersService {
         }) as any
     }
 
+    getAllParsers (): Promise<Parser[]> {
+        return Parser.find({
+            select: ['uid', 'provide', 'disabled', 'public', 'cri']
+        })
+    }
+
     async deleteParsers (uids: string[]): Promise<void> {
         await Parser.delete({
             uid: In(uids)

@@ -209,4 +209,17 @@ export default class ParsersController {
         await ParsersService.instance.runParsersGroup(kind, only?.split(',') ?? [])
         return 'TASK_QUEUED'
     }
+
+    @Endpoint({
+        name: 'List parsers',
+        description: 'Get list of parsers',
+        returns: {
+            type: 'Parser[]',
+        }
+    })
+    @RequireFlag('admin')
+    @Get('/list')
+    async getParsers () {
+        return ParsersService.instance.getAllParsers()
+    }
 }
