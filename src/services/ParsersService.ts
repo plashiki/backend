@@ -13,6 +13,7 @@ import { generateOnConflictStatement } from '@/helpers/utils'
 import { chunks, createIndex, shallowMerge } from '@/helpers/object-utils'
 import { ChildProcess, fork } from 'child_process'
 import { join } from 'path'
+import { ParsersState } from '@/workers/parsers'
 
 const gzip = promisify(zlib.gzip)
 const gunzip = promisify(zlib.gunzip)
@@ -75,13 +76,14 @@ export class ParsersService {
         this.parsersProcess = fork(join(__dirname, '../workers/parsers.js'))
     }
 
-    runParsersGroup (group: string): void {
+    runParsersGroup (group: string, only: string[] = []): void {
         if (!this.parsersProcess) {
             this.startParsersProcess()
         }
 
         this.parsersProcess!.send({
-            act: `run-${group}`
+            act: `run-${group}`,
+            only
         })
     }
 
@@ -283,6 +285,23 @@ export class ParsersService {
             uid: In(uids)
         })
         await this.invalidate(uids)
+    }
+
+    getParsersState (): Promise<ParsersState | null> {
+        if (!this.parsersProcess) return Promise.resolve(null)
+
+        return new Promise((resolve) => {
+            const rid = `${Date.now()}-${Math.random()}`
+            this.parsersProcess!.send({ act: 'state', rid })
+
+            const handler = (evt): void => {
+                if (evt.rid === rid) {
+                    resolve(evt.state)
+                    this.parsersProcess!.off('message', handler)
+                }
+            }
+            this.parsersProcess!.on('message', handler)
+        })
     }
 
     private __handleMessage (msg: any): void {

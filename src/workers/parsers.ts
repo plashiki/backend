@@ -12,6 +12,7 @@ import Mapping from '@/models/Mapping'
 import { RelationsParser } from '@/helpers/relations'
 import { ExternalService } from '@/types'
 import qs from 'qs'
+import { asyncPool } from '@/helpers/async-pool'
 
 interface ExternalId {
     service: ExternalService
@@ -22,37 +23,77 @@ const service = ParsersService.instance
 const translationService = new TranslationService()
 
 let typeorm: boolean | Promise<void> = false
-let importersRunning = false
-let mappersRunning = false
-let cleanersRunning = false
+
+const state = {
+    importers: {
+        running: false,
+        states: {}
+    },
+    mappers: {
+        running: false,
+        states: {}
+    },
+    cleaners: {
+        running: false,
+        states: {}
+    }
+}
+export type ParsersState = typeof state
 
 async function batchRunIterableParsers<T> (
+    type: keyof ParsersState,
     uids: string[],
     callback: (ctx: any, uid: string, item: T) => Promise<void>,
     params: any = undefined,
-    atOnce = 15
+    atOnce = 5
 ): Promise<Record<string, number>> {
+    if (!uids.length) return {}
+    state[type].states = {}
+
     const stats = {}
     const ctxes: Record<string, any> = {}
 
-    for (let chunk of chunks(uids, atOnce)) {
-        await Promise.all(chunk.map(async (uid) => {
-            try {
-                const parser = await service.getParserAndLoadDependencies(uid)
-                if (!parser) return
+    const runSingleParser = async (idx: number, uid: string): Promise<void> => {
+        state[type].states[uid] = 'preparing'
+        const parser = await service.getParserAndLoadDependencies(uid)
+        if (!parser) throw new Error('Parser not found')
 
-                const ctx = service.getContextFor(parser, params)
-                ctxes[uid] = ctx
-                const iter = await service.executeParser(parser, undefined, ctx)
+        const ctx = service.getContextFor(parser, params)
+        ctxes[uid] = ctx
+        const iter = await service.executeParser(parser, undefined, ctx)
 
-                for await (let it of iter) {
-                    await callback(ctx, uid, it)
-                }
-            } catch (e) {
-                LOG.parsers.error('Error while running %s: %s', uid, e)
-            }
-        }))
+        state[type].states[uid] = 'running'
+        let count = 0
+        for await (let it of iter) {
+            state[type].states[uid] = count++
+            await callback(ctx, uid, it)
+        }
+        state[type].states[uid] = 'finished'
     }
+
+    for await (let { item, error } of asyncPool(runSingleParser, uids, atOnce)) {
+        if (error) {
+            state[type].states[item] = `error\n${error.stack}`
+            LOG.parsers.error('Error while running %s: %s', item, error)
+        }
+    }
+
+    // for (let chunk of chunks(uids, atOnce)) {
+    //     await Promise.all(chunk.map(async (uid) => {
+    //         try {
+    //             const parser = await service.getParserAndLoadDependencies(uid)
+    //             if (!parser) return
+    //
+    //             const ctx = service.getContextFor(parser, params)
+    //             ctxes[uid] = ctx
+    //             const iter = await service.executeParser(parser, undefined, ctx)
+    //
+    //
+    //         } catch (e) {
+    //             LOG.parsers.error('Error while running %s: %s', uid, e)
+    //         }
+    //     }))
+    // }
 
     uids.forEach((uid) => {
         if (ctxes[uid]) {
@@ -66,7 +107,7 @@ async function batchRunIterableParsers<T> (
     return stats
 }
 
-async function getRunnableParsers (kind: string): Promise<string[]> {
+async function getRunnableParsers (kind: string, only: string[]): Promise<string[]> {
     const onlyUids = await Parser.find({
         where: {
             uid: Like(kind + '/%'),
@@ -76,7 +117,11 @@ async function getRunnableParsers (kind: string): Promise<string[]> {
         select: ['uid']
     })
 
-    const uids = onlyUids.map(i => i.uid)
+    let uids = onlyUids.map(i => i.uid)
+
+    if (only.length) {
+        uids = uids.filter(i => only.indexOf(i) !== -1)
+    }
 
     await service.loadParsers(uids)
 
@@ -92,14 +137,15 @@ function isValidUrl (url: string): boolean {
     }
 }
 
-async function runImporters (): Promise<void> {
-    const parsers = await getRunnableParsers('importers')
+async function runImporters (only: string[]): Promise<void> {
+    const parsers = await getRunnableParsers('importers', only)
     let items: Partial<Translation>[] = []
     let total = 0
     let perParserTotal = {}
 
     let perParserItems = await batchRunIterableParsers<Partial<Translation>>(
-        parsers, async (ctx, uid, item) => {
+        'importers', parsers,
+        async (ctx, uid, item) => {
             // normalize fields
             if (!('author' in item)) item.author = ''
             if (!('hq' in item)) item.hq = false
@@ -201,12 +247,13 @@ async function runImporters (): Promise<void> {
     })
 }
 
-async function runMappers (): Promise<void> {
-    const parsers = await getRunnableParsers('mappers')
+async function runMappers (only: string[]): Promise<void> {
+    const parsers = await getRunnableParsers('mappers', only)
     let total = 0
 
     await batchRunIterableParsers<MapperResult>(
-        parsers, async (ctx, uid, { type, mappings: item }) => {
+        'mappers', parsers,
+        async (ctx, uid, { type, mappings: item }) => {
             if (!Object.keys(item)) return
 
             try {
@@ -267,14 +314,15 @@ async function runMappers (): Promise<void> {
     })
 }
 
-async function runCleaners (): Promise<void> {
-    const parsers = await getRunnableParsers('cleaners')
+async function runCleaners (only: string[]): Promise<void> {
+    const parsers = await getRunnableParsers('cleaners', only)
     let total = 0
     let buffer: number[] = []
     let perCleanerTotal = {}
 
     await batchRunIterableParsers<number>(
-        parsers, async (ctx, uid, id) => {
+        'cleaners', parsers,
+        async (ctx, uid, id) => {
             if (typeof id as any !== 'number') return
             if (!perCleanerTotal[uid]) {
                 perCleanerTotal[uid] = 0
@@ -332,24 +380,28 @@ process.on('message', function onMessage (e) {
 
     if (!e || !e.act) return
 
-    if (e.act === 'run-importers' && !importersRunning) {
-        importersRunning = true
-        runImporters().catch(LOG.parsers.error).then(() => {
-            importersRunning = false
+    if (e.act === 'run-importers' && !state.importers.running) {
+        state.importers.running = true
+        runImporters(e.only).catch(LOG.parsers.error).then(() => {
+            state.importers.running = false
         })
     }
 
-    if (e.act === 'run-mappers' && !mappersRunning) {
-        mappersRunning = true
-        runMappers().catch(LOG.parsers.error).then(() => {
-            mappersRunning = false
+    if (e.act === 'run-mappers' && !state.mappers.running) {
+        state.mappers.running = true
+        runMappers(e.only).catch(LOG.parsers.error).then(() => {
+            state.mappers.running = false
         })
     }
 
-    if (e.act === 'run-cleaners' && !cleanersRunning) {
-        cleanersRunning = true
-        runCleaners().catch(LOG.parsers.error).then(() => {
-            cleanersRunning = false
+    if (e.act === 'run-cleaners' && !state.cleaners.running) {
+        state.cleaners.running = true
+        runCleaners(e.only).catch(LOG.parsers.error).then(() => {
+            state.cleaners.running = false
         })
+    }
+
+    if (e.act === 'state') {
+        process.send!({ state, rid: e.rid })
     }
 })

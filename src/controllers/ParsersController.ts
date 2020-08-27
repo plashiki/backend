@@ -2,13 +2,14 @@ import { Body, Controller, Ctx, Get, Param, Post, QueryParams, Session } from 'r
 import { Endpoint } from '@/decorators/docs'
 import { ParsersService } from '@/services/ParsersService'
 import { AnyKV, ApiError } from '@/types'
-import { RequireServerScope, requireServerScope } from '@/decorators/auth-decorators'
+import { RequireFlag, RequireServerScope, requireServerScope } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
 import { Expose, Type } from 'class-transformer'
 import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator'
 import { Parser } from '@/models/Parser'
 import rateLimitMiddleware from '@/middlewares/rate-limit'
 import { Context } from 'koa'
+import { QueryParam } from 'routing-controllers/index'
 
 
 class ParsersPullBody {
@@ -163,5 +164,49 @@ export default class ParsersController {
         }
 
         return 'OK'
+    }
+
+    @Endpoint({
+        name: 'Get parsers state',
+        description: 'Get current parsers runtime state',
+        returns: {
+            type: 'ParsersState | null',
+            description: 'Parsers state or <code>null</code> if parsers did not start since server restart'
+        }
+    })
+    @RequireFlag('admin')
+    @Get('/state')
+    async getParsersState () {
+        return ParsersService.instance.getParsersState()
+    }
+
+    @Endpoint({
+        name: 'Start parsers',
+        description: 'Manually start parsers',
+        query: {
+            kind: {
+                type: 'string',
+                required: true,
+                description: 'Kind of parsers to run (mappers/cleaners/importers)'
+            },
+            only: {
+                type: 'string[]',
+                description: '(optional) List of Parsers\' UIDs to run. Only parsers of a selected <code>kind</code>'
+                    + ' will be started'
+            }
+        },
+        returns: {
+            type: 'ParsersState | null',
+            description: 'Parsers state or <code>null</code> if parsers did not start since server restart'
+        }
+    })
+    @RequireFlag('admin')
+    @Get('/start')
+    async startParsers (
+        @QueryParam('kind', { required: true }) kind: string,
+        @QueryParam('only') only?: string
+    ) {
+        await ParsersService.instance.runParsersGroup(kind, only?.split(',') ?? [])
+        return 'TASK_QUEUED'
     }
 }
