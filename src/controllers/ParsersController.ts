@@ -232,4 +232,34 @@ export default class ParsersController {
     ) {
         return ParsersService.instance.getAllParsers(pagination, search)
     }
+
+    @Endpoint({
+        name: 'Toggle parsers',
+        description: 'Enable or disable parsers',
+        params: {
+            action: {
+                type: '"enable" | "disable"',
+                description: 'Whether to enable or disable given parsers'
+            }
+        },
+        query: {
+            uids: {
+                type: 'string[]',
+                required: true,
+                description: 'Comma-separated list of parsers to enable or disable'
+            }
+        },
+        returns: {
+            type: '"OK"',
+        }
+    })
+    @RequireFlag('admin')
+    @Get('/:action(enable|disable)')
+    async toggleParsers (
+        @Param('action') action: 'enable' | 'disable',
+        @QueryParam('uids', { required: true }) uids: string
+    ) {
+        await ParsersService.instance.toggleParsers(uids.split(','), action === 'disable')
+        return 'OK'
+    }
 }

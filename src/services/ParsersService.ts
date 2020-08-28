@@ -293,6 +293,14 @@ export class ParsersService {
             .getManyPaginated()
     }
 
+    async toggleParsers (uids: string[], disabled: boolean): Promise<void> {
+        await Parser.createQueryBuilder()
+            .update()
+            .set({ disabled })
+            .where({ uid: In(uids) })
+            .execute()
+    }
+
     async deleteParsers (uids: string[]): Promise<void> {
         await Parser.delete({
             uid: In(uids)
