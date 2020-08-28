@@ -1,6 +1,6 @@
 import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch'
 import { sleep } from '@/helpers/utils'
-import { ApiError } from '@/types'
+import { ApiError } from '@/types/errors'
 
 export type RetryRequestInit = RequestInit & {
     attempts?: number

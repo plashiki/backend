@@ -7,10 +7,12 @@ import { ShikimoriAuthService } from '@/services/auth/ShikimoriAuthService'
 import RateLimit from '@/decorators/rate-limit'
 import { StatisticsQueue } from '@/data/queues'
 import { UserService } from '@/services/UserService'
-import { AnyKV, ApiError, ConnectableService } from '@/types'
 import { IsPojo } from '@/helpers/validators'
 import { Endpoint } from '@/decorators/docs'
 import { User } from '@/models/User'
+import { AnyKV } from '@/types/utils'
+import { ApiError } from '@/types/errors'
+import { ConnectableService } from '@/types/media'
 
 
 class ShikimoriLoginBody {

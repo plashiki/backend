@@ -8,11 +8,13 @@ import {
 import * as qs from 'querystring'
 import fetchRetry from '@/helpers/fetch-retry'
 import { isProduction, shikimori } from '@/config'
-import { AnyKV, ApiError, ConnectableService, MediaType } from '@/types'
 import { isPojo } from '@/helpers/object-utils'
 import { AuthData } from '@/models/AuthData'
 import ShikimoriAuth from '@/external/shikimori/auth'
 import { LOG } from '@/helpers/logging'
+import { AnyKV } from '@/types/utils'
+import { ConnectableService, MediaType } from '@/types/media'
+import { ApiError } from '@/types/errors'
 
 export class ShikimoriApiError extends ApiError {
     constructor (code: number | string, message?: string) {

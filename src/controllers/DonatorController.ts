@@ -1,7 +1,8 @@
 import { Controller, Get, QueryParam, QueryParams } from 'routing-controllers'
 import { Endpoint } from '@/decorators/docs'
 import { UserService } from '@/services/UserService'
-import { ConnectableService, Paginated } from '@/types'
+import { Paginated } from '@/types/api'
+import { ConnectableService } from '@/types/media'
 
 @Endpoint({
     name: 'Donators',

@@ -3,7 +3,7 @@ import bodyParser from 'koa-bodyparser'
 import * as path from 'path'
 import { useKoaServer } from 'routing-controllers'
 import { port } from '@/config'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import directoryLoader, { LoadedDefaultModule } from '@/helpers/directory-loader'
 
 import envelopeMiddleware from '@/middlewares/00_envelope'

@@ -1,7 +1,8 @@
 import { GetUserRatesParams } from './UserRateService.types'
-import { ApiError, ConnectableService, UserRate } from '@/types'
 import { ShikimoriUserRateDelegate } from '@/services/user-rates/shikimori'
 import { User } from '@/models/User'
+import { ApiError } from '@/types/errors'
+import { ConnectableService, UserRate } from '@/types/media'
 
 export interface IUserRateDelegate {
     getUserRates (userId: number, params: GetUserRatesParams): Promise<UserRate[]>

@@ -1,5 +1,5 @@
 import { config } from 'dotenv'
-import { StringKV } from '@/types'
+import { StringKV } from '@/types/utils'
 
 config()
 

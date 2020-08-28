@@ -1,10 +1,11 @@
 import { Context } from 'koa'
-import { AnyKV, ApiError } from '@/types'
 import { isProduction, selfDomainsRegex } from '@/config'
 import redis from '@/data/redis'
 import { OauthSession } from '@/models/oauth/OauthSession'
 import { generateSignedToken, validateSignedToken } from '@/helpers/utils'
 import { OauthApp } from '@/models/oauth/OauthApp'
+import { AnyKV } from '@/types/utils'
+import { ApiError } from '@/types/errors'
 
 const REDIS_PREFIX = 'pls-sess:'
 

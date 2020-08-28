@@ -4,7 +4,7 @@ import typeOrmLoader from '@/init/00_typeorm-loader'
 import { User } from '@/models/User'
 import { Translation, TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
 import { StatisticsDay } from '@/models/StatisticsDay'
-import { MediaType } from '@/types'
+import { MediaType } from '@/types/media'
 import { createIndex } from '@/helpers/object-utils'
 import { normalizeUrl } from '@/helpers/utils'
 

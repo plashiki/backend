@@ -1,9 +1,9 @@
-import { AnyKV } from '@/types'
 import { isProduction, telegram } from '@/config'
 import fetchRetry from '@/helpers/fetch-retry'
 import FormData from 'form-data'
 import { isPojo } from '@/helpers/object-utils'
 import { LOG } from '@/helpers/logging'
+import { AnyKV } from '@/types/utils'
 
 const API_PREFIX = 'https://api.telegram.org/bot' + telegram.token + '/'
 let httpAgent = undefined

@@ -1,6 +1,5 @@
 import IORedis from 'ioredis'
 import { Parser } from '@/models/Parser'
-import { AnyKV, AtLeast, ExternalServiceMappings, MediaType, PaginatedResponse, PaginatedSorted } from '@/types'
 import { libs } from '@/vendor/parsers-libs'
 import { getLogger } from '@/helpers/logging'
 import * as config from '@/config'
@@ -14,6 +13,9 @@ import { chunks, createIndex, shallowMerge } from '@/helpers/object-utils'
 import { ChildProcess, fork } from 'child_process'
 import { join } from 'path'
 import { ParsersState } from '@/workers/parsers'
+import { AnyKV, AtLeast } from '@/types/utils'
+import { PaginatedResponse, PaginatedSorted } from '@/types/api'
+import { ExternalServiceMappings, MediaType } from '@/types/media'
 
 const gzip = promisify(zlib.gzip)
 const gunzip = promisify(zlib.gunzip)

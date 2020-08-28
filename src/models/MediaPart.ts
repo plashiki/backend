@@ -1,5 +1,5 @@
 import { EntityConstructor, EntityField } from '@/decorators/docs'
-import { MediaType } from '@/types'
+import { MediaType } from '@/types/media'
 import { Column, PrimaryGeneratedColumn, Entity, BaseEntity, Index } from 'typeorm'
 import { generateOnConflictStatement } from '@/helpers/utils'
 

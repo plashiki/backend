@@ -1,7 +1,7 @@
 // couldnt find good api docs engine -- wrote my own, xd
 
-import { AnyKV } from '@/types'
 import { merge } from '@/helpers/object-utils'
+import { AnyKV } from '@/types/utils'
 
 export interface ParametrizedMeta {
     name: string

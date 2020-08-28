@@ -1,7 +1,7 @@
 import { Worker } from 'bullmq'
 import { Translation } from '@/models/Translation'
 import { Notification } from '@/models/Notification'
-import { MediaType } from '@/types'
+import { MediaType } from '@/types/media'
 
 new Worker('TranslationNotifier', async ({ name, data }) => {
     if (name === 'notify-new') {

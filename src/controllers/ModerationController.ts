@@ -5,7 +5,6 @@ import { SubmitTranslationBody } from '@/controllers/SubmissionController'
 import { ModerationService } from '@/services/ModerationService'
 import { TranslationService } from '@/services/TranslationService'
 import { TranslationStatus } from '@/models/Translation'
-import { AnyKV, ApiError, ApiValidationError, PaginatedSorted } from '@/types'
 import { merge, strip } from '@/helpers/object-utils'
 import { ReportStatus } from '@/models/Report'
 import { StatisticsQueue, TLoggerQueue } from '@/data/queues'
@@ -16,6 +15,9 @@ import { Expose } from 'class-transformer'
 import { UserService } from '@/services/UserService'
 import { UpdateResult } from 'typeorm'
 import { PushService } from '@/services/PushService'
+import { AnyKV } from '@/types/utils'
+import { ApiError, ApiValidationError } from '@/types/errors'
+import { PaginatedSorted } from '@/types/api'
 
 class BatchPatchTranslationBody extends SubmitTranslationBody {
     @Expose()

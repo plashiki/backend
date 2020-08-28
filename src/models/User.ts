@@ -1,7 +1,7 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 import { IsEnum, IsUrl } from 'class-validator'
-import { ConnectableService } from '@/types'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+import { ConnectableService } from '@/types/media'
 
 @EntityConstructor({
     description: 'A single user'

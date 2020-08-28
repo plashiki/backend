@@ -10,9 +10,9 @@ import { TLoggerQueue } from '@/data/queues'
 import typeOrmLoader from '@/init/00_typeorm-loader'
 import Mapping from '@/models/Mapping'
 import { RelationsParser } from '@/helpers/relations'
-import { ExternalService } from '@/types'
 import qs from 'qs'
 import { asyncPool } from '@/helpers/async-pool'
+import { ExternalService } from '@/types/media'
 
 interface ExternalId {
     service: ExternalService

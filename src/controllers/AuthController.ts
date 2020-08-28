@@ -2,7 +2,7 @@ import { Controller, Get, QueryParam, Session } from 'routing-controllers'
 import { UserService } from '@/services/UserService'
 import { ISession } from '@/middlewares/01_session'
 import { RequireCookie, RequireLogin } from '@/decorators/auth-decorators'
-import { ApiValidationError } from '@/types'
+import { ApiValidationError } from '@/types/errors'
 import { Endpoint } from '@/decorators/docs'
 
 @Endpoint({

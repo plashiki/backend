@@ -1,4 +1,4 @@
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import fetchRetry from '@/helpers/fetch-retry'
 import { stringify } from 'querystring'
 import { vk } from '@/config'

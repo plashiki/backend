@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, QueryParams, Session } from 'routing-controllers'
 import { RequireLogin } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
-import { UserRate } from '@/types'
 import { UserRateService } from '@/services/user-rates/UserRateService'
 import { GetUserRatesParams } from '@/services/user-rates/UserRateService.types'
 import { PartialBody } from '@/helpers/api-validate'
 import { Endpoint } from '@/decorators/docs'
+import { UserRate } from '@/types/media'
 
 @Endpoint({
     name: 'User rates',

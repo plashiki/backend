@@ -1,5 +1,5 @@
-import { ExternalServiceMappings, MediaType } from '@/types'
 import Mapping from '@/models/Mapping'
+import { ExternalServiceMappings, MediaType } from '@/types/media'
 
 export class MappingService {
     async findFullMappings (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping | null> {

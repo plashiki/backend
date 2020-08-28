@@ -3,12 +3,13 @@ import { RequireCookie, RequireFlag, RequireLogin } from '@/decorators/auth-deco
 import { Endpoint } from '@/decorators/docs'
 import { ISession } from '@/middlewares/01_session'
 import { ApplicationsService } from '@/services/ApplicationsService'
-import { ApiError, Paginated } from '@/types'
 import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator'
 import { Expose } from 'class-transformer'
 import RateLimit from '@/decorators/rate-limit'
 import { User } from '@/models/User'
 import { merge, strip } from '@/helpers/object-utils'
+import { Paginated } from '@/types/api'
+import { ApiError } from '@/types/errors'
 
 class CreateApplicationBody {
     @Expose()

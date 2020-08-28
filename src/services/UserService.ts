@@ -1,9 +1,10 @@
 import { User } from '@/models/User'
-import { ApiError, ConnectableService, Paginated, PaginatedResponse, PaginatedSorted } from '@/types'
 import { MoreThan } from 'typeorm'
-import { KeyValue } from '@/models/KeyValue'
 import { Translation, TranslationStatus } from '@/models/Translation'
 import { AuthData } from '@/models/AuthData'
+import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types/api'
+import { ApiError } from '@/types/errors'
+import { ConnectableService } from '@/types/media'
 
 export class UserService {
     async assertNewUser (nickname: string): Promise<void> {

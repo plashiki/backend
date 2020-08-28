@@ -1,6 +1,5 @@
 import { BodyParam, Controller, Ctx, Get, Post, QueryParam, Session } from 'routing-controllers'
 import { RequireCookie } from '@/decorators/auth-decorators'
-import { ApiError, ApiValidationError } from '@/types'
 import { ISession } from '@/middlewares/01_session'
 import { StatisticsQueue } from '@/data/queues'
 import { templateFile } from '@/helpers/templating'
@@ -11,6 +10,7 @@ import redirect from '@/middlewares/redirect'
 import { primarySelfDomain } from '@/config'
 import { Endpoint } from '@/decorators/docs'
 import { ApplicationsService } from '@/services/ApplicationsService'
+import { ApiError, ApiValidationError } from '@/types/errors'
 
 @Endpoint({
     name: 'OAuth',

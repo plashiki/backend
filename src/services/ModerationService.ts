@@ -4,12 +4,12 @@ import { User } from '@/models/User'
 import { Notification } from '@/models/Notification'
 import { Report } from '@/models/Report'
 import { Translation, TranslationStatus } from '@/models/Translation'
-import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types'
 import { DeleteResult, In, MoreThanOrEqual, Not, UpdateResult } from 'typeorm'
 import { dropUndefined } from '@/helpers/object-utils'
 import { KeyValue } from '@/models/KeyValue'
 import { StatisticsDay } from '@/models/StatisticsDay'
 import { resolveMeta, PlayerMeta } from '@/helpers/meta-resolvers'
+import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types/api'
 
 export class ModerationService {
     async fixCommonUrlMistakes (url: string): Promise<string> {

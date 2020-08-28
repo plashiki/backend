@@ -1,5 +1,5 @@
 import { UseBefore } from 'routing-controllers'
-import { ApiError } from '@/types'
+import { ApiError } from '@/types/errors'
 import { User } from '@/models/User'
 import { Endpoint } from '@/decorators/docs'
 import { miniMatchAny } from '@/helpers/utils'

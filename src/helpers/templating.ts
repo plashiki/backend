@@ -1,9 +1,9 @@
-import { AnyKV } from '@/types'
 import { readFile } from 'fs'
 import { extname, join } from 'path'
 import { compile, registerHelper, TemplateDelegate } from 'handlebars'
 import { minify } from 'html-minifier'
 import juice from 'juice'
+import { AnyKV } from '@/types/utils'
 
 const cache: Record<string, TemplateDelegate> = {}
 

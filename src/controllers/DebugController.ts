@@ -1,7 +1,7 @@
 import { Body, Controller, Ctx, Get, Param, Post, QueryParam, Session, UseBefore } from 'routing-controllers'
 import { debugSecret, isProduction } from '@/config'
 import { Context } from 'koa'
-import { ApiError } from '@/types'
+import { ApiError } from '@/types/errors'
 import { ISession } from '@/middlewares/01_session'
 import { sleep } from '@/helpers/utils'
 import { Notification } from '@/models/Notification'

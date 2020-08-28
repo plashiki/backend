@@ -1,11 +1,12 @@
 import { OAuthResponse, ShikimoriBriefUser } from '@/external/shikimori/types'
 import { AuthData } from '@/models/AuthData'
-import { ApiError, ConnectableService } from '@/types'
 import { User } from '@/models/User'
 import ShikimoriApi, { ShikimoriApiError } from '@/external/shikimori/api'
 import ShikimoriAuth from '@/external/shikimori/auth'
 import { AuthService } from '@/services/auth/AuthService'
 import { UserService } from '@/services/UserService'
+import { ApiError } from '@/types/errors'
+import { ConnectableService } from '@/types/media'
 
 export class ShikimoriAuthService extends AuthService {
     shikimori = {

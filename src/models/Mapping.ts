@@ -1,7 +1,8 @@
 import { BaseEntity, Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn } from 'typeorm'
-import { ApiError, ExternalServiceMappings, MediaType } from '@/types'
 import { merge } from '@/helpers/object-utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+import { ExternalServiceMappings, MediaType } from '@/types/media'
+import { ApiError } from '@/types/errors'
 
 
 function checkConflict (old: ExternalServiceMappings, item: ExternalServiceMappings): void {
@@ -34,7 +35,7 @@ export default class Mapping extends BaseEntity {
     type: MediaType
 
     @EntityField({
-        description: 'Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types.ts</code> file of backend, line 60',
+        description: 'Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types/media.ts</code> file of backend',
         fields: {
             '%ExternalService%': {
                 type: 'string',

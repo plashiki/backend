@@ -1,8 +1,10 @@
 import { Body, Controller, Get, Param, QueryParams, Post, QueryParam } from 'routing-controllers'
-import { AnyKV, ApiValidationError, ExternalServiceMappings, MediaType } from '@/types'
 import { MappingService } from '@/services/MappingService'
 import { Endpoint } from '@/decorators/docs'
 import { RequireServerScope } from '@/decorators/auth-decorators'
+import { AnyKV } from '@/types/utils'
+import { ApiValidationError } from '@/types/errors'
+import { ExternalServiceMappings, MediaType } from '@/types/media'
 
 @Endpoint({
     name: 'Mappings',

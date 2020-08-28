@@ -1,8 +1,9 @@
 import { validate, ValidationError, ValidatorOptions } from 'class-validator'
 import { ClassTransformOptions, plainToClass } from 'class-transformer'
-import { AnyKV, ApiValidationError, Constructor } from '@/types'
 import { strip } from '@/helpers/object-utils'
 import { BodyOptions } from 'routing-controllers'
+import { AnyKV, Constructor } from '@/types/utils'
+import { ApiValidationError } from '@/types/errors'
 
 export interface TransformValidationOptions {
     validator?: ValidatorOptions

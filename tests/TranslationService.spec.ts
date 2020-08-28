@@ -4,7 +4,7 @@ import { TranslationQueryResult } from '@/services/TranslationService.types'
 import { Translation, TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
 import { clone } from '@/helpers/object-utils'
 import { TranslationService } from '@/services/TranslationService'
-import { MediaType } from '@/types'
+import { MediaType } from '@/types/media'
 
 describe('TranslationService', () => {
     describe('#processTranslations', () => {

@@ -1,5 +1,4 @@
 import { IUserRateDelegate } from './UserRateService'
-import { AnyKV, MediaType, Paginated, UserRate } from '@/types'
 import { GetUserRatesParams } from './UserRateService.types'
 import ShikimoriApi from '@/external/shikimori/api'
 import {
@@ -7,6 +6,9 @@ import {
     ShikimoriUserRate,
     UserRateToShikimoriStatusAdapter
 } from '@/external/shikimori/types'
+import { AnyKV } from '@/types/utils'
+import { Paginated } from '@/types/api'
+import { MediaType, UserRate } from '@/types/media'
 
 export class ShikimoriUserRateDelegate implements IUserRateDelegate {
     shikimoriApi = ShikimoriApi.instance

@@ -1,6 +1,5 @@
 import { Controller, Ctx, Get, Param, QueryParam, QueryParams, Session } from 'routing-controllers'
 import { TranslationService } from '@/services/TranslationService'
-import { ApiError, ApiValidationError, MediaType } from '@/types'
 import { GetTranslationsParameters } from '@/services/TranslationService.types'
 import { IsOptional, IsString, ValidateIf } from 'class-validator'
 import Deprecated from '../decorators/deprecated'
@@ -12,6 +11,8 @@ import { Context } from 'koa'
 import { In } from 'typeorm'
 import { Endpoint } from '@/decorators/docs'
 import { IsNumeric } from '@/helpers/validators'
+import { ApiError, ApiValidationError } from '@/types/errors'
+import { MediaType } from '@/types/media'
 
 
 class GetTranslationsParametersCompat extends GetTranslationsParameters {

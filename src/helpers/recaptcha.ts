@@ -1,10 +1,10 @@
 import { stringify } from 'querystring'
 import fetch from 'node-fetch'
 import { isProduction, recaptcha } from '@/config'
-import { ApiError } from '@/types'
 import { UseBefore } from 'routing-controllers'
 import { Context } from 'koa'
 import { Endpoint } from '@/decorators/docs'
+import { ApiError } from '@/types/errors'
 
 export async function verifyCaptcha (response: string, secret = recaptcha): Promise<boolean> {
     return fetch('https://www.google.com/recaptcha/api/siteverify', {

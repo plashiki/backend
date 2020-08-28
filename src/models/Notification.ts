@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { PushService } from '@/services/PushService'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 
 @EntityConstructor({

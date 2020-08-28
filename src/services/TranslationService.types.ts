@@ -3,9 +3,11 @@ import { Translation, TranslationKind, TranslationLanguage } from '@/models/Tran
 import { IsNumeric } from '@/helpers/validators'
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator'
 import { FindOperator } from 'typeorm'
-import { MediaType, Numeric, Paginated } from '@/types'
 import { Expose } from 'class-transformer'
 import { EntityField } from '@/decorators/docs'
+import { Numeric } from '@/types/utils'
+import { Paginated } from '@/types/api'
+import { MediaType } from '@/types/media'
 
 export type TranslationQueryResult = Record<number, TranslationQuerySinglePart>
 

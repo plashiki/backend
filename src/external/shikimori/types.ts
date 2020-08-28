@@ -1,5 +1,6 @@
-import { AnyKV, UserRateStatus } from '@/types'
 import { PathFunction } from 'path-to-regexp'
+import { AnyKV } from '@/types/utils'
+import { UserRateStatus } from '@/types/media'
 
 export interface OAuthResponse {
     access_token: string

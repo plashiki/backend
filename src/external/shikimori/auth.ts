@@ -2,7 +2,7 @@ import { shikimori } from '@/config'
 import fetchRetry from '@/helpers/fetch-retry'
 import * as qs from 'querystring'
 import { OAuthResponse } from './types'
-import { ApiError } from '@/types'
+import { ApiError } from '@/types/errors'
 
 export default class ShikimoriAuth {
     private static __instance?: ShikimoriAuth

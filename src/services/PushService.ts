@@ -1,7 +1,7 @@
 import IORedis from 'ioredis'
 import { Notification } from '@/models/Notification'
 import redis from '@/data/redis'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import { merge } from '@/helpers/object-utils'
 import fetch from 'node-fetch'
 import { firebaseToken } from '@/config'

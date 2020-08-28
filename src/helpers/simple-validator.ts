@@ -1,5 +1,5 @@
 import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 
 export type ValidationFunction = (obj: any, args: ValidationArguments) => boolean | Promise<boolean>
 

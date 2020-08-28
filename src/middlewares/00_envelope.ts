@@ -1,8 +1,8 @@
 import { Context, Next } from 'koa'
 import { isProduction } from '@/config'
-import { ApiError, ApiValidationError } from '@/types'
 import { processErrors } from '@/helpers/api-validate'
 import { register } from '@/helpers/pretty-stacktrace'
+import { ApiError, ApiValidationError } from '@/types/errors'
 
 register()
 

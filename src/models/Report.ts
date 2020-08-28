@@ -8,7 +8,7 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 import { User } from './User'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 
 

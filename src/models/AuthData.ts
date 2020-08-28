@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from '@/models/User'
-import { ConnectableService } from '@/types'
+import { ConnectableService } from '@/types/media'
 import { EntityConstructor } from '@/decorators/docs'
 
 export interface AuthOptions {

@@ -1,10 +1,10 @@
 import { BodyParam, Controller, Get, Post, QueryParams } from 'routing-controllers'
-import { PaginatedSorted } from '@/types'
 import { UserService } from '@/services/UserService'
 import { Endpoint } from '@/decorators/docs'
 import { RequireFlag } from '@/decorators/auth-decorators'
 import { appendToGithubFile } from '@/external/github'
 import { github } from '@/config'
+import { PaginatedSorted } from '@/types/api'
 
 @Endpoint({
     name: 'Control users',

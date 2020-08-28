@@ -4,7 +4,6 @@ import { TranslationService } from '@/services/TranslationService'
 import { ISession } from '@/middlewares/01_session'
 import { RequireLogin } from '@/decorators/auth-decorators'
 import { CaptchaProtected } from '@/helpers/recaptcha'
-import { ApiError, MediaType, Paginated, PaginatedSorted } from '@/types'
 import { IsNumeric } from '@/helpers/validators'
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator'
 import { TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
@@ -16,6 +15,9 @@ import { PartialBody } from '@/helpers/api-validate'
 import { Expose, Type } from 'class-transformer'
 import { StatisticsQueue, TLoggerQueue } from '@/data/queues'
 import { Endpoint, EntityConstructor } from '@/decorators/docs'
+import { Paginated, PaginatedSorted } from '@/types/api'
+import { MediaType } from '@/types/media'
+import { ApiError } from '@/types/errors'
 
 export class SubmitTranslationBody {
     @Expose()

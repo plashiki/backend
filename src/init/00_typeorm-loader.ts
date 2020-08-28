@@ -4,9 +4,11 @@ import { database, databaseType, isProduction } from '@/config'
 import { join } from 'path'
 import { QueryBuilder } from 'typeorm/query-builder/QueryBuilder'
 import { WhereExpression } from 'typeorm/query-builder/WhereExpression'
-import { ApiError, numericToNumber, Paginated, PaginatedResponse, PaginatedSorted } from '@/types'
+import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types/api'
 import { TheNamingStrategy } from '@/helpers/typeorm-naming'
 import { clone, merge, strip } from '@/helpers/object-utils'
+import { numericToNumber } from '@/types/utils'
+import { ApiError } from '@/types/errors'
 
 export const connectionOptions: ConnectionOptions = {
     type: databaseType as any,

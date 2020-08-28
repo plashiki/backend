@@ -1,4 +1,4 @@
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import {
     registerDecorator,
     ValidationArguments,

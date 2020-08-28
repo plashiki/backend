@@ -4,7 +4,7 @@
 
 import { BaseEntity, Column, Entity, In, PrimaryColumn } from 'typeorm'
 import { EntityConstructor } from '@/decorators/docs'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 
 @EntityConstructor({
     private: true

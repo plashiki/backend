@@ -1,8 +1,8 @@
 import { Controller, Get, QueryParam } from 'routing-controllers'
 import { RequireFlag } from '@/decorators/auth-decorators'
 import { Endpoint } from '@/decorators/docs'
-import { ApiValidationError } from '@/types'
 import { StatisticsService } from '@/services/admin/StatisticsService'
+import { ApiValidationError } from '@/types/errors'
 
 @Endpoint({
     name: 'Statistics',

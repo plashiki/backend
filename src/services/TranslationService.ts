@@ -10,11 +10,14 @@ import {
     TranslationQueryResultCompat
 } from './TranslationService.types'
 import { In } from 'typeorm'
-import { AnyKV, ApiError, AtLeast, MediaType, numericToNumber, PaginatedResponse, PaginatedSorted } from '@/types'
 import { chunks, dropUndefined, strip, uniqueBy } from '@/helpers/object-utils'
 import { TranslationNotifierQueue } from '@/data/queues'
 import { rowsToColumns } from '@/helpers/utils'
 import { externalRedirectPage } from '@/config'
+import { AnyKV, AtLeast, numericToNumber } from '@/types/utils'
+import { PaginatedResponse, PaginatedSorted } from '@/types/api'
+import { MediaType } from '@/types/media'
+import { ApiError } from '@/types/errors'
 
 export class TranslationService {
     async getTranslations<T extends GetTranslationsParameters> (params: GetTranslationsParameters):

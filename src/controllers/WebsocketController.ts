@@ -5,7 +5,7 @@ import koaCompose from 'koa-compose'
 import WebSocket from 'ws'
 import { isProduction, primarySelfDomain } from '@/config'
 import { ISession } from '@/middlewares/01_session'
-import { AnyKV, ApiError } from '@/types'
+import { AnyKV } from '@/types/utils'
 import { isPojo } from '@/helpers/object-utils'
 import { IsIn, IsOptional, IsString } from 'class-validator'
 import apiValidate from '@/helpers/api-validate'
@@ -13,6 +13,7 @@ import { Stream } from 'stream'
 import { IsPojo } from '@/helpers/validators'
 import { PushEventListener, PushService } from '@/services/PushService'
 import { Expose } from 'class-transformer'
+import { ApiError } from '@/types/errors'
 
 const debug = _debug('api:ws')
 

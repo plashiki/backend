@@ -1,5 +1,5 @@
 import { OauthApp } from '@/models/oauth/OauthApp'
-import { Paginated } from '@/types'
+import { Paginated } from '@/types/api'
 import { createNonce, generateSignedToken } from '@/helpers/utils'
 import { OauthSession } from '@/models/oauth/OauthSession'
 

@@ -4,13 +4,15 @@ import { AssertCurrentUser, CurrentUserAlias, RequireLogin } from '@/decorators/
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator'
 import { Expose } from 'class-transformer'
 import { IsNumeric } from '@/helpers/validators'
-import { AnyKV, ApiError, ApiValidationError, ConnectableService } from '@/types'
 import { ISession } from '@/middlewares/01_session'
 import { merge, strip } from '@/helpers/object-utils'
 import { Endpoint, EntityField } from '@/decorators/docs'
 import { User } from '@/models/User'
 import { supportedLanguages } from '@/config'
 import isURL from 'validator/lib/isURL'
+import { AnyKV } from '@/types/utils'
+import { ApiError, ApiValidationError } from '@/types/errors'
+import { ConnectableService } from '@/types/media'
 
 class GetUserParams {
     @Expose()

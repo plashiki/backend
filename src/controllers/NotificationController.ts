@@ -2,10 +2,10 @@ import { Controller, Get, QueryParam, Session } from 'routing-controllers'
 import { RequireLogin } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
 import { UserService } from '@/services/UserService'
-import { ApiError, ApiValidationError } from '@/types'
 import { uniqueBy } from '@/helpers/object-utils'
 import { PushService } from '@/services/PushService'
 import { Endpoint } from '@/decorators/docs'
+import { ApiError, ApiValidationError } from '@/types/errors'
 
 @Endpoint({
     name: 'Notifications',

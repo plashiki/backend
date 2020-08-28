@@ -1,7 +1,6 @@
 import { Body, Controller, Ctx, Get, Param, Post, QueryParams, Session } from 'routing-controllers'
 import { Endpoint } from '@/decorators/docs'
 import { ParsersService } from '@/services/ParsersService'
-import { AnyKV, ApiError, PaginatedSorted } from '@/types'
 import { RequireFlag, RequireServerScope, requireServerScope } from '@/decorators/auth-decorators'
 import { ISession } from '@/middlewares/01_session'
 import { Expose, Type } from 'class-transformer'
@@ -10,6 +9,9 @@ import { Parser } from '@/models/Parser'
 import rateLimitMiddleware from '@/middlewares/rate-limit'
 import { Context } from 'koa'
 import { QueryParam } from 'routing-controllers/index'
+import { AnyKV } from '@/types/utils'
+import { PaginatedSorted } from '@/types/api'
+import { ApiError } from '@/types/errors'
 
 
 class ParsersPullBody {

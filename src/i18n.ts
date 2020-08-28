@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import { SupportedLanguage } from '@/config'
-import { AnyKV } from '@/types'
+import { AnyKV } from '@/types/utils'
 import { TranslationKind, TranslationLanguage } from '@/models/Translation'
 
 

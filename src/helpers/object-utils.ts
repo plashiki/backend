@@ -1,11 +1,11 @@
-import { AnyKV } from '@/types'
-
 /**
  * Returns whether an object is a POJO
  * (probably created by an object literal)
  *
  * @param obj  Object to check
  */
+import { AnyKV } from '@/types/utils'
+
 export function isPojo (obj: any): obj is AnyKV {
     return obj && typeof obj === 'object' && obj.constructor === Object
 }

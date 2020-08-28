@@ -1,8 +1,9 @@
-import { MediaType, Paginated, UserRateStatus } from '@/types'
 import { IsNumeric } from '@/helpers/validators'
 import { IsEnum, IsOptional } from 'class-validator'
 import { Expose } from 'class-transformer'
 import { EntityConstructor } from '@/decorators/docs'
+import { Paginated } from '@/types/api'
+import { MediaType, UserRateStatus } from '@/types/media'
 
 @EntityConstructor({
     description: 'Paramters for Get user rates request'

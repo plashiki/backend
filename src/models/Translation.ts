@@ -10,7 +10,7 @@ import {
 } from 'typeorm'
 import { User } from './User'
 import { IsUrl } from 'class-validator'
-import { MediaType } from '@/types'
+import { MediaType } from '@/types/media'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 
 export enum TranslationKind {
