@@ -69,7 +69,7 @@ async function batchRunIterableParsers<T> (
         let count = 0
         state[type].states[uid] = `running|${count}`
         for await (let it of iter) {
-            state[type].states[uid] = `running|${count}`
+            state[type].states[uid] = `running|${count++}`
             await callback(ctx, uid, it)
         }
         state[type].states[uid] = `finished|${count}`
