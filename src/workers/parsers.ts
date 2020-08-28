@@ -50,6 +50,10 @@ async function batchRunIterableParsers<T> (
     if (!uids.length) return {}
     state[type].states = {}
 
+    uids.forEach((uid) => {
+        state[type].states[uid] = 'waiting'
+    })
+
     const stats = {}
     const ctxes: Record<string, any> = {}
 
