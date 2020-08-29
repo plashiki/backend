@@ -338,6 +338,7 @@ export class ParsersService {
                 select: ['storage']
             })
             if (!parser) ApiError.e('NOT_FOUND')
+            if (!parser.storage.length) return { items: [], count: 0 }
 
             if (parser.storage.indexOf(search) > -1) {
                 builder.where({ key: Like(search) })
