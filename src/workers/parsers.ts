@@ -101,10 +101,7 @@ async function batchRunIterableParsers<T> (
 
     uids.forEach((uid) => {
         if (ctxes[uid]) {
-            let s = ctxes[uid].__stat
-            if (s > 0) {
-                stats[uid] = s
-            }
+            stats[uid] = ctxes[uid].__stat ?? 0
         }
     })
 
@@ -221,19 +218,19 @@ async function runImporters (only: string[]): Promise<void> {
     let perParserEfficiency = {}
     const today = await StatisticsDay.today()
     Object.keys(perParserItems).forEach((uid) => {
-        let efficiency = perParserTotal[uid] / perParserItems[uid]
-        if (perParserTotal[uid] === 0) {
-            efficiency = 1 // weird flex but ok
-        }
-        perParserEfficiency[uid] = efficiency
-        let key = 'efficiency:' + uid
-        if (!today.data[key]) {
-            today.data[key] = efficiency
-        } else {
-            today.data[key] *= efficiency
+        if (perParserTotal[uid] !== 0 && perParserItems[uid] !== 0) {
+            let efficiency = perParserTotal[uid] / perParserItems[uid]
+
+            perParserEfficiency[uid] = efficiency
+            let key = 'efficiency:' + uid
+            if (!today.data[key]) {
+                today.data[key] = efficiency
+            } else {
+                today.data[key] *= efficiency
+            }
         }
 
-        key = 'tr-added:' + uid
+        let key = 'tr-added:' + uid
         if (!today.data[key]) {
             today.data[key] = perParserItems[uid]
         } else {
