@@ -264,4 +264,66 @@ export default class ParsersController {
         await ParsersService.instance.toggleParsers(uids.split(','), action === 'disable')
         return 'OK'
     }
+
+    @Endpoint({
+        name: 'Parser storage',
+        description: 'Get internal storage of a single parser or global key-value storage',
+        query: {
+            $extends: 'PaginatedSorted',
+            uid: {
+                type: 'string',
+                description: 'UID of a parser for which to request storage. If missing, entire storage will be available'
+            },
+            search: {
+                type: 'string',
+                description: 'Search by key. Supports SQL-like patterns (ex. <code>name:%</code>)'
+            }
+        },
+        throws: [
+            {
+                type: 'NOT_FOUND',
+                description: 'Parser with a given UID was not found'
+            }
+        ],
+        returns: {
+            type: 'KeyValue[]',
+        }
+    })
+    @RequireFlag('admin')
+    @Get('/storage')
+    async getParserStorage (
+        @QueryParams() pagination: PaginatedSorted,
+        @QueryParam('search') search: string,
+        @QueryParam('uid') uid?: string
+    ) {
+        return ParsersService.instance.getParserStorage(uid, pagination, search)
+    }
+
+    @Endpoint({
+        name: 'Modify parser storage',
+        description: 'Modify internal parsers\' storage',
+        query: {
+            key: {
+                type: 'string',
+                required: true
+            }
+        },
+        body: {
+            type: 'any',
+            description: 'Value of the KeyValue pair. Will be JSON.stringify()-ied before putting to DB'
+        },
+        returns: {
+            type: '"OK"',
+        }
+    })
+    @RequireFlag('admin')
+    @Post('/storage')
+    async modifyParserStorage (
+        @QueryParams() pagination: PaginatedSorted,
+        @QueryParam('key') key: string,
+        @Body() value: any
+    ) {
+        await ParsersService.instance.setParserStorage(key, value)
+        return "OK"
+    }
 }

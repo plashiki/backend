@@ -16,6 +16,9 @@ import { ParsersState } from '@/workers/parsers'
 import { AnyKV, AtLeast } from '@/types/utils'
 import { PaginatedResponse, PaginatedSorted } from '@/types/api'
 import { ExternalServiceMappings, MediaType } from '@/types/media'
+import { KeyValue } from '@/models/KeyValue'
+import { ApiError } from '@/types/errors'
+import { Brackets, Like } from 'typeorm/index'
 
 const gzip = promisify(zlib.gzip)
 const gunzip = promisify(zlib.gunzip)
@@ -325,6 +328,38 @@ export class ParsersService {
             }
             this.parsersProcess!.on('message', handler)
         })
+    }
+
+    async getParserStorage (uid: string | undefined, pagination: PaginatedSorted, search = ''): Promise<PaginatedResponse<KeyValue>> {
+        let builder = KeyValue.createQueryBuilder('k')
+        if (uid) {
+            const parser = await Parser.findOne({
+                where: { uid },
+                select: ['storage']
+            })
+            if (!parser) ApiError.e('NOT_FOUND')
+
+            if (parser.storage.indexOf(search) > -1) {
+                builder.where({ key: Like(search) })
+            } else {
+                const brackets = new Brackets((w) => {
+                    parser.storage.forEach((rule, i) => w.orWhere(`k.key like :rule${i}`, { [`rule${i}`]: rule }))
+                })
+                builder
+                    .where(brackets)
+                    .andWhere('k.key like :search', { search: `%${search}%` })
+            }
+        } else if (search) {
+            builder.where({ key: Like(`%${search}%`) })
+        }
+
+        return builder.paginate(pagination, 50)
+            .sort(pagination, (s) => s.orderBy('key'))
+            .getManyPaginated()
+    }
+
+    async setParserStorage (key: string, value: any): Promise<void> {
+        await KeyValue.set(key, value)
     }
 
     private __handleMessage (msg: any): void {
