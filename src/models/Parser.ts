@@ -51,6 +51,19 @@ export class Parser extends BaseEntity {
     provide: string[]
 
     @Expose()
+    @IsString({ each: true })
+    @EntityField({
+        description: 'List of used storage keys by a parser. This list may not be exhaustive, '
+            + 'and is only used for parser dashboard. This DOES NOT affect parser\'s runtime permissions or whatever. '
+            + 'May include SQL patterns, for example <code>name:%</code>'
+    })
+    @Column('text', {
+        array: true,
+        default: '{}'
+    })
+    storage: string[]
+
+    @Expose()
     @IsBoolean()
     @EntityField({
         description: 'When a parser is disabled, it will not be started on schedule (in case of an Importer/Mapper) '

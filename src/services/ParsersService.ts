@@ -22,7 +22,7 @@ const gunzip = promisify(zlib.gunzip)
 
 const conflictStatement = generateOnConflictStatement(
     ['uid'],
-    ['disabled', 'cri', 'code', 'provide', 'hash', 'source']
+    ['disabled', 'cri', 'code', 'storage', 'provide', 'hash', 'source']
 )
 
 export interface MapperResult {
@@ -291,7 +291,7 @@ export class ParsersService {
         }
         return b
             .sort(pagination, (s) => s.orderBy('uid'))
-            .select(['p.uid', 'p.provide', 'p.disabled', 'p.public', 'p.cri'])
+            .select(['p.uid', 'p.storage', 'p.provide', 'p.disabled', 'p.public', 'p.cri'])
             .getManyPaginated()
     }
 
