@@ -363,6 +363,10 @@ export class ParsersService {
         await KeyValue.set(key, value)
     }
 
+    async deleteFromParserStorage (key: string): Promise<void> {
+        await KeyValue.del(key)
+    }
+
     private __handleMessage (msg: any): void {
         if (msg.act === 'invalidate') {
             msg.uids.forEach((uid: string) => {

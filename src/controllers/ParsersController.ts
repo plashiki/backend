@@ -8,7 +8,7 @@ import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator'
 import { Parser } from '@/models/Parser'
 import rateLimitMiddleware from '@/middlewares/rate-limit'
 import { Context } from 'koa'
-import { QueryParam } from 'routing-controllers/index'
+import { Delete, QueryParam } from 'routing-controllers/index'
 import { AnyKV } from '@/types/utils'
 import { PaginatedSorted } from '@/types/api'
 import { ApiError } from '@/types/errors'
@@ -319,11 +319,32 @@ export default class ParsersController {
     @RequireFlag('admin')
     @Post('/storage')
     async modifyParserStorage (
-        @QueryParams() pagination: PaginatedSorted,
         @QueryParam('key') key: string,
         @Body() value: any
     ) {
         await ParsersService.instance.setParserStorage(key, value)
+        return "OK"
+    }
+
+    @Endpoint({
+        name: 'Remove from parser storage',
+        description: 'Remove items from internal parsers\' storage',
+        query: {
+            key: {
+                type: 'string',
+                required: true
+            }
+        },
+        returns: {
+            type: '"OK"',
+        }
+    })
+    @RequireFlag('admin')
+    @Delete('/storage')
+    async removeFromParserStorage (
+        @QueryParam('key') key: string
+    ) {
+        await ParsersService.instance.deleteFromParserStorage(key)
         return "OK"
     }
 }
