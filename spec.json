@@ -961,6 +961,10 @@
                                 }
                             ],
                             "type": "number | string"
+                        },
+                        "all": {
+                            "type": "boolean",
+                            "description": "Whether to return all submissions/reports and not only most recent (will remove date filtering, does not affect pagination)"
                         }
                     },
                     "returns": {
@@ -1475,6 +1479,339 @@
                     "body": {
                         "type": "ParsersPushBody",
                         "description": "Parser updates. Hashes will be calculated automatically, source code will be gzipped automatically as well"
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/state",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Get parsers state",
+                    "description": "Get current parsers runtime state",
+                    "returns": {
+                        "type": "ParsersState | null",
+                        "description": "Parsers state or <code>null</code> if parsers did not start since server restart"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/start",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Start parsers",
+                    "description": "Manually start parsers",
+                    "query": {
+                        "kind": {
+                            "type": "string",
+                            "required": true,
+                            "description": "Kind of parsers to run (mappers/cleaners/importers)"
+                        },
+                        "only": {
+                            "type": "string[]",
+                            "description": "(optional) List of Parsers' UIDs to run. Only parsers of a selected <code>kind</code> will be started"
+                        }
+                    },
+                    "returns": {
+                        "type": "ParsersState | null",
+                        "description": "Parsers state or <code>null</code> if parsers did not start since server restart"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/list",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "List parsers",
+                    "description": "Get list of parsers",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "sort": {
+                            "type": "string"
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search by UID. Supports star patterns (ex. <code>importers/*</code>)"
+                        }
+                    },
+                    "returns": {
+                        "type": "Parser[]"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/:action",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Toggle parsers",
+                    "description": "Enable or disable parsers",
+                    "params": {
+                        "action": {
+                            "type": "\"enable\" | \"disable\"",
+                            "description": "Whether to enable or disable given parsers"
+                        }
+                    },
+                    "query": {
+                        "uids": {
+                            "type": "string[]",
+                            "required": true,
+                            "description": "Comma-separated list of parsers to enable or disable"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/parsers/storage",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        },
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Parser with a given UID was not found"
+                        }
+                    ],
+                    "name": "Parser storage",
+                    "description": "Get internal storage of a single parser or global key-value storage",
+                    "query": {
+                        "limit": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "offset": {
+                            "checks": [
+                                {
+                                    "name": "numeric",
+                                    "params": {
+                                        "min": 0,
+                                        "int": true
+                                    }
+                                }
+                            ],
+                            "type": "number | string"
+                        },
+                        "sort": {
+                            "type": "string"
+                        },
+                        "uid": {
+                            "type": "string",
+                            "description": "UID of a parser for which to request storage. If missing, entire storage will be available"
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search by key. Supports SQL-like patterns (ex. <code>name:%</code>)"
+                        }
+                    },
+                    "returns": {
+                        "type": "KeyValue[]"
+                    }
+                },
+                {
+                    "method": "POST",
+                    "path": "/v2/parsers/storage",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Modify parser storage",
+                    "description": "Modify internal parsers' storage",
+                    "query": {
+                        "key": {
+                            "type": "string",
+                            "required": true
+                        }
+                    },
+                    "body": {
+                        "type": "any",
+                        "description": "Value of the KeyValue pair. Will be JSON.stringify()-ied before putting to DB"
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                },
+                {
+                    "method": "DELETE",
+                    "path": "/v2/parsers/storage",
+                    "checks": [
+                        {
+                            "name": "login"
+                        },
+                        {
+                            "name": "user-flag",
+                            "params": {
+                                "flag": "admin",
+                                "value": true
+                            }
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "Flag not set"
+                        }
+                    ],
+                    "name": "Remove from parser storage",
+                    "description": "Remove items from internal parsers' storage",
+                    "query": {
+                        "key": {
+                            "type": "string",
+                            "required": true
+                        }
                     },
                     "returns": {
                         "type": "\"OK\""
@@ -2059,7 +2396,7 @@
                     },
                     "returns": {
                         "type": "User | null",
-                        "description": "Requested user if exists, null otherwise. Note that <code>sub</code> and <code>service</code> fields will only be available for current user"
+                        "description": "Requested user if exists, null otherwise. Note that <code>sub</code>, <code>service</code> and <code>language</code> fields will only be available for current user"
                     }
                 },
                 {
@@ -2398,6 +2735,9 @@
                 },
                 "sub": {
                     "type": "string[]"
+                },
+                "language": {
+                    "type": "string | null"
                 }
             }
         },
@@ -2589,6 +2929,10 @@
                     "type": "string[]",
                     "description": "Dependencies of a parser. A parser can contain some dependencies, for example to abstract parsing logic of a single platform but keep different parsers for different authors. Nested dependencies are supported, circular are not"
                 },
+                "storage": {
+                    "type": "string[]",
+                    "description": "List of used storage keys by a parser. This list may not be exhaustive, and is only used for parser dashboard. This DOES NOT affect parser's runtime permissions or whatever. May include SQL patterns, for example <code>name:%</code>"
+                },
                 "disabled": {
                     "type": "boolean",
                     "description": "When a parser is disabled, it will not be started on schedule (in case of an Importer/Mapper) This WILL NOT disable importing it as a dependency."
@@ -2617,7 +2961,7 @@
         },
         {
             "type": "Mapping",
-            "description": "A single media ID mapping",
+            "description": "A single media ID mapping. Daily dumps (gzipped JSON) are available at <a href=\"https://plashiki.su/static/mappings.json.gz\">https://plashiki.su/static/mappings.json.gz</a>",
             "fields": {
                 "id": {
                     "type": "number",
@@ -2629,13 +2973,39 @@
                 },
                 "external": {
                     "type": "object",
-                    "description": "Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types.ts</code> file of backend, line 60",
+                    "description": "Actual ID mappings. List of <code>ExternalService</code>s can be found in <code>src/types/media.ts</code> file of backend",
                     "fields": {
                         "%ExternalService%": {
                             "type": "string",
                             "description": "Media ID in a given ExternalService."
                         }
                     }
+                }
+            }
+        },
+        {
+            "type": "MediaPart",
+            "description": "A single media part's information",
+            "fields": {
+                "id": {
+                    "type": "number",
+                    "description": "Unique part ID"
+                },
+                "media_type": {
+                    "type": "string",
+                    "description": "Target media type"
+                },
+                "media_id": {
+                    "type": "number",
+                    "description": "Target media ID (MAL)"
+                },
+                "number": {
+                    "type": "number",
+                    "description": "Part number (starting from 1)"
+                },
+                "title": {
+                    "type": "string",
+                    "description": "Part title"
                 }
             }
         },
@@ -2671,67 +3041,6 @@
                 },
                 "sender": {
                     "description": "Report sender object. Only available in Moderation API -> Get single report"
-                }
-            }
-        },
-        {
-            "type": "Paginated",
-            "fields": {
-                "limit": {
-                    "checks": [
-                        {
-                            "name": "numeric",
-                            "params": {
-                                "min": 0,
-                                "int": true
-                            }
-                        }
-                    ],
-                    "type": "number | string"
-                },
-                "offset": {
-                    "checks": [
-                        {
-                            "name": "numeric",
-                            "params": {
-                                "min": 0,
-                                "int": true
-                            }
-                        }
-                    ],
-                    "type": "number | string"
-                }
-            }
-        },
-        {
-            "type": "PaginatedSorted",
-            "fields": {
-                "limit": {
-                    "checks": [
-                        {
-                            "name": "numeric",
-                            "params": {
-                                "min": 0,
-                                "int": true
-                            }
-                        }
-                    ],
-                    "type": "number | string"
-                },
-                "offset": {
-                    "checks": [
-                        {
-                            "name": "numeric",
-                            "params": {
-                                "min": 0,
-                                "int": true
-                            }
-                        }
-                    ],
-                    "type": "number | string"
-                },
-                "sort": {
-                    "type": "string"
                 }
             }
         },
@@ -2831,6 +3140,67 @@
                 },
                 "query": {
                     "type": "object"
+                }
+            }
+        },
+        {
+            "type": "Paginated",
+            "fields": {
+                "limit": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "offset": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                }
+            }
+        },
+        {
+            "type": "PaginatedSorted",
+            "fields": {
+                "limit": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "offset": {
+                    "checks": [
+                        {
+                            "name": "numeric",
+                            "params": {
+                                "min": 0,
+                                "int": true
+                            }
+                        }
+                    ],
+                    "type": "number | string"
+                },
+                "sort": {
+                    "type": "string"
                 }
             }
         },
