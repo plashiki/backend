@@ -239,16 +239,16 @@ export default class ModerationController {
                 await this.translationService.assertNoDuplicates(body.url)
             }
 
-            merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
-
-            await translation.save()
-
             TLoggerQueue.add('update', {
-                translation,
+                translation: { ...translation },
                 issuerId: session.userId,
                 reason: 'репорт ' + reportId,
                 diff: body
             })
+
+            merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
+
+            await translation.save()
 
             report.status = ReportStatus.Resolved
         } else if (action === 'delete') {

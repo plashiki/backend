@@ -6,7 +6,7 @@
 Изменено:<br/>
 {{#each diff}}
 {{#eq @key 'url'}}
-<code>- url: </code><a href="{{../translation.url}}">{{../translation.urlDomain}}</a> <code>-&gt;</code> <a href="{{../diff.url}}">{{../diff.urlDomain}}</a><br/>
+<code>- url: </code><a href="{{../translation.url}}">{{../translation.urlDomain}}</a><code> -&gt; </code><a href="{{../diff.url}}">{{../diff.urlDomain}}</a><br/>
 {{/eq}}
 {{#neq @key 'url'}}
 {{#neq @key 'urlDomain'}}

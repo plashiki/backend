@@ -368,13 +368,9 @@ export default class SubmissionController {
             await this.translationService.assertNoDuplicates(body.url)
         }
 
-        shallowMerge(translation, body, ignoredFields)
-
-        await translation.save()
-
         if (user.moderator && translation.uploader_id !== session.userId) {
             TLoggerQueue.add('update', {
-                translation,
+                translation: { ...translation },
                 issuerId: session.userId,
                 diff: body
             })
@@ -383,6 +379,10 @@ export default class SubmissionController {
                 name: `tr-edit:${session.userId}`
             })
         }
+
+        shallowMerge(translation, body, ignoredFields)
+
+        await translation.save()
 
         return user.moderator ? translation : translation.stripHidden()
     }
