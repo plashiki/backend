@@ -1,8 +1,6 @@
 <template>
     <div class="entity">
-        <h2
-            :id="slug"
-        >
+        <h2 :id="slug">
             <a
                 :href="'#' + slug"
                 class="header-anchor"
@@ -11,9 +9,7 @@
             {{ item.type }}
         </h2>
 
-        <p>
-            {{ item.description }}
-        </p>
+        <p v-html="item.description" />
 
         <h4>Fields</h4>
 
@@ -32,9 +28,7 @@
                     <TypeDisplay :param="param" />
                 </td>
                 <td>
-                    <span
-                        v-html="param.description"
-                    />
+                    <span v-html="param.description" />
                     <ChecksDisplay
                         :checks="param.checks"
                         v-if="param.checks && param.checks.length"
