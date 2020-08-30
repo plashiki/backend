@@ -18,6 +18,7 @@ import { PushService } from '@/services/PushService'
 import { AnyKV } from '@/types/utils'
 import { ApiError, ApiValidationError } from '@/types/errors'
 import { PaginatedSorted } from '@/types/api'
+import { QueryParam } from 'routing-controllers/index'
 
 class BatchPatchTranslationBody extends SubmitTranslationBody {
     @Expose()
@@ -47,7 +48,12 @@ export default class ModerationController {
             }
         },
         query: {
-            $extends: 'Paginated'
+            $extends: 'Paginated',
+            all: {
+                type: 'boolean',
+                description: 'Whether to return all submissions/reports and not only most recent (will remove '
+                    + 'date filtering, does not affect pagination)'
+            }
         },
         returns: {
             type: 'PaginatedResponse<Translation[]> | PaginatedResponse<Report[]>',
@@ -57,10 +63,11 @@ export default class ModerationController {
     @Get('/:type(submissions|reports)/recent')
     async getRecentSubmissionsOrReports (
         @Param('type') type: 'submissions' | 'reports',
-        @QueryParams() params: PaginatedSorted
+        @QueryParams() params: PaginatedSorted,
+        @QueryParam('all') all: boolean
     ) {
         if (type === 'submissions') {
-            return this.moderationService.getRecentSubmissions(params)
+            return this.moderationService.getSubmissions(params, !all)
         } else {
             return this.moderationService.getRecentReports(params)
         }

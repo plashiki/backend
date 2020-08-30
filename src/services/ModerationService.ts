@@ -63,15 +63,16 @@ export class ModerationService {
         return User.query('select id from users where moderator = true').then(it => it.map(i => i.id))
     }
 
-    async getRecentSubmissions (pagination: PaginatedSorted): Promise<PaginatedResponse<Translation>> {
-        return Translation.createQueryBuilder('tr')
-            .where({
+    async getSubmissions (pagination: PaginatedSorted, recent = true): Promise<PaginatedResponse<Translation>> {
+        let builder = Translation.createQueryBuilder('tr')
+        if (recent) {
+            builder.where({
                 // only return last week so queries are faster (we dont need to count all tr-s)
                 updated_at: MoreThanOrEqual(new Date(Date.now() - 604800000)),
                 status: Not(TranslationStatus.Mapping)
-            })
-            .andWhere('tr.uploader_id is not null')
-            .leftJoin('tr.uploader', 'u')
+            }).andWhere('tr.uploader_id is not null')
+        }
+        return builder.leftJoin('tr.uploader', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
             .paginate(pagination, 50)
             .sort(pagination, (b) => b
