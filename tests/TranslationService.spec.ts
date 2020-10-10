@@ -18,7 +18,6 @@ describe('TranslationService', () => {
                 part: 1,
                 kind: TranslationKind.Subtitles,
                 lang: TranslationLanguage.Russian,
-                hq: true,
                 author: 'FooSub',
                 status: TranslationStatus.Added,
                 url: 'https://example.com/1'
@@ -30,7 +29,6 @@ describe('TranslationService', () => {
                 part: 1,
                 kind: TranslationKind.Dubbed,
                 lang: TranslationLanguage.Russian,
-                hq: true,
                 author: 'FooDub',
                 status: TranslationStatus.Added,
                 url: 'https://example.com/2'
@@ -42,7 +40,6 @@ describe('TranslationService', () => {
                 part: 1,
                 kind: TranslationKind.Original,
                 lang: TranslationLanguage.Japanese,
-                hq: true,
                 author: 'FooRaw',
                 status: TranslationStatus.Added,
                 url: 'https://example.com/3'
@@ -57,7 +54,6 @@ describe('TranslationService', () => {
                         'name': 'FooSub',
                         'translations': [
                             {
-                                'hq': true,
                                 'id': 1,
                                 'name': 'example.com',
                                 'uploader': 42,
@@ -71,7 +67,6 @@ describe('TranslationService', () => {
                         'name': 'FooDub',
                         'translations': [
                             {
-                                'hq': true,
                                 'id': 2,
                                 'name': 'example.com',
                                 'uploader': 42,
@@ -85,7 +80,6 @@ describe('TranslationService', () => {
                         'name': 'FooRaw',
                         'translations': [
                             {
-                                'hq': true,
                                 'id': 3,
                                 'name': 'example.com',
                                 'uploader': 42,

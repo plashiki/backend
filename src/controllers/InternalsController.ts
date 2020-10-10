@@ -130,7 +130,6 @@ export default class InternalsController {
                 part: i.part,
                 kind: i.kind,
                 lang: i.lang,
-                hq: i.hq,
                 author: i.author,
                 url: i.url,
                 groups: uniqueBy([...(i.groups ?? []), 'from-app:' + session.$app!.id]),

@@ -149,7 +149,6 @@ async function runImporters (only: string[]): Promise<void> {
         async (ctx, uid, item) => {
             // normalize fields
             if (!('author' in item)) item.author = ''
-            if (!('hq' in item)) item.hq = false
             if (!('status' in item)) item.status = TranslationStatus.Added
             if (!('groups' in item)) item.groups = []
             if (

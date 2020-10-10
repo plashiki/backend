@@ -133,7 +133,6 @@ async function main (): Promise<void> {
                 TranslationLanguage.Japanese,
                 TranslationLanguage.Other
             ][tr.lang],
-            hq: tr.quality === 1,
             author: tr.author,
             url: tr.url,
             status: [

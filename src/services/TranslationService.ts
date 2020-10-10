@@ -286,7 +286,6 @@ export class TranslationService {
                 id: tr.id,
                 name: playerHost,
                 url: tr.url,
-                hq: tr.hq,
                 uploader: tr.uploader
             }
             if ('quality' in tr) {

@@ -41,10 +41,6 @@ export class SubmitTranslationBody {
     lang: TranslationLanguage
 
     @Expose()
-    @IsBoolean()
-    hq: boolean
-
-    @Expose()
     @IsString()
     author: string
 

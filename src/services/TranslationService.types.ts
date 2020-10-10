@@ -20,7 +20,6 @@ export interface TranslationQuerySingle {
     id: number
     name: string
     url: string
-    hq: boolean
     uploader: User | number | null
 }
 

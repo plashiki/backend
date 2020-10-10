@@ -103,13 +103,6 @@ export class Translation extends BaseEntity {
     lang: TranslationLanguage
 
     @EntityField({
-        description: 'Whether the translation is HQ (exact definition may vary, '
-            + 'but usually it means 720p or more for anime and hi-res scans for manga)'
-    })
-    @Column()
-    hq: boolean
-
-    @EntityField({
         description: 'Translation author. Can contain studio name (like <code>AniDUB</code>), author names (like <code>Anku, mutagenb</code>), '
             + 'both (like <code>AniDUB (Anku, mutagenb)</code>) or basically anything else that can be used to describe an author. '
             + 'There\'s no strict format. Edge case is an empty <code>author</code>, which should be interpreted as Unknown author.'
