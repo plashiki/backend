@@ -20,7 +20,7 @@
         "build:paths": "tscpaths -p tsconfig.json -s . -o dist",
         "build:static": "copyfiles src/templates/**/* dist",
         "build:docs": "vuepress build docs",
-        "create-migration": "node dist/scripts/generate-migration.js"
+        "create-migration": "yarn run build:ts && node dist/scripts/generate-migration.js"
     },
     "dependencies": {
         "@teidesu/anitomy-js": "^4.1.2",
