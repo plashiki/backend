@@ -1,4 +1,4 @@
-import { Translation, TranslationStatus } from '@/models/Translation'
+import { Translation, TranslationAuthor, TranslationStatus } from '@/models/Translation'
 import { URL } from 'url'
 import SortedArray from '@/helpers/sorted-array'
 import {
@@ -20,8 +20,7 @@ import { MediaType } from '@/types/media'
 import { ApiError } from '@/types/errors'
 
 export class TranslationService {
-    async getTranslations<T extends GetTranslationsParameters> (params: GetTranslationsParameters):
-        Promise<T extends { raw: any } ? Translation[] : TranslationQueryResult> {
+    async getTranslations (params: GetTranslationsParameters): Promise<any> {
         params = dropUndefined(params)
 
         if (Array.isArray(params.target_id)) {
@@ -30,7 +29,7 @@ export class TranslationService {
 
         let opts = {
             status: 'added',
-            ...strip({ ...params }, ['raw', 'external', 'needUploader', 'renameAsAnime'], true)
+            ...strip({ ...params }, ['raw', 'external', 'needUploader', 'renameAsAnime', 'fullAuthor'], true)
         } as any
 
 
@@ -67,14 +66,21 @@ export class TranslationService {
 
                     i.episode = i.part
                     i.part = undefined
-                    i.quality = i.hq ? 'bd' : 'tv'
+                    i.quality = 'tv'
 
                     return i
                 }) as any
             }
 
+            if (!('fullAuthor' in params)) {
+                items = items.map((it) => {
+                    (it as any).author = this.authorToString(it.author)
+                    return it
+                })
+            }
+
             if (params.external !== TranslationQueryExternalType.Protocol) {
-                items = items.map((i) => this.normalizeTranslationUrl(i))
+                items = items.map((i) => this.normalizeTranslationUrl(i, params.external))
             }
 
             return items as any
@@ -82,14 +88,92 @@ export class TranslationService {
             if (params.renameAsAnime) {
                 // compat with anime api v1/v2
                 items = items.map((i: AnyKV) => {
-                    i.quality = i.hq ? 'bd' : 'tv'
-
+                    i.quality = 'tv'
                     return i
                 }) as any
             }
 
-            return this.processTranslations(items, params.external) as any
+            return this.processTranslations(items, params)
         }
+    }
+
+    processTranslations (
+        translations: Translation[],
+        params: GetTranslationsParameters
+    ): TranslationQueryResult {
+        const ret: TranslationQueryResult = {}
+
+        const peopleCombiner: Record<number, Record<string, string[]>> = {}
+        const authorsIndex: Record<number, Record<string, TranslationQueryAuthor>> = {}
+
+        translations.forEach((tr) => {
+            const playerHost = this.getPlayerHost(tr.url)
+            this.normalizeTranslationUrl(tr, params.external)
+
+            const hasGroup = !!tr.author.group
+            let people: string[] = tr.author.people || []
+            if (hasGroup) {
+                if (!(tr.part in peopleCombiner)) peopleCombiner[tr.part] = {}
+                if (!(tr.author.group! in peopleCombiner[tr.part])) peopleCombiner[tr.part][tr.author.group!] = []
+                tr.author.people!.forEach((it) => {
+                    if (peopleCombiner[tr.part][tr.author.group!].indexOf(it) === -1) {
+                        peopleCombiner[tr.part][tr.author.group!].push(it)
+                    }
+                })
+
+                people = peopleCombiner[tr.part][tr.author.group!]
+            }
+
+            const authorName = tr.author.group || tr.author.people?.join(', ') || ''
+            const metaTag = `${tr.kind}:${tr.lang}:${authorName}`
+
+            // add part to ret if needed
+            if (!(tr.part in ret)) {
+                ret[tr.part] = {
+                    players: [],
+                    authors: []
+                }
+            }
+
+            // ref to current part
+            const part = ret[tr.part]
+            if (!part.players.includes(playerHost)) {
+                part.players.push(playerHost)
+            }
+
+            if (!(tr.part in authorsIndex)) authorsIndex[tr.part] = {}
+            if (!(metaTag in authorsIndex[tr.part])) {
+                const author: TranslationQueryAuthor = {
+                    kind: tr.kind,
+                    lang: tr.lang,
+                    translations: [],
+                    name: authorName
+                }
+                if (tr.author.people) author.people = people
+
+                // adding in index
+                authorsIndex[tr.part][metaTag] = author
+                // adding in ret
+                part.authors.push(author)
+            }
+
+            // adding translation in ret.
+            let item: any = {
+                id: tr.id,
+                name: playerHost,
+                url: tr.url,
+                uploader: tr.uploader
+            }
+            if ('quality' in tr) {
+                item.quality = (tr as any).quality
+            }
+            if (tr.author.ripper) {
+                item.ripper = tr.author.ripper
+            }
+            authorsIndex[tr.part][metaTag].translations.push(item)
+        })
+
+        return ret
     }
 
     async getAvailableParts (targetId: number, targetType: MediaType): Promise<number[]> {
@@ -209,94 +293,6 @@ export class TranslationService {
         if (duplicateId) ApiError.e(`TRANSLATION_DUPLICATE_${duplicateId}`, `Given translation seems to be a duplicate of ${duplicateId}`)
     }
 
-    processTranslations (translations: Translation[], returnUrlType?: TranslationQueryExternalType): TranslationQueryResult {
-        const ret: TranslationQueryResult = {}
-        const index: Record<string, TranslationQueryAuthor> = {}
-
-        // tags registry is a place where all tags are stored as a SortedArray for faster lookup
-        // strings are compared by first N chars of in-array item, where N is length of requested item
-        const tagsRegistry = new SortedArray<string>([], (a, b) => {
-            if (a === b) return 0
-            if (a.length === b.length) return a > b ? 1 : -1
-            const substr = b.substr(0, a.length)
-            if (a === substr) return 0
-            return a > substr ? 1 : -1
-        })
-
-        translations.forEach((tr) => {
-            const playerHost = this.getPlayerHost(tr.url)
-            const optName = this.optimizeName(tr.author)
-
-            this.normalizeTranslationUrl(tr, returnUrlType)
-
-            // creating internal meta tag. user-submitted info is always
-            // at the end, others params are sure not to have :,
-            // so collisions of any kind aren't possible
-            const metaTag = `${tr.part}:${tr.kind}:${tr.lang}:${optName}`
-
-            // adding tag to registry if needed
-            let tagIndex = tagsRegistry.index(metaTag)
-            if (tagIndex === -1) {
-                tagIndex = tagsRegistry.insert(metaTag)
-            }
-
-            // ensure current metaTag is longest
-            if (metaTag.length > tagsRegistry.raw[tagIndex].length) {
-                // first create a ref in index
-                index[metaTag] = index[tagsRegistry.raw[tagIndex]]
-
-                // then replace shorter boi with longer one.
-                // sort order should not change since our tag
-                // starts exactly as tag in sorted array
-                tagsRegistry.raw[tagIndex] = metaTag
-            }
-            const fullTag = tagsRegistry.raw[tagIndex]
-
-            // add part to ret if needed
-            if (!(tr.part in ret)) {
-                ret[tr.part] = {
-                    players: [],
-                    authors: []
-                }
-            }
-
-            // ref to current episode
-            const ep = ret[tr.part]
-            if (!ep.players.includes(playerHost)) {
-                ep.players.push(playerHost)
-            }
-
-            // adding author if needed
-            if (!(fullTag in index)) {
-                const author: TranslationQueryAuthor = {
-                    kind: tr.kind,
-                    lang: tr.lang,
-                    name: tr.author,
-                    translations: []
-                }
-
-                // adding in index
-                index[fullTag] = author
-                // adding in ret
-                ep.authors.push(author)
-            }
-
-            // adding translation in ret.
-            let item = {
-                id: tr.id,
-                name: playerHost,
-                url: tr.url,
-                uploader: tr.uploader
-            }
-            if ('quality' in tr) {
-                (item as any).quality = (tr as any).quality
-            }
-            index[fullTag].translations.push(item)
-        })
-
-        return ret
-    }
-
     getPlayerHost (url: string): string {
         try {
             return new URL(url).hostname
@@ -305,20 +301,43 @@ export class TranslationService {
         }
     }
 
-    optimizeName (name: string): string {
-        if (name === '') {
-            return 'unknown'
+    parseTranslationAuthor (author: string): TranslationAuthor {
+        if (!author) return {}
+        let match = author.match(/^(.+?)(?:\s+[[(](.+)[\])]|\s+на\s+.+)?$/) // holy fuck
+
+        if (!match) return {
+            group: author
         }
-        name = name.toLowerCase()
-            .match(/^(.+?)(?:\s+[[(].+[\])]|\s+на\s+.+)?$/)![1]  // magic, dont touch
-        if (name.indexOf(', ') !== -1 || name.indexOf(' & ') !== -1) {
-            name = name.split(/(?:, | & )/)
-                .sort()
-                .join(', ')
-            // if name is multiple names divided by comma or ampersand we sort them so the order does not matter
-            // i.e. FooSub (Eva & Bob) is same as FooSub (Bob & Eva)
+
+        let [, group, people] = match
+
+        if (group.match(/[,;]|\s[и&]\s/)) {
+            people = group
+            group = ''
         }
-        return name
+
+        return {
+            group,
+            people: people?.split(/[,;]|\s[и&]\s/gi).map(i => i.trim()) ?? []
+        }
+    }
+
+    authorToString (author: TranslationAuthor): string {
+        let ret = ''
+        if (author.group) {
+            ret = author.group
+            if (author.people?.length) {
+                ret += ` (${author.people.join(', ')})`
+            }
+        } else if (author.people?.length) {
+            ret = author.people.join(', ')
+        } else return ''
+
+        if (author.ripper) {
+            ret += ` [${author.ripper}]`
+        }
+
+        return ret
     }
 
     compatAdapter (result: TranslationQueryResult): TranslationQueryResultCompat {
@@ -332,7 +351,7 @@ export class TranslationService {
                     sources: result[i].players
                 }
                 result[i].authors.forEach((author) => {
-                    if (!(author.name in output[i].authors)) {
+                    if (!(author.name! in output[i].authors)) {
                         output[i].authors[author.name] = []
                     }
                     output[i].authors[author.name].push(...author.translations.map((i) => {

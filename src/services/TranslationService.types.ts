@@ -1,5 +1,5 @@
 import { User } from '@/models/User'
-import { Translation, TranslationKind, TranslationLanguage } from '@/models/Translation'
+import { Translation, TranslationAuthor, TranslationKind, TranslationLanguage } from '@/models/Translation'
 import { IsNumeric } from '@/helpers/validators'
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator'
 import { FindOperator } from 'typeorm'
@@ -21,13 +21,15 @@ export interface TranslationQuerySingle {
     name: string
     url: string
     uploader: User | number | null
+    ripper: string // only when ?fullAuthor=true
 }
 
 export interface TranslationQueryAuthor {
     kind: TranslationKind
-    name: string
     lang: TranslationLanguage
     translations: TranslationQuerySingle[]
+    name: string
+    people?: string[] // only when ?fullAuthor=true
 }
 
 export enum TranslationQueryExternalType {
@@ -112,6 +114,13 @@ export class GetTranslationsParameters extends Paginated {
     @Expose()
     @IsOptional()
     needUploader?: boolean
+
+    @EntityField({
+        description: 'If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)'
+    })
+    @Expose()
+    @IsOptional()
+    fullAuthor?: boolean
 
     @EntityField({ private: true })
     @Expose()

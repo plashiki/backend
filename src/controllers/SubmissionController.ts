@@ -6,7 +6,7 @@ import { RequireLogin } from '@/decorators/auth-decorators'
 import { CaptchaProtected } from '@/helpers/recaptcha'
 import { IsNumeric } from '@/helpers/validators'
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator'
-import { TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
+import { TranslationAuthor, TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
 import normalizeUrl from 'normalize-url'
 import { ModerationService } from '@/services/ModerationService'
 import { ReportStatus, ReportType } from '@/models/Report'
@@ -17,7 +17,7 @@ import { StatisticsQueue, TLoggerQueue } from '@/data/queues'
 import { Endpoint, EntityConstructor } from '@/decorators/docs'
 import { Paginated, PaginatedSorted } from '@/types/api'
 import { MediaType } from '@/types/media'
-import { ApiError } from '@/types/errors'
+import { ApiError, ApiValidationError } from '@/types/errors'
 
 export class SubmitTranslationBody {
     @Expose()
@@ -41,8 +41,9 @@ export class SubmitTranslationBody {
     lang: TranslationLanguage
 
     @Expose()
-    @IsString()
-    author: string
+    @Type(() => TranslationAuthor)
+    @ValidateNested()
+    author: TranslationAuthor
 
     @Expose()
     @IsUrl({
@@ -119,6 +120,9 @@ export default class SubmissionController {
         @Body() body: SubmitTranslationBody,
         @Session() session: ISession
     ) {
+        // for some reason validator accepts undefined and arrays, idk why and i dont want to care
+        if (!body.author || Array.isArray(body.author)) ApiValidationError.e('author must be an object')
+
         const user = await this.userService.getUserById(session.userId!)
         if (!user) ApiError.e('USER_UNKNOWN')
 
@@ -342,6 +346,9 @@ export default class SubmissionController {
         @Body(PartialBody) body: SubmitTranslationBody,
         @Session() session: ISession
     ) {
+        // for some reason validator accepts arrays, idk why and i dont want to care
+        if (Array.isArray(body.author)) ApiValidationError.e('author must be an object')
+
         const user = await this.userService.getUserById(session.userId!)
         if (!user) ApiError.e('UNKNOWN_USER')
 

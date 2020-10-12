@@ -9,9 +9,42 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 import { User } from './User'
-import { IsUrl } from 'class-validator'
+import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator'
 import { MediaType } from '@/types/media'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+import { Expose } from 'class-transformer'
+
+
+@EntityConstructor({
+    description: 'Translation author'
+})
+export class TranslationAuthor {
+    @EntityField({
+        description: 'Translators group (like AniDUB, HorribleSubs or Wakanim)'
+    })
+    @Expose()
+    @IsOptional()
+    @IsString()
+    group?: string
+
+    @EntityField({
+        type: 'string[]',
+        description: 'People who translated/voiced'
+    })
+    @Expose()
+    @IsArray()
+    @IsString()
+    @IsOptional()
+    people?: string[]
+
+    @EntityField({
+        description: '(Optional) Name of rip author (like FortunaTV)'
+    })
+    @Expose()
+    @IsOptional()
+    @IsString()
+    ripper?: string
+}
 
 export enum TranslationKind {
     // for anime
@@ -103,12 +136,10 @@ export class Translation extends BaseEntity {
     lang: TranslationLanguage
 
     @EntityField({
-        description: 'Translation author. Can contain studio name (like <code>AniDUB</code>), author names (like <code>Anku, mutagenb</code>), '
-            + 'both (like <code>AniDUB (Anku, mutagenb)</code>) or basically anything else that can be used to describe an author. '
-            + 'There\'s no strict format. Edge case is an empty <code>author</code>, which should be interpreted as Unknown author.'
+        description: 'Translation author'
     })
-    @Column()
-    author: string
+    @Column('jsonb')
+    author: TranslationAuthor
 
     @EntityField({
         description: 'ID of user that added this translation. '

@@ -19,7 +19,7 @@ export const connectionOptions: ConnectionOptions = {
     migrations: [
         join(__dirname, '../migrations/*.{ts,js}')
     ],
-    logging: isProduction ? ['migration', 'warn', 'error'] : true,
+    logging: /* isProduction */ true ? ['migration', 'warn', 'error'] : true,
     namingStrategy: new TheNamingStrategy()
 }
 
