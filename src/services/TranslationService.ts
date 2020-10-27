@@ -115,7 +115,7 @@ export class TranslationService {
             if (hasGroup) {
                 if (!(tr.part in peopleCombiner)) peopleCombiner[tr.part] = {}
                 if (!(tr.author.group! in peopleCombiner[tr.part])) peopleCombiner[tr.part][tr.author.group!] = []
-                tr.author.people!.forEach((it) => {
+                tr.author.people?.forEach((it) => {
                     if (peopleCombiner[tr.part][tr.author.group!].indexOf(it) === -1) {
                         peopleCombiner[tr.part][tr.author.group!].push(it)
                     }
