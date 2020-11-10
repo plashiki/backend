@@ -33,7 +33,7 @@ export class TranslationAuthor {
     })
     @Expose()
     @IsArray()
-    @IsString()
+    @IsString({ each: true })
     @IsOptional()
     people?: string[]
 
