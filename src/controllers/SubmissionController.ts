@@ -6,7 +6,13 @@ import { RequireLogin } from '@/decorators/auth-decorators'
 import { CaptchaProtected } from '@/helpers/recaptcha'
 import { IsNumeric } from '@/helpers/validators'
 import { IsBoolean, IsEnum, IsOptional, IsString, IsUrl, MaxLength, ValidateNested } from 'class-validator'
-import { TranslationAuthor, TranslationKind, TranslationLanguage, TranslationStatus } from '@/models/Translation'
+import {
+    Translation,
+    TranslationAuthor,
+    TranslationKind,
+    TranslationLanguage,
+    TranslationStatus,
+} from '@/models/Translation'
 import normalizeUrl from 'normalize-url'
 import { ModerationService } from '@/services/ModerationService'
 import { ReportStatus, ReportType } from '@/models/Report'
@@ -56,6 +62,10 @@ export class SubmitTranslationBody {
     description: 'Request body for New report'
 })
 export class SubmitReportBody {
+    @Expose()
+    @IsBoolean()
+    is_complex: boolean
+
     @Expose()
     @IsNumeric()
     translation_id: number
@@ -239,8 +249,11 @@ export default class SubmissionController {
 
         if (user.banned) ApiError.e('BANNED', 'You are not allowed to submit reports.')
 
-        const tran = await this.translationService.getSingleTranslation(body.translation_id)
-        if (!tran) ApiError.e('NOT_FOUND', 'Translation does not exist')
+        let tran: Translation | undefined = undefined
+        if (!body.is_complex) {
+            tran = await this.translationService.getSingleTranslation(body.translation_id)
+            if (!tran) ApiError.e('NOT_FOUND', 'Translation does not exist')
+        }
 
         // prevent abuse :p
         if (body.comment === 'AUTO_REPORT_DESCRIPTION') {
@@ -253,10 +266,11 @@ export default class SubmissionController {
             comment: body.comment,
             status: user.moderator && body.edit ? ReportStatus.Resolved : ReportStatus.Pending,
             edit: body.edit,
-            translation_id: body.translation_id
+            translation_id: body.translation_id,
+            is_complex: body.is_complex
         })
 
-        if (user.moderator && body.edit) {
+        if (tran && user.moderator && body.edit) {
             merge(tran, body.edit)
             await tran.save()
         } else {

@@ -125,21 +125,22 @@ export class ModerationService {
             moderator: true
         })
 
-        Notification.create({
-            for_users: targets,
-            tag: `mod-rp:${report.id}`,
-            payload: {
-                type: 'push',
-                title: 'MOD_NEW_REP',
-                body: 'MOD_NEW_REP_BODY',
-                url: '$domain/moderation',
-                format: {
-                    id: report.translation_id,
-                    type: report.type,
-                    sender: sender.nickname
-                }
-            } as any
-        }).send()
+
+        // Notification.create({
+        //     for_users: targets,
+        //     tag: `mod-rp:${report.id}`,
+        //     payload: {
+        //         type: 'push',
+        //         title: 'MOD_NEW_REP',
+        //         body: 'MOD_NEW_REP_BODY',
+        //         url: '$domain/moderation',
+        //         format: {
+        //             id: report.translation_id,
+        //             type: report.type,
+        //             sender: sender.nickname
+        //         }
+        //     } as any
+        // }).send()
 
     }
 

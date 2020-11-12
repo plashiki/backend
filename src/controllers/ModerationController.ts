@@ -4,7 +4,7 @@ import { ISession } from '@/middlewares/01_session'
 import { SubmitTranslationBody } from '@/controllers/SubmissionController'
 import { ModerationService } from '@/services/ModerationService'
 import { TranslationService } from '@/services/TranslationService'
-import { TranslationStatus } from '@/models/Translation'
+import { Translation, TranslationStatus } from '@/models/Translation'
 import { merge, strip } from '@/helpers/object-utils'
 import { ReportStatus } from '@/models/Report'
 import { StatisticsQueue, TLoggerQueue } from '@/data/queues'
@@ -225,44 +225,51 @@ export default class ModerationController {
 
         // we dont auto-fix urls coz i trust moderators more than script
 
-        const translation = await this.translationService.getSingleTranslation(report.translation_id, { full: true })
-        if (!translation) {
-            // edge case, when translation was somehow else removed but report is still open.
-            report.status = ReportStatus.Resolved
-            await report.save()
-            return true
+        let translation: Translation | undefined = undefined
+        if (!report.is_complex) {
+            translation = await this.translationService.getSingleTranslation(report.translation_id, { full: true })
+            if (!translation) {
+                // edge case, when translation was somehow else removed but report is still open.
+                report.status = ReportStatus.Resolved
+                await report.save()
+                return true
+            }
         }
 
         if (action === 'resolve') {
             // check for duplicates if url changed
-            if (body.url) {
-                await this.translationService.assertNoDuplicates(body.url)
+            if (!report.is_complex) {
+                if (body.url) {
+                    await this.translationService.assertNoDuplicates(body.url)
+                }
+
+                TLoggerQueue.add('update', {
+                    translation: { ...translation },
+                    issuerId: session.userId,
+                    reason: 'репорт ' + reportId,
+                    diff: body
+                })
+
+                merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
+
+                await translation!.save()
             }
-
-            TLoggerQueue.add('update', {
-                translation: { ...translation },
-                issuerId: session.userId,
-                reason: 'репорт ' + reportId,
-                diff: body
-            })
-
-            merge(translation as any, body, ['id', 'uploader_id', 'status'], false, true)
-
-            await translation.save()
 
             report.status = ReportStatus.Resolved
         } else if (action === 'delete') {
-            TLoggerQueue.add('delete', {
-                translation,
-                issuerId: session.userId,
-                reason: 'репорт ' + reportId
-            })
+            if (!report.is_complex) {
+                TLoggerQueue.add('delete', {
+                    translation,
+                    issuerId: session.userId,
+                    reason: 'репорт ' + reportId
+                })
 
-            StatisticsQueue.add('stat-event', {
-                name: `rep-proc:${session.userId}`
-            })
+                StatisticsQueue.add('stat-event', {
+                    name: `rep-proc:${session.userId}`
+                })
 
-            await translation.remove()
+                await translation!.remove()
+            }
             report.status = ReportStatus.Resolved
         } else {
             report.status = ReportStatus.Discarded

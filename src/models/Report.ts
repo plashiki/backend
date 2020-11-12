@@ -38,10 +38,17 @@ export class Report extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
-    // no relation here because well translation may get deleted
     @EntityField({
-        description: 'Translation ID which is reported. Translation with this ID '
-            + 'may not exist in case it was deleted after report was created. '
+        description: 'Whether this report is complex, meaning it affects more than one translation.'
+    })
+    @Column({
+        default: false
+    })
+    is_complex: boolean
+
+    @EntityField({
+        description: 'Report target ID. For <code>is_complex=true</code>, contains ID of a media (currently supports only anime). '
+            + 'For <code>is_complex=false</code>, contains ID of a translation.'
     })
     @Column()
     translation_id: number
