@@ -1,14 +1,15 @@
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 import { MediaType } from '@/types/media'
-import { Column, PrimaryGeneratedColumn, Entity, BaseEntity, Index } from 'typeorm'
+import { Column, PrimaryGeneratedColumn, Entity, Index } from 'typeorm'
 import { generateOnConflictStatement } from '@/helpers/utils'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @EntityConstructor({
     description: 'A single media part\'s information'
 })
 @Entity('media_parts')
 @Index(['media_type', 'media_id', 'number'], { unique: true })
-export default class MediaPart extends BaseEntity {
+export default class MediaPart extends TheEntity {
     static ON_CONFLICT = generateOnConflictStatement(['media_type', 'media_id', 'number'], ['title'])
 
     @EntityField({

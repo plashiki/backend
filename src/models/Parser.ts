@@ -1,7 +1,8 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, PrimaryColumn } from 'typeorm'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 import { Expose } from 'class-transformer'
 import { IsBoolean, IsString } from 'class-validator'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @EntityConstructor({
     description: 'Parser is a piece of JS code + meta information for some actions, whose method of handling may '
@@ -25,7 +26,7 @@ import { IsBoolean, IsString } from 'class-validator'
         + '<a href="//github.com/plashiki/plashiki-parsers">plashiki-parsers</a> repository.'
 })
 @Entity('parsers')
-export class Parser extends BaseEntity {
+export class Parser extends TheEntity {
     @Expose()
     @IsString()
     @EntityField({

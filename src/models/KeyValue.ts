@@ -2,15 +2,16 @@
 // idc honestly, i dont want to store all the shit like TIME OF LAST SYNC WITH SOME SERVICE FOR GUY XXX
 // in memory all the time but still want to have that data somewhere outside main User model.
 
-import { BaseEntity, Column, Entity, In, PrimaryColumn } from 'typeorm'
+import { Column, Entity, In, PrimaryColumn } from 'typeorm'
 import { EntityConstructor } from '@/decorators/docs'
 import { AnyKV } from '@/types/utils'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @EntityConstructor({
     private: true
 })
 @Entity()
-export class KeyValue extends BaseEntity {
+export class KeyValue extends TheEntity {
     @PrimaryColumn()
     key: string
 

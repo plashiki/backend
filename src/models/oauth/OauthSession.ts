@@ -1,9 +1,10 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
 import { OauthApp } from '@/models/oauth/OauthApp'
 import { User } from '@/models/User'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @Entity()
-export class OauthSession extends BaseEntity {
+export class OauthSession extends TheEntity {
     @PrimaryColumn()
     token: string
 

@@ -1,8 +1,9 @@
-import { BaseEntity, Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn } from 'typeorm'
+import { Brackets, Column, Entity, getConnection, PrimaryGeneratedColumn } from 'typeorm'
 import { merge } from '@/helpers/object-utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 import { ExternalServiceMappings, MediaType } from '@/types/media'
 import { ApiError } from '@/types/errors'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 
 function checkConflict (old: ExternalServiceMappings, item: ExternalServiceMappings): void {
@@ -18,7 +19,7 @@ function checkConflict (old: ExternalServiceMappings, item: ExternalServiceMappi
         + 'at <a href="https://plashiki.su/static/mappings.json.gz">https://plashiki.su/static/mappings.json.gz</a>'
 })
 @Entity('mappings')
-export default class Mapping extends BaseEntity {
+export default class Mapping extends TheEntity {
     @EntityField({
         description: 'Unique mapping ID'
     })

@@ -1,5 +1,4 @@
 import {
-    BaseEntity,
     Column,
     CreateDateColumn,
     Entity,
@@ -10,6 +9,7 @@ import {
 import { User } from './User'
 import { AnyKV } from '@/types/utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 
 export enum ReportType {
@@ -31,7 +31,7 @@ export enum ReportStatus {
     description: 'A single report.'
 })
 @Entity('reports')
-export class Report extends BaseEntity {
+export class Report extends TheEntity {
     @EntityField({
         description: 'Unique report ID'
     })

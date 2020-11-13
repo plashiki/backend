@@ -1,13 +1,14 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import { Column, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { PushService } from '@/services/PushService'
 import { AnyKV } from '@/types/utils'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @EntityConstructor({
     description: 'A single notification'
 })
 @Entity()
-export class Notification extends BaseEntity {
+export class Notification extends TheEntity {
     @EntityField({
         description: 'Unique notification ID'
     })

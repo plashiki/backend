@@ -1,5 +1,4 @@
 import {
-    BaseEntity,
     Column,
     CreateDateColumn,
     Entity,
@@ -13,6 +12,7 @@ import { IsArray, IsOptional, IsString, IsUrl } from 'class-validator'
 import { MediaType } from '@/types/media'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 import { Expose } from 'class-transformer'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 
 @EntityConstructor({
@@ -88,7 +88,7 @@ export enum TranslationStatus {
 })
 @Entity('translations')
 @Index(['target_type', 'target_id', 'part'])
-export class Translation extends BaseEntity {
+export class Translation extends TheEntity {
     @EntityField({
         description: 'Unique translation/submission ID.'
     })

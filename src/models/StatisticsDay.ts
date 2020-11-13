@@ -1,7 +1,8 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity, PrimaryColumn } from 'typeorm'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @Entity('stats')
-export class StatisticsDay extends BaseEntity {
+export class StatisticsDay extends TheEntity {
     @PrimaryColumn({
         type: 'date'
     })

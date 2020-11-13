@@ -1,7 +1,8 @@
-import { BaseEntity, Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {  Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from '@/models/User'
 import { ConnectableService } from '@/types/media'
 import { EntityConstructor } from '@/decorators/docs'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 export interface AuthOptions {
     token: string
@@ -13,7 +14,7 @@ export interface AuthOptions {
     private: true
 })
 @Entity()
-export class AuthData extends BaseEntity {
+export class AuthData extends TheEntity {
     @PrimaryGeneratedColumn()
     id: number
 

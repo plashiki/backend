@@ -1,13 +1,14 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
 import { IsEnum, IsUrl } from 'class-validator'
 import { EntityConstructor, EntityField } from '@/decorators/docs'
 import { ConnectableService } from '@/types/media'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @EntityConstructor({
     description: 'A single user'
 })
 @Entity('users')
-export class User extends BaseEntity {
+export class User extends TheEntity {
     @EntityField({
         description: 'User\'s ID'
     })

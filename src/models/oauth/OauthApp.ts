@@ -1,9 +1,10 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { User } from '@/models/User'
 import { EntityField } from '@/decorators/docs'
+import { TheEntity } from '@/helpers/typeorm-utils'
 
 @Entity()
-export class OauthApp extends BaseEntity {
+export class OauthApp extends TheEntity {
     @EntityField({
         description: 'Application ID'
     })
