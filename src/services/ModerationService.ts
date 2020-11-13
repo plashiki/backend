@@ -83,10 +83,11 @@ export class ModerationService {
             .getManyPaginated()
     }
 
-    async getRecentReports (pagination: PaginatedSorted): Promise<PaginatedResponse<Report>> {
+    async getRecentReports (complex: boolean | undefined, pagination: PaginatedSorted): Promise<PaginatedResponse<Report>> {
         return Report.createQueryBuilder('r')
-            .leftJoinAndSelect('r.sender', 'u')
+            .leftJoin('r.sender', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
+            .where(complex === undefined ? {} : { is_complex: complex } )
             .paginate(pagination, 50)
             .sort(pagination, (b) => b
                 .orderBy('status<>\'pending\'', 'ASC')

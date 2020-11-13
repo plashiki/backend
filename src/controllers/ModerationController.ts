@@ -53,6 +53,11 @@ export default class ModerationController {
                 type: 'boolean',
                 description: 'Whether to return all submissions/reports and not only most recent (will remove '
                     + 'date filtering, does not affect pagination)'
+            },
+            complex: {
+                type: 'boolean',
+                description: 'If passed, will only return complex (if true) or non-complex (if false) reports. '
+                    + 'If omitted, all reports are returned. Only used when <code>:type=reports</code>'
             }
         },
         returns: {
@@ -64,12 +69,13 @@ export default class ModerationController {
     async getRecentSubmissionsOrReports (
         @Param('type') type: 'submissions' | 'reports',
         @QueryParams() params: PaginatedSorted,
-        @QueryParam('all') all: boolean
+        @QueryParam('all') all: boolean,
+        @QueryParam('complex') complex?: boolean
     ) {
         if (type === 'submissions') {
             return this.moderationService.getSubmissions(params, !all)
         } else {
-            return this.moderationService.getRecentReports(params)
+            return this.moderationService.getRecentReports(complex, params)
         }
     }
 
