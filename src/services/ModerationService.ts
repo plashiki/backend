@@ -10,6 +10,7 @@ import { KeyValue } from '@/models/KeyValue'
 import { StatisticsDay } from '@/models/StatisticsDay'
 import { resolveMeta, PlayerMeta } from '@/helpers/meta-resolvers'
 import { Paginated, PaginatedResponse, PaginatedSorted } from '@/types/api'
+import { ApiError } from '@/types/errors'
 
 export class ModerationService {
     async fixCommonUrlMistakes (url: string): Promise<string> {
@@ -147,6 +148,18 @@ export class ModerationService {
 
     createReport (params: Partial<Report>): Promise<Report> {
         return Report.create(params).save()
+    }
+
+    async makeReportComplex (report: Report): Promise<void> {
+        if (report.is_complex) ApiError.e('ALREADY_COMPLEX')
+
+        const translation = await Translation.findOne({ id: report.translation_id })
+        if (!translation) ApiError.e('TR_NOT_FOUND')
+
+        report.translation_id = translation.target_id
+        report.is_complex = true
+
+        await report.save()
     }
 
     getUserSubmissions (userId: number, pagination: PaginatedSorted): Promise<PaginatedResponse<Translation>> {

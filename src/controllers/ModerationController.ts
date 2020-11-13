@@ -293,6 +293,40 @@ export default class ModerationController {
     }
 
     @Endpoint({
+        name: 'Make report complex',
+        description: 'Make a report complex. Note that this action is irreversible!',
+        params: {
+            id: {
+                type: 'number',
+                description: 'Report ID'
+            }
+        },
+        throws: [
+            {
+                type: 'NOT_FOUND',
+                description: 'Report was not found'
+            },
+            {
+                type: 'TR_NOT_FOUND',
+                description: 'Report is bound to a translation which does not exist'
+            },
+            {
+                type: 'ALREADY_COMPLEX',
+                description: 'Report is already complex'
+            }
+        ]
+    })
+    @Get('/reports/:id(\\d+)/makeComplex')
+    async makeReportComplex (
+        @Param('id') reportId: number,
+    ) {
+        let report = await this.moderationService.getSingleReport(reportId)
+        if (!report) ApiError.e('NOT_FOUND')
+
+        await this.moderationService.makeReportComplex(report)
+    }
+
+    @Endpoint({
         name: 'Batch update translations',
         description: 'Update multiple translations\' fields at once. '
             + 'Note that URLs and groups can\'t be changed here. '
