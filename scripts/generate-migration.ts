@@ -45,9 +45,9 @@ async function main (): Promise<void> {
     }
 
     // removing set default because it finds them mistakingly, see https://github.com/typeorm/typeorm/issues/3076
-    // however this means that
-    const ups = sql.upQueries.map(prepare).filter(i => !i.match(/ALTER TABLE ".+" ALTER COLUMN ".+" (SET|DROP) DEFAULT/i))
-    const downs = sql.downQueries.map(prepare).filter(i => !i.match(/ALTER TABLE ".+" ALTER COLUMN ".+" (SET|DROP) DEFAULT/i))
+    // and comment on column because who the fuck cares about comments in database
+    const ups = sql.upQueries.map(prepare).filter(i => !i.match(/ALTER TABLE ".+" ALTER COLUMN ".+" (SET|DROP) DEFAULT|COMMENT ON COLUMN/i))
+    const downs = sql.downQueries.map(prepare).filter(i => !i.match(/ALTER TABLE ".+" ALTER COLUMN ".+" (SET|DROP) DEFAULT|COMMENT ON COLUMN/i))
 
     const now = Date.now()
 
