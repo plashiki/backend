@@ -281,6 +281,8 @@ export default class ModerationController {
             report.status = ReportStatus.Discarded
         }
 
+        report.closed_by_id = session.userId!
+
         StatisticsQueue.add('stat-event', {
             name: `tr-rem:user-${session.userId}`
         })

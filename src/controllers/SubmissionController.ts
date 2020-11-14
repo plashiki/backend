@@ -493,6 +493,7 @@ export default class SubmissionController {
             ApiError.e('ACCESS_DENIED')
         }
 
+        report.closed_by_id = null
         report.status = ReportStatus.Pending
 
         await report.save()

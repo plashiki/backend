@@ -82,6 +82,15 @@ export class Report extends TheEntity {
     @ManyToOne(() => User, user => user.id)
     sender: User
 
+    @EntityField({
+        description: 'User who closed the report. Only available for closed reports, for others is null.',
+    })
+    @ManyToOne(() => User, user => user.id, {
+        nullable: true
+    })
+    closed_by: User
+    closed_by_id: number | null
+
     @Column({
         type: 'enum',
         enum: ReportStatus

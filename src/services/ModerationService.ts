@@ -88,6 +88,8 @@ export class ModerationService {
         return Report.createQueryBuilder('r')
             .leftJoin('r.sender', 'u')
             .addSelect(['u.id', 'u.nickname', 'u.avatar'])
+            .leftJoin('r.closed_by', 'cl')
+            .addSelect(['cl.id', 'cl.avatar', 'cl.nickname'])
             .where(complex === undefined ? {} : { is_complex: complex } )
             .paginate(pagination, 50)
             .sort(pagination, (b) => b
@@ -178,6 +180,8 @@ export class ModerationService {
             .where({
                 sender_id: userId
             })
+            .leftJoin('rp.closed_by', 'cl')
+            .addSelect(['cl.id', 'cl.avatar', 'cl.nickname'])
             .paginate(pagination, 50)
             .orderBy('rp.id', 'DESC')
             .getManyPaginated()
