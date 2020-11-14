@@ -314,7 +314,10 @@ export default class ModerationController {
                 type: 'ALREADY_COMPLEX',
                 description: 'Report is already complex'
             }
-        ]
+        ],
+        returns: {
+            type: '"OK"'
+        }
     })
     @Get('/reports/:id(\\d+)/makeComplex')
     async makeReportComplex (
@@ -324,6 +327,8 @@ export default class ModerationController {
         if (!report) ApiError.e('NOT_FOUND')
 
         await this.moderationService.makeReportComplex(report)
+
+        return "OK"
     }
 
     @Endpoint({
