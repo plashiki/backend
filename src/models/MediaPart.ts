@@ -46,7 +46,7 @@ export default class MediaPart extends TheEntity {
     title: string
 
     static async add (part: Partial<MediaPart>, update = false): Promise<void> {
-        await this.createQueryBuilder()
+        await this.createQueryBuilder('m')
             .insert()
             .values(part)
             .onConflict(update ? this.ON_CONFLICT : 'do nothing')

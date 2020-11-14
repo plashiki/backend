@@ -266,7 +266,7 @@ export class ParsersService {
         }))
 
         for (let chunk of chunks(allParsers, 1000)) {
-            await Parser.createQueryBuilder()
+            await Parser.createQueryBuilder('p')
                 .insert()
                 .values(chunk)
                 .onConflict(conflictStatement)
@@ -299,7 +299,7 @@ export class ParsersService {
     }
 
     async toggleParsers (uids: string[], disabled: boolean): Promise<void> {
-        await Parser.createQueryBuilder()
+        await Parser.createQueryBuilder('p')
             .update()
             .set({ disabled })
             .where({ uid: In(uids) })

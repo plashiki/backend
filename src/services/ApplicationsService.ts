@@ -35,7 +35,7 @@ export class ApplicationsService {
     }
 
     getApplication (id: number, full = false): Promise<OauthApp | null> {
-        const builder = OauthApp.createQueryBuilder()
+        const builder = OauthApp.createQueryBuilder('a')
             .where({ id })
 
         if (full) {
@@ -70,7 +70,7 @@ export class ApplicationsService {
     }
 
     getApp (params: Partial<OauthApp>, full = false): Promise<OauthApp | undefined> {
-        const builder = OauthApp.createQueryBuilder().where(params)
+        const builder = OauthApp.createQueryBuilder('a').where(params)
 
         if (full) {
             builder.addSelectHidden()

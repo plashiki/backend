@@ -272,7 +272,7 @@ async function runMappers (only: string[]): Promise<void> {
 
     let monthAgo = Date.now() - 2592000000
     let almostMonthAgo = monthAgo + 604800000
-    let translations = await Translation.createQueryBuilder().where({
+    let translations = await Translation.createQueryBuilder('t').where({
         status: TranslationStatus.Mapping,
         updated_at: MoreThanOrEqual(new Date(monthAgo))
     }).addSelectHidden().getMany()

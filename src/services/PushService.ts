@@ -111,7 +111,7 @@ export class PushService {
     }
 
     async getFullNotification (id: number): Promise<Notification | undefined> {
-        return Notification.createQueryBuilder()
+        return Notification.createQueryBuilder('n')
             .addSelectHidden()
             .where({
                 id
@@ -245,7 +245,7 @@ export class PushService {
 
     async addFirebaseToken (token: string, userId: number): Promise<void> {
         FirebaseToken
-            .createQueryBuilder()
+            .createQueryBuilder('fb')
             .insert()
             .values({
                 token,
@@ -257,7 +257,7 @@ export class PushService {
 
     async removeFirebaseToken (token: string): Promise<void> {
         FirebaseToken
-            .createQueryBuilder()
+            .createQueryBuilder('fb')
             .delete()
             .where({
                 token

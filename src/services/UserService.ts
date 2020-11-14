@@ -8,8 +8,8 @@ import { ConnectableService } from '@/types/media'
 
 export class UserService {
     async assertNewUser (nickname: string): Promise<void> {
-        const builder = User.createQueryBuilder()
-            .where('nickname = :nickname', { nickname })
+        const builder = User.createQueryBuilder('u')
+            .where({ nickname })
         return builder.getCount()
             .then(cnt => {
                 if (cnt > 0) {
@@ -27,7 +27,7 @@ export class UserService {
     }
 
     async getUserAddedCount (id: number): Promise<number> {
-        return Translation.createQueryBuilder()
+        return Translation.createQueryBuilder('u')
             .where({
                 uploader_id: id,
                 status: TranslationStatus.Added
@@ -101,7 +101,7 @@ export class UserService {
     }
 
     async getUsersList (pagination: PaginatedSorted): Promise<PaginatedResponse<User>> {
-        return User.createQueryBuilder()
+        return User.createQueryBuilder('u')
             .paginate(pagination, 50)
             .sort(pagination, (b) => b.orderBy('id'))
             .getManyPaginated()

@@ -180,7 +180,7 @@ export class TheEntity extends BaseEntity {
         )
     }
 
-    static createQueryBuilder <T extends TheEntity>(this: ObjectType<T>, alias?: string): TheSelectQueryBuilder<T> {
+    static createQueryBuilder <T extends TheEntity>(this: ObjectType<T>, alias: string): TheSelectQueryBuilder<T> {
         let connection = getConnection()
         if (alias) {
             const metadata = connection.getMetadata(this)
@@ -189,7 +189,7 @@ export class TheEntity extends BaseEntity {
                 .from(metadata.target, alias) as any
 
         } else {
-            return new SelectQueryBuilder(connection, (this as any).getRepository().queryRunner) as any
+            throw new Error('alias must be supplied for createQueryBuilder')
         }
     }
 }

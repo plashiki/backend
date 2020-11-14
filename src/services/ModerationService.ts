@@ -198,7 +198,7 @@ export class ModerationService {
     }
 
     deleteTranslationsInGroup (groups: string[]): Promise<DeleteResult> {
-        return Translation.createQueryBuilder()
+        return Translation.createQueryBuilder('t')
             .delete()
             .where('groups && :groups', { groups })
             .execute()
@@ -232,12 +232,12 @@ export class ModerationService {
     }
 
     async getModerationStatistics (userId: number): Promise<Record<string, number>> {
-        let d = await StatisticsDay.createQueryBuilder()
-            .where('data->>(\'moder-accept:\' || :id) is not null', { id: userId })
-            .orWhere('data->>(\'moder-decline:\' || $1) is not null')
-            .orWhere('data->>(\'rep-proc:\' || $1) is not null')
-            .orWhere('data->>(\'tr-rem:user-\' || $1) is not null')
-            .orWhere('data->>(\'tr-edit:\' || $1) is not null')
+        let d = await StatisticsDay.createQueryBuilder('s')
+            .where('s.data->>(\'moder-accept:\' || :id) is not null', { id: userId })
+            .orWhere('s.data->>(\'moder-decline:\' || $1) is not null')
+            .orWhere('s.data->>(\'rep-proc:\' || $1) is not null')
+            .orWhere('s.data->>(\'tr-rem:user-\' || $1) is not null')
+            .orWhere('s.data->>(\'tr-edit:\' || $1) is not null')
             .getMany()
         let ret = {
             accepted: 0,

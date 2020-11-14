@@ -95,7 +95,7 @@ export default class Mapping extends TheEntity {
     }
 
     static async findFull (type: MediaType, mapping: ExternalServiceMappings): Promise<Mapping | null> {
-        return this.createQueryBuilder()
+        return this.createQueryBuilder('m')
             .where({
                 type
             })

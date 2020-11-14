@@ -5,9 +5,9 @@ export class StatisticsService {
         from.setHours(0, 0, 0, 0)
         to.setHours(0, 0, 0, 0)
 
-        return StatisticsDay.createQueryBuilder()
-            .where('day >= :from', { from })
-            .andWhere('day <= :to', { to })
+        return StatisticsDay.createQueryBuilder('s')
+            .where('s.day >= :from', { from })
+            .andWhere('s.day <= :to', { to })
             .getMany()
     }
 }

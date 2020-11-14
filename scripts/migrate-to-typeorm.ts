@@ -67,7 +67,7 @@ async function main (): Promise<void> {
     log('Inserting users')
     let used_nicknames = new Set()
     let cacheT = Math.round(Date.now())
-    const insertedUsers = await User.createQueryBuilder().insert().values(users.rows.map((i) => {
+    const insertedUsers = await User.createQueryBuilder('u').insert().values(users.rows.map((i) => {
         delete i.id
 
 
@@ -164,7 +164,7 @@ async function main (): Promise<void> {
         tormItems.push(obj)
 
         if (tormItems.length >= chunkSize) {
-            await Translation.createQueryBuilder()
+            await Translation.createQueryBuilder('t')
                 .insert()
                 .values(tormItems)
                 .onConflict('(url) do nothing')
@@ -178,7 +178,7 @@ async function main (): Promise<void> {
     }
 
     if (tormItems.length >= 0) {
-        await Translation.createQueryBuilder()
+        await Translation.createQueryBuilder('t')
             .insert()
             .values(tormItems)
             .onConflict('(url) do nothing')
@@ -193,7 +193,7 @@ async function main (): Promise<void> {
     const stats = await pool.query('select * from stats')
 
     log('Inserting stats')
-    await StatisticsDay.createQueryBuilder().insert().values(stats.rows.map((i) => {
+    await StatisticsDay.createQueryBuilder('s').insert().values(stats.rows.map((i) => {
         const ts = i.ts
         delete i.ts
         return {

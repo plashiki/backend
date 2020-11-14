@@ -177,7 +177,7 @@ export class TranslationService {
     }
 
     async getAvailableParts (targetId: number, targetType: MediaType): Promise<number[]> {
-        const builder = Translation.createQueryBuilder()
+        const builder = Translation.createQueryBuilder('t')
             .distinctOn(['part'])
             .where({
                 target_id: targetId,
