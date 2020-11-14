@@ -3,7 +3,7 @@ import { Translation } from '@/models/Translation'
 import { Notification } from '@/models/Notification'
 import { MediaType } from '@/types/media'
 
-new Worker('TranslationNotifier', async ({ name, data }) => {
+const worker = new Worker('TranslationNotifier', async ({ name, data }) => {
     if (name === 'notify-new') {
         const { translation } = data
         let in_part, same_meta
@@ -46,3 +46,4 @@ new Worker('TranslationNotifier', async ({ name, data }) => {
         }
     }
 })
+worker.on('error', console.error)

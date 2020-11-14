@@ -14,7 +14,7 @@ import { User } from '@/models/User'
 
 const shikimoriApi = ShikimoriApi.instance
 
-new Worker('FirebaseNotifier', async ({ name, data }) => {
+const worker = new Worker('FirebaseNotifier', async ({ name, data }) => {
     if (name === 'del-tag') {
         await PushService.instance.deleteNotificationsWithTag(data.tag)
         return
@@ -144,3 +144,5 @@ new Worker('FirebaseNotifier', async ({ name, data }) => {
         })
     }
 })
+
+worker.on('error', console.error)

@@ -24,7 +24,7 @@
     },
     "dependencies": {
         "@teidesu/anitomy-js": "^4.1.2",
-        "bullmq": "^1.8.4",
+        "bullmq": "^1.10.0",
         "cheerio": "^1.0.0-rc.3",
         "class-transformer": "^0.3.1",
         "class-validator": "https://registry.npmjs.org/@teidesu/class-validator/-/class-validator-0.11.0.tgz#a5ed62a15206b9d9972f636f437211a45b8fbc09",

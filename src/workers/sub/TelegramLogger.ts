@@ -5,7 +5,7 @@ import { UserService } from '@/services/UserService'
 
 const userService = new UserService()
 
-new Worker('TLogger', async ({ name, data }) => {
+const worker = new Worker('TLogger', async ({ name, data }) => {
     if (name === 'delete') {
         const { reason, issuerId, translation } = data
 
@@ -63,3 +63,4 @@ new Worker('TLogger', async ({ name, data }) => {
         }
     }
 })
+worker.on('error', console.error)

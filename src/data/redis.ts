@@ -1,6 +1,7 @@
 import IORedis from 'ioredis'
 
 const redis = new IORedis()
+redis.on('error', console.error)
 
 export default redis
 
