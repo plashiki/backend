@@ -450,6 +450,57 @@ export default class SubmissionController {
     }
 
     @Endpoint({
+        name: 'Re-open a report',
+        description: 'Re-open a report marked as resolved or discarded',
+        returns: {
+            type: '"OK"'
+        },
+        throws: [
+            {
+                type: 'NOT_FOUND',
+                description: 'Report was not found'
+            },
+            {
+                type: 'NOT_CLOSED',
+                description: 'Report is not closed yet, can\'t re-open'
+            },
+            {
+                type: 'ACCESS_DENIED',
+                description: 'You can only re-open own reports (except for moderators)'
+            },
+            {
+                type: 'BANNED',
+                description: 'You are banned and can not re-open reports'
+            }
+        ]
+    })
+    @Get('/reports/:id(\\d+)/reopen')
+    async reopenReport (
+        @Param('id') reportId: number,
+        @Session() session: ISession
+    ) {
+        const report = await this.moderationService.getSingleReport(reportId)
+        if (!report) ApiError.e('NOT_FOUND', 'Report was not found')
+
+        let user = await this.userService.getUserById(session.userId!)
+        if (!user) ApiError.e('INVALID_SESSION')
+
+        if (user.banned)
+            ApiError.e('BANNED')
+        if (report.status === ReportStatus.Pending)
+            ApiError.e('NOT_CLOSED')
+        if (report.sender_id !== session.userId! && !user.moderator) {
+            ApiError.e('ACCESS_DENIED')
+        }
+
+        report.status = ReportStatus.Pending
+
+        await report.save()
+
+        return 'OK'
+    }
+
+    @Endpoint({
         name: 'Delete a submission',
         description: 'Delete sent submission. Will result in error if submission is already processed and user is not a moderator.',
         params: {
