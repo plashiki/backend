@@ -89,6 +89,7 @@ export class Report extends TheEntity {
         nullable: true
     })
     closed_by: User
+    @Column()
     closed_by_id: number | null
 
     @Column({
