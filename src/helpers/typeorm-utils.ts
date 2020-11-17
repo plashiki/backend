@@ -88,6 +88,36 @@ export class TheSelectQueryBuilder<T> extends SelectQueryBuilder<T> {
         return this
     }
 
+    // shitty workaround for https://github.com/typeorm/typeorm/issues/296
+    // it is actually very bad but idc lol
+    // utility function to addSelect a column that does not exist in model
+    addSelectAndMap (query: string, columnName: string, type: string): this {
+        this.addSelect([`${query} as ${this.expressionMap.mainAlias!.name}_${columnName}`])
+        const metadata = (this.expressionMap.mainAlias as any)._metadata
+        if (!metadata.target._customMappedColumns) {
+            metadata.target._customMappedColumns = {}
+        }
+        if (!(columnName in metadata.target._customMappedColumns)) {
+            metadata.target._customMappedColumns[columnName] = true
+            metadata.columns.push({
+                ...metadata.columns[metadata.columns.length - 1],
+                type,
+                isSelect: false,
+                propertyName: columnName,
+                propertyPath: columnName,
+                propertyAliasName: columnName,
+                databaseName: columnName,
+                databasePath: columnName,
+                databaseNameWithoutPrefixes: columnName,
+                setEntityValue (obj, value) {
+                    obj[columnName] = value
+                }
+            })
+        }
+
+        return this
+    }
+
     sort (
         p: PaginatedSorted,
         defaultSort?: (c: SelectQueryBuilder<T>) => void,
