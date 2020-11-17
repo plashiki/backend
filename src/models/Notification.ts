@@ -53,6 +53,24 @@ export class Notification extends TheEntity {
     for_users: number[]
 
     @EntityField({
+        description: 'Users who have seen the notification (internal)',
+        private: true
+    })
+    @Column({
+        nullable: true,
+        default: null,
+        type: 'int',
+        array: true,
+        select: false
+    })
+    users_seen: number[]
+
+    @EntityField({
+        description: 'Whether current user has seen this notification'
+    })
+    seen: boolean
+
+    @EntityField({
         description: 'Whether the notification should be displayed in UI as deleted.'
     })
     @Column({

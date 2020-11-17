@@ -227,6 +227,7 @@ export class PushService {
                 topics,
                 userId
             })
+            .addSelectAndMap(':userId = any(notif.users_seen)', 'seen', 'boolean')
             .orderBy('notif.time', 'DESC')
             .getMany()
     }
