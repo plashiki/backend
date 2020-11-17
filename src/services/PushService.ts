@@ -245,7 +245,7 @@ export class PushService {
     }
 
     async addFirebaseToken (token: string, userId: number): Promise<void> {
-        FirebaseToken
+        await FirebaseToken
             .createQueryBuilder('fb')
             .insert()
             .values({
@@ -257,11 +257,22 @@ export class PushService {
     }
 
     async removeFirebaseToken (token: string): Promise<void> {
-        FirebaseToken
+        await FirebaseToken
             .createQueryBuilder('fb')
             .delete()
             .where({
                 token
+            })
+            .execute()
+    }
+
+    async markNotificationsAsSeen (ids: number[], userId: number): Promise<void> {
+        await Notification.createQueryBuilder('n')
+            .update()
+            .where('id = any(:ids)', { ids })
+            .andWhere('not (:userId = any(users_seen))', { userId })
+            .set({
+                users_seen: () => 'array_append(users_seen, :userId)'
             })
             .execute()
     }

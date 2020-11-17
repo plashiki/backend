@@ -203,4 +203,34 @@ export default class NotificationController {
 
         return 'OK'
     }
+
+    @Endpoint({
+        name: 'Mark notifications as seen',
+        description: 'Mark notifications with given IDs as seen. When implementing on client-side, since users usually '
+            + 'read many notifications at once, it is best to debounce the events and call this method with multiple IDs',
+        query: {
+            ids: {
+                type: 'number[]',
+                required: true,
+                description: 'IDs of notifications to mark as read, delimited with a comma.'
+            }
+        },
+        returns: {
+            type: '"OK"'
+        }
+    })
+    @RequireLogin()
+    @Get('/markAsSeen')
+    async markAsSeen (
+        @QueryParam('ids', { required: true }) idsString: string,
+        @Session() session: ISession
+    ) {
+        let ids = idsString.split(',').map(i => parseInt(i))
+        if (!ids.length) ApiError.e('VALIDATION_ERROR', '.ids: there must be at least one item')
+        if (ids.some(isNaN)) ApiError.e('VALIDATION_ERROR', '.ids: all items must be numbers')
+
+        await this.pushService.markNotificationsAsSeen(ids, session.userId!)
+
+        return 'OK'
+    }
 }
