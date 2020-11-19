@@ -149,6 +149,9 @@ async function runImporters (only: string[]): Promise<void> {
         async (ctx, uid, item) => {
             // normalize fields
             if (!('author' in item)) item.author = {}
+            if (item.author?.people && !item.author.people.length) delete item.author.people
+            if (item.author?.group && !item.author.group.length) delete item.author.group
+            if (item.author?.ripper && !item.author.ripper.length) delete item.author.ripper
             if (!('status' in item)) item.status = TranslationStatus.Added
             if (!('groups' in item)) item.groups = []
             if (
