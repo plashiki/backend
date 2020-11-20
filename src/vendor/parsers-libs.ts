@@ -11,6 +11,8 @@ import { JSDOM } from 'jsdom'
 import PB from 'protoflex'
 import * as anitomy from '@teidesu/anitomy-js'
 import * as fuzz from 'fuzzball'
+import acorn from 'acorn'
+import * as JSON5 from 'json5'
 import { normalizeUrl } from '@/helpers/utils'
 import fetchRetry from '@/helpers/fetch-retry'
 import { RelationsParser } from '@/helpers/relations'
@@ -26,6 +28,8 @@ export type DynamicOptions<T, I> = {
 
 export const libs = {
     cheerio,
+    acorn,
+    JSON5,
     fetch: fetchRetry,
     objectUtils,
     vm,
