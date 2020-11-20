@@ -47,14 +47,14 @@ export default class ShikimoriApi {
             url += params.endpoint
         }
 
-        // __=/autocomplete is a ratelimit bypass xdd
+        // ?/autocomplete is a ratelimit bypass xdd
         // https://github.com/shikimori/shikimori/blob/master/config/initializers/rack-attack.rb#L31
         // morr plz leave this as a feature, lol
 
         if (params.query) {
-            url += '?' + qs.stringify(params.query) + '&__/autocomplete'
+            url += `?${qs.stringify(params.query)}&${Date.now()}/autocomplete`
         } else {
-            url += '?__/autocomplete'
+            url += `?${Date.now()}/autocomplete`
         }
 
         const headers: AnyKV = {
