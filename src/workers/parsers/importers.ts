@@ -1,4 +1,4 @@
-import { Translation, TranslationStatus } from '@/models/Translation'
+import { Translation, TranslationAuthor, TranslationStatus } from '@/models/Translation'
 import { LOG } from '@/helpers/logging'
 import Mapping from '@/models/Mapping'
 import qs from 'qs'
@@ -7,6 +7,12 @@ import { StatisticsDay } from '@/models/StatisticsDay'
 import { TLoggerQueue } from '@/data/queues'
 import { batchRunIterableParsers, ExternalId, getRunnableParsers, isValidUrl } from '@/workers/parsers/comon'
 import { TranslationService } from '@/services/TranslationService'
+import { shallowMerge } from '@/helpers/object-utils'
+
+const overrideAuthorByPlayerName: Record<string, TranslationAuthor> = {
+    'wakanim.tv': { group: 'Wakanim' },
+    'www.wakanim.tv': { group: 'Wakanim' }
+}
 
 export async function runImporters (service: TranslationService, only: string[]): Promise<void> {
     const parsers = await getRunnableParsers('importers', only)
@@ -35,6 +41,11 @@ export async function runImporters (service: TranslationService, only: string[])
             ) {
                 LOG.parsers.warn('Incomplete translation encountered at %s: %o', uid, item)
                 return
+            }
+
+            let hostname = new URL(item.url).hostname
+            if (overrideAuthorByPlayerName[hostname]) {
+                shallowMerge(item.author, overrideAuthorByPlayerName[hostname])
             }
 
             if (typeof item.target_id === 'object') {
