@@ -12,13 +12,13 @@ import { generateOnConflictStatement } from '@/helpers/utils'
 import { chunks, createIndex, shallowMerge } from '@/helpers/object-utils'
 import { ChildProcess, fork } from 'child_process'
 import { join } from 'path'
-import { ParsersState } from '@/workers/parsers'
 import { AnyKV, AtLeast } from '@/types/utils'
 import { PaginatedResponse, PaginatedSorted } from '@/types/api'
 import { ExternalServiceMappings, MediaType } from '@/types/media'
 import { KeyValue } from '@/models/KeyValue'
 import { ApiError } from '@/types/errors'
-import { Brackets, Like } from 'typeorm/index'
+import { Brackets, Like } from 'typeorm'
+import { ParsersState } from '@/workers/parsers/state'
 
 const gzip = promisify(zlib.gzip)
 const gunzip = promisify(zlib.gunzip)
