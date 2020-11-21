@@ -37,14 +37,11 @@ export function asyncPool<T, V> (
     function startNext () {
         let currentIdx = idx++
         const it = iteratorNext!.value
-        console.log('starting %d', currentIdx)
         let prom = Promise.resolve(callback(idx, it))
         working += 1
         prom.then((res) => {
-            console.log('%d finished', currentIdx)
             buffer.push({ idx: currentIdx, item: it, value: res })
         }).catch((err) => {
-            console.log('%d error %s', currentIdx, err)
             buffer.push({ idx: currentIdx, item: it, error: err })
         }).finally(() => {
             working -= 1
