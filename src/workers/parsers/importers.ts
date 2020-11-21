@@ -1,7 +1,7 @@
 import { Translation, TranslationAuthor, TranslationStatus } from '@/models/Translation'
 import { LOG } from '@/helpers/logging'
 import Mapping from '@/models/Mapping'
-import qs from 'qs'
+import qs from 'querystring'
 import { RelationsParser } from '@/helpers/relations'
 import { StatisticsDay } from '@/models/StatisticsDay'
 import { TLoggerQueue } from '@/data/queues'
