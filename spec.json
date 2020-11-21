@@ -704,6 +704,33 @@
                     ]
                 },
                 {
+                    "method": "GET",
+                    "path": "/v2/reports/:id/reopen",
+                    "name": "Re-open a report",
+                    "description": "Re-open a report marked as resolved or discarded",
+                    "returns": {
+                        "type": "\"OK\""
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Report was not found"
+                        },
+                        {
+                            "type": "NOT_CLOSED",
+                            "description": "Report is not closed yet, can't re-open"
+                        },
+                        {
+                            "type": "ACCESS_DENIED",
+                            "description": "You can only re-open own reports (except for moderators)"
+                        },
+                        {
+                            "type": "BANNED",
+                            "description": "You are banned and can not re-open reports"
+                        }
+                    ]
+                },
+                {
                     "method": "DELETE",
                     "path": "/v2/translations/:id",
                     "name": "Delete a submission",
@@ -965,6 +992,10 @@
                         "all": {
                             "type": "boolean",
                             "description": "Whether to return all submissions/reports and not only most recent (will remove date filtering, does not affect pagination)"
+                        },
+                        "complex": {
+                            "type": "boolean",
+                            "description": "If passed, will only return complex (if true) or non-complex (if false) reports. If omitted, all reports are returned. Only used when <code>:type=reports</code>"
                         }
                     },
                     "returns": {
@@ -1059,6 +1090,35 @@
                     ],
                     "returns": {
                         "type": "boolean"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/reports/:id/makeComplex",
+                    "name": "Make report complex",
+                    "description": "Make a report complex. Note that this action is irreversible!",
+                    "params": {
+                        "id": {
+                            "type": "number",
+                            "description": "Report ID"
+                        }
+                    },
+                    "throws": [
+                        {
+                            "type": "NOT_FOUND",
+                            "description": "Report was not found"
+                        },
+                        {
+                            "type": "TR_NOT_FOUND",
+                            "description": "Report is bound to a translation which does not exist"
+                        },
+                        {
+                            "type": "ALREADY_COMPLEX",
+                            "description": "Report is already complex"
+                        }
+                    ],
+                    "returns": {
+                        "type": "\"OK\""
                     }
                 },
                 {
@@ -1332,6 +1392,33 @@
                             "type": "string",
                             "required": true,
                             "description": "Firebase token"
+                        }
+                    },
+                    "returns": {
+                        "type": "\"OK\""
+                    }
+                },
+                {
+                    "method": "GET",
+                    "path": "/v2/notifications/markAsSeen",
+                    "checks": [
+                        {
+                            "name": "login"
+                        }
+                    ],
+                    "throws": [
+                        {
+                            "type": "NO_AUTH",
+                            "description": "Not logged in"
+                        }
+                    ],
+                    "name": "Mark notifications as seen",
+                    "description": "Mark notifications with given IDs as seen. When implementing on client-side, since users usually read many notifications at once, it is best to debounce the events and call this method with multiple IDs",
+                    "query": {
+                        "ids": {
+                            "type": "number[]",
+                            "required": true,
+                            "description": "IDs of notifications to mark as read, delimited with a comma."
                         }
                     },
                     "returns": {
@@ -1913,6 +2000,10 @@
                         "needUploader": {
                             "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
                             "type": "boolean"
+                        },
+                        "fullAuthor": {
+                            "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
+                            "type": "boolean"
                         }
                     },
                     "returns": {
@@ -1998,6 +2089,10 @@
                         },
                         "needUploader": {
                             "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        },
+                        "fullAuthor": {
+                            "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
                             "type": "boolean"
                         }
                     },
@@ -2118,6 +2213,10 @@
                             "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
                             "type": "boolean"
                         },
+                        "fullAuthor": {
+                            "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
+                            "type": "boolean"
+                        },
                         "formatted": {
                             "type": "presence",
                             "description": "Opposite of <code>raw</code>"
@@ -2227,6 +2326,10 @@
                         "needUploader": {
                             "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
                             "type": "boolean"
+                        },
+                        "fullAuthor": {
+                            "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
+                            "type": "boolean"
                         }
                     },
                     "returns": {
@@ -2320,6 +2423,10 @@
                         },
                         "needUploader": {
                             "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
+                            "type": "boolean"
+                        },
+                        "fullAuthor": {
+                            "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
                             "type": "boolean"
                         }
                     },
@@ -2808,6 +2915,9 @@
                 "for_users": {
                     "type": "number[] | null"
                 },
+                "users_seen": {
+                    "type": "number[] | null"
+                },
                 "deleted": {
                     "type": "boolean"
                 },
@@ -2870,13 +2980,8 @@
                     "type": "string",
                     "description": "Translation language. Currently support <code>en, ru, by, ua, jp, fr, de, cn, ko</code> and <code>other</code>, but list may expand at some time."
                 },
-                "hq": {
-                    "type": "boolean",
-                    "description": "Whether the translation is HQ (exact definition may vary, but usually it means 720p or more for anime and hi-res scans for manga)"
-                },
                 "author": {
-                    "type": "string",
-                    "description": "Translation author. Can contain studio name (like <code>AniDUB</code>), author names (like <code>Anku, mutagenb</code>), both (like <code>AniDUB (Anku, mutagenb)</code>) or basically anything else that can be used to describe an author. There's no strict format. Edge case is an empty <code>author</code>, which should be interpreted as Unknown author."
+                    "description": "Translation author"
                 },
                 "uploader_id": {
                     "type": "number",
@@ -3017,9 +3122,13 @@
                     "type": "number",
                     "description": "Unique report ID"
                 },
+                "is_complex": {
+                    "type": "boolean",
+                    "description": "Whether this report is complex, meaning it affects more than one translation."
+                },
                 "translation_id": {
                     "type": "number",
-                    "description": "Translation ID which is reported. Translation with this ID may not exist in case it was deleted after report was created. "
+                    "description": "Report target ID. For <code>is_complex=true</code>, contains ID of a media (currently supports only anime). For <code>is_complex=false</code>, contains ID of a translation."
                 },
                 "type": {
                     "type": "string",
@@ -3033,6 +3142,9 @@
                     "type": "number",
                     "description": "Report sender ID"
                 },
+                "closed_by_id": {
+                    "type": "object"
+                },
                 "status": {
                     "type": "enum"
                 },
@@ -3041,6 +3153,9 @@
                 },
                 "sender": {
                     "description": "Report sender object. Only available in Moderation API -> Get single report"
+                },
+                "closed_by": {
+                    "description": "User who closed the report. Only available for closed reports, for others is null."
                 }
             }
         },
@@ -3140,6 +3255,23 @@
                 },
                 "query": {
                     "type": "object"
+                }
+            }
+        },
+        {
+            "type": "TranslationAuthor",
+            "fields": {
+                "group": {
+                    "description": "Translators group (like AniDUB, HorribleSubs or Wakanim)",
+                    "type": "string"
+                },
+                "people": {
+                    "type": "string[]",
+                    "description": "People who translated/voiced"
+                },
+                "ripper": {
+                    "description": "(Optional) Name of rip author (like FortunaTV)",
+                    "type": "string"
                 }
             }
         },
@@ -3416,6 +3548,10 @@
                 "needUploader": {
                     "description": "If passed, all translation object will contain a <code>uploader</code> field. However, only <code>id, nickname, avatar</code> fields will be available.",
                     "type": "boolean"
+                },
+                "fullAuthor": {
+                    "description": "If passed, <code>author</code> will contain a <code>TranslationAuthor</code> object (only relevant when <code>?raw</code> is passed)",
+                    "type": "boolean"
                 }
             }
         },
@@ -3498,11 +3634,8 @@
                     ],
                     "type": "object"
                 },
-                "hq": {
-                    "type": "boolean"
-                },
                 "author": {
-                    "type": "string"
+                    "type": "TranslationAuthor"
                 },
                 "url": {
                     "checks": [
@@ -3522,6 +3655,9 @@
         {
             "type": "SubmitReportBody",
             "fields": {
+                "is_complex": {
+                    "type": "boolean"
+                },
                 "translation_id": {
                     "checks": [
                         {
