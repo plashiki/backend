@@ -220,15 +220,12 @@ export class TranslationService {
 
         for (let chunk of chunks(translations, 5000)) {
             const params = rowsToColumns(chunk)
-            const result = await Translation.query(`select *
-                                                    from translations_bulk_insert($1, $2, $3, $4, $5, $6, $7, $8, $9,
-                                                                                  $10)`, [
+            const result = await Translation.query('select * from translations_bulk_insert($1, $2, $3, $4, $5, $6, $7, $8, $9)', [
                 params.target_id,
                 params.target_type,
                 params.part,
                 params.kind,
                 params.lang,
-                params.hq,
                 params.author,
                 params.url,
                 // postgres is a bit weird >__<
