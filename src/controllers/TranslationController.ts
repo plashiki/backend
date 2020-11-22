@@ -118,6 +118,10 @@ export default class TranslationController {
             ids: {
                 type: 'number[]',
                 description: 'Comma-separated list of translation ids'
+            },
+            fullAuthor: {
+                type: 'boolean',
+                description: 'Whether to return full author'
             }
         },
         returns: {
@@ -127,13 +131,15 @@ export default class TranslationController {
     })
     @Get('/v2/translations')
     async getTranslationsByIds (
-        @QueryParam('ids') idsString: string
+        @QueryParam('ids') idsString: string,
+        @QueryParam('fullAuthor') fullAuthor?: boolean,
     ) {
         let ids = idsString.split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
 
         return this.service.getTranslations({
             id: In(ids),
-            raw: true
+            raw: true,
+            fullAuthor
         })
     }
 
