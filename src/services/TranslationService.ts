@@ -177,7 +177,7 @@ export class TranslationService {
         return ret
     }
 
-    async getAvailableParts (targetId: number, targetType: MediaType): Promise<number[]> {
+    async getAvailableParts (targetId: number, targetType: MediaType, include365: boolean): Promise<number[]> {
         const builder = Translation.createQueryBuilder('t')
             .distinctOn(['part'])
             .where({
@@ -185,7 +185,11 @@ export class TranslationService {
                 target_type: targetType,
                 status: TranslationStatus.Added
             })
-            .select('part')
+        if (!include365) {
+            builder.andWhere('url not like \'https://smotret-anime.online%\'')
+        }
+
+        builder.select('part')
             .orderBy('part', 'ASC')
         const translations = await builder.execute()
         return translations.map(i => i.part)

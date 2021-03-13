@@ -156,6 +156,13 @@ export default class TranslationController {
                 description: 'Anime ID (MAL)'
             }
         },
+        query: {
+            include365: {
+                type: 'boolean',
+                description: 'When not present, parts that only contain Anime365 translations '
+                    + 'will be omitted from the response.'
+            },
+        },
         returns: {
             type: 'number[]',
             description: 'List of available media parts'
@@ -167,9 +174,10 @@ export default class TranslationController {
     @Get('/v2/translations/:type(anime|manga)/:id(\\d+)/parts')
     async getAvailableParts (
         @Param('id') animeId: number,
-        @Ctx() ctx: Context
+        @Ctx() ctx: Context,
+        @QueryParam('include365') include365?: string,
     ) {
-        return this.service.getAvailableParts(animeId, ctx.params.type ?? MediaType.anime)
+        return this.service.getAvailableParts(animeId, ctx.params.type ?? MediaType.anime, include365 !== undefined)
     }
 
     @Endpoint({
