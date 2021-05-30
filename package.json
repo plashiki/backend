@@ -61,7 +61,7 @@
         "validator": "^12.1.0",
         "winston": "^3.3.3",
         "winston-daily-rotate-file": "^4.5.0",
-        "ws": "^7.4.0",
+        "ws": "^7.4.6",
         "puppeteer": "^5.2.1"
     },
     "devDependencies": {
