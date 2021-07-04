@@ -130,91 +130,93 @@ export default class SubmissionController {
         @Body() body: SubmitTranslationBody,
         @Session() session: ISession
     ) {
+        ApiError.e('EOL_REACHED')
+
         // for some reason validator accepts undefined and arrays, idk why and i dont want to care
-        if (!body.author || Array.isArray(body.author)) ApiValidationError.e('author must be an object')
-
-        const user = await this.userService.getUserById(session.userId!)
-        if (!user) ApiError.e('USER_UNKNOWN')
-
-        if (user.banned) ApiError.e('BANNED', 'You are not allowed to submit translations.')
-
-        let url = await this.moderationService.fixCommonUrlMistakes(body.url)
-        url = normalizeUrl(url, {
-            defaultProtocol: 'https',
-            forceHttps: true,
-            normalizeProtocol: true,
-            sortQueryParameters: true
-        })
-        body.url = url
-
-        const duplicate = await this.translationService.findFullTranslationWithSimilarUrl(body.url)
-        if (duplicate) {
-            let reportCreated = false
-
-            if (duplicate.status === TranslationStatus.Added && (
-                duplicate.target_type !== body.target_type
-                || duplicate.target_id !== body.target_id
-                || duplicate.part !== body.part
-                || duplicate.kind !== body.kind
-                || duplicate.lang !== body.lang
-            )) {
-                let type: ReportType
-                if (
-                    duplicate.target_type !== body.target_type
-                    || duplicate.target_id !== body.target_id
-                ) {
-                    type = ReportType.InvalidMedia
-                } else if (duplicate.part !== body.part) {
-                    type = ReportType.InvalidPart
-                } else if (
-                    duplicate.kind !== body.kind
-                    || duplicate.lang !== body.lang
-                ) {
-                    type = ReportType.InvalidMeta
-                } else {
-                    type = ReportType.Other
-                }
-
-                await this.moderationService.createReport({
-                    translation_id: duplicate.id,
-                    type,
-                    sender_id: user.id,
-                    edit: shallowDiff(duplicate, body),
-                    status: ReportStatus.Pending,
-                    comment: 'AUTO_REPORT_DESCRIPTION'
-                })
-                reportCreated = true
-            }
-
-            throw ApiError.e(`TRANSLATION_DUPLICATE_${reportCreated ? 'REP_' : ''}${duplicate.id}`, `Given translation seems to be a duplicate of ${duplicate.id}`)
-        }
-
-        let translation = await this.translationService.addATranslation({
-            ...body,
-            uploader_id: session.userId!,
-            status: (user.trusted || user.moderator) ? TranslationStatus.Added : TranslationStatus.Pending,
-            groups: undefined  // discarding in case client sent
-        })
-
-        if (user.trusted || user.moderator) {
-            StatisticsQueue.add('stat-event', {
-                name: `tr-added:user-${user.id}`
-            })
-
-            await this.translationService.notifyNewTranslation(translation)
-        } else {
-            StatisticsQueue.add('stat-event', {
-                name: `moder-new:${user.id}`
-            })
-            TLoggerQueue.add('moder-new', {
-                translation,
-                issuerId: user.id
-            })
-
-            await this.moderationService.notifyNewTranslation(translation, user)
-        }
-
-        return translation
+        // if (!body.author || Array.isArray(body.author)) ApiValidationError.e('author must be an object')
+        //
+        // const user = await this.userService.getUserById(session.userId!)
+        // if (!user) ApiError.e('USER_UNKNOWN')
+        //
+        // if (user.banned) ApiError.e('BANNED', 'You are not allowed to submit translations.')
+        //
+        // let url = await this.moderationService.fixCommonUrlMistakes(body.url)
+        // url = normalizeUrl(url, {
+        //     defaultProtocol: 'https',
+        //     forceHttps: true,
+        //     normalizeProtocol: true,
+        //     sortQueryParameters: true
+        // })
+        // body.url = url
+        //
+        // const duplicate = await this.translationService.findFullTranslationWithSimilarUrl(body.url)
+        // if (duplicate) {
+        //     let reportCreated = false
+        //
+        //     if (duplicate.status === TranslationStatus.Added && (
+        //         duplicate.target_type !== body.target_type
+        //         || duplicate.target_id !== body.target_id
+        //         || duplicate.part !== body.part
+        //         || duplicate.kind !== body.kind
+        //         || duplicate.lang !== body.lang
+        //     )) {
+        //         let type: ReportType
+        //         if (
+        //             duplicate.target_type !== body.target_type
+        //             || duplicate.target_id !== body.target_id
+        //         ) {
+        //             type = ReportType.InvalidMedia
+        //         } else if (duplicate.part !== body.part) {
+        //             type = ReportType.InvalidPart
+        //         } else if (
+        //             duplicate.kind !== body.kind
+        //             || duplicate.lang !== body.lang
+        //         ) {
+        //             type = ReportType.InvalidMeta
+        //         } else {
+        //             type = ReportType.Other
+        //         }
+        //
+        //         await this.moderationService.createReport({
+        //             translation_id: duplicate.id,
+        //             type,
+        //             sender_id: user.id,
+        //             edit: shallowDiff(duplicate, body),
+        //             status: ReportStatus.Pending,
+        //             comment: 'AUTO_REPORT_DESCRIPTION'
+        //         })
+        //         reportCreated = true
+        //     }
+        //
+        //     throw ApiError.e(`TRANSLATION_DUPLICATE_${reportCreated ? 'REP_' : ''}${duplicate.id}`, `Given translation seems to be a duplicate of ${duplicate.id}`)
+        // }
+        //
+        // let translation = await this.translationService.addATranslation({
+        //     ...body,
+        //     uploader_id: session.userId!,
+        //     status: (user.trusted || user.moderator) ? TranslationStatus.Added : TranslationStatus.Pending,
+        //     groups: undefined  // discarding in case client sent
+        // })
+        //
+        // if (user.trusted || user.moderator) {
+        //     StatisticsQueue.add('stat-event', {
+        //         name: `tr-added:user-${user.id}`
+        //     })
+        //
+        //     await this.translationService.notifyNewTranslation(translation)
+        // } else {
+        //     StatisticsQueue.add('stat-event', {
+        //         name: `moder-new:${user.id}`
+        //     })
+        //     TLoggerQueue.add('moder-new', {
+        //         translation,
+        //         issuerId: user.id
+        //     })
+        //
+        //     await this.moderationService.notifyNewTranslation(translation, user)
+        // }
+        //
+        // return translation
     }
 
     @Endpoint({
@@ -244,45 +246,47 @@ export default class SubmissionController {
         @Body() body: SubmitReportBody,
         @Session() session: ISession
     ) {
-        const user = await this.userService.getUserById(session.userId!)
-        if (!user) ApiError.e('USER_UNKNOWN')
+        ApiError.e('EOL_REACHED')
 
-        if (user.banned) ApiError.e('BANNED', 'You are not allowed to submit reports.')
-
-        let tran: Translation | undefined = undefined
-        if (!body.is_complex) {
-            tran = await this.translationService.getSingleTranslation(body.translation_id)
-            if (!tran) ApiError.e('NOT_FOUND', 'Translation does not exist')
-        }
-
-        // prevent abuse :p
-        if (body.comment === 'AUTO_REPORT_DESCRIPTION') {
-            body.comment = ''
-        }
-
-        const report = await this.moderationService.createReport({
-            sender_id: session.userId!,
-            type: body.type,
-            comment: body.comment,
-            status: user.moderator && body.edit ? ReportStatus.Resolved : ReportStatus.Pending,
-            edit: body.edit,
-            translation_id: body.translation_id,
-            is_complex: body.is_complex
-        })
-
-        if (tran && user.moderator && body.edit) {
-            merge(tran, body.edit)
-            await tran.save()
-        } else {
-            TLoggerQueue.add('rep-new', {
-                report,
-                issuerId: user.id
-            })
-
-            await this.moderationService.notifyNewReport(report, user)
-        }
-
-        return report
+        // const user = await this.userService.getUserById(session.userId!)
+        // if (!user) ApiError.e('USER_UNKNOWN')
+        //
+        // if (user.banned) ApiError.e('BANNED', 'You are not allowed to submit reports.')
+        //
+        // let tran: Translation | undefined = undefined
+        // if (!body.is_complex) {
+        //     tran = await this.translationService.getSingleTranslation(body.translation_id)
+        //     if (!tran) ApiError.e('NOT_FOUND', 'Translation does not exist')
+        // }
+        //
+        // // prevent abuse :p
+        // if (body.comment === 'AUTO_REPORT_DESCRIPTION') {
+        //     body.comment = ''
+        // }
+        //
+        // const report = await this.moderationService.createReport({
+        //     sender_id: session.userId!,
+        //     type: body.type,
+        //     comment: body.comment,
+        //     status: user.moderator && body.edit ? ReportStatus.Resolved : ReportStatus.Pending,
+        //     edit: body.edit,
+        //     translation_id: body.translation_id,
+        //     is_complex: body.is_complex
+        // })
+        //
+        // if (tran && user.moderator && body.edit) {
+        //     merge(tran, body.edit)
+        //     await tran.save()
+        // } else {
+        //     TLoggerQueue.add('rep-new', {
+        //         report,
+        //         issuerId: user.id
+        //     })
+        //
+        //     await this.moderationService.notifyNewReport(report, user)
+        // }
+        //
+        // return report
     }
 
     @Endpoint({

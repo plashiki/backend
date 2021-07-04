@@ -37,6 +37,8 @@ export default class NotificationController {
         @QueryParam('topics') topicsString: string,
         @Session() session: ISession
     ) {
+        ApiError.e('EOL_REACHED')
+
         const opts = await this.userService.getUserByIdOrThrow(session.userId!)
 
         let topics = topicsString.toLowerCase().split(',')
@@ -127,21 +129,23 @@ export default class NotificationController {
         @QueryParam('since') since: number,
         @Session() session: ISession
     ) {
-        if (isNaN(since)) {
-            ApiValidationError.e('since must be a number')
-        }
+        return [] // EOL reached
 
-        let now = Date.now()
-        let delta = now - since
-
-        if (delta < 0) return []
-        if (delta > 5184000000) since = now - 5184000000 // 60 days
-
-        return PushService.instance.getMissedNotifications(
-            new Date(since),
-            await this.getUserTopics(session),
-            session.userId!
-        )
+        // if (isNaN(since)) {
+        //     ApiValidationError.e('since must be a number')
+        // }
+        //
+        // let now = Date.now()
+        // let delta = now - since
+        //
+        // if (delta < 0) return []
+        // if (delta > 5184000000) since = now - 5184000000 // 60 days
+        //
+        // return PushService.instance.getMissedNotifications(
+        //     new Date(since),
+        //     await this.getUserTopics(session),
+        //     session.userId!
+        // )
     }
 
     @Endpoint({
@@ -170,6 +174,8 @@ export default class NotificationController {
         @QueryParam('token') firebaseToken: string,
         @Session() session: ISession
     ) {
+        ApiError.e('EOL_REACHED')
+
         const valid = await this.pushService.checkFirebaseToken(firebaseToken)
 
         if (!valid) {
