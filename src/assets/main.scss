@@ -1,0 +1,14 @@
+$mdi-font-path: '~@mdi/font/fonts/';
+@import '~@mdi/font/scss/materialdesignicons';
+@import '~izitoast/dist/css/iziToast.min.css';
+@import './styles/emoji';
+@import './styles/layout';
+@import './styles/scroll';
+@import './styles/text';
+@import './styles/tooltip';
+@import './styles/transitions';
+@import './styles/vuetify';
+
+html {
+    overflow-y: auto!important;
+}
