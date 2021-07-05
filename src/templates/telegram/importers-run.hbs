@@ -1,0 +1,8 @@
+Импортеры отработали.<br />
+Добавлено {{total}} переводов.<br />
+Статистика:
+<pre>
+{{#each perParserEfficiency}}
+{{@key}}: {{lookup ../perParserTotal @key}}/{{lookup ../perParserItems @key}}={{this}}
+{{/each}}
+</pre>

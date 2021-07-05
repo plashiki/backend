@@ -1,0 +1,124 @@
+.endpoint > h2,
+.endpoint > h2,
+.entity > h3,
+.entity > h3 {
+  margin-top: -3.1rem;
+  padding-top: 4.6rem;
+  margin-bottom: 0;
+}
+
+.endpoint .method {
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  min-width: 40px;
+  display: inline-block;
+  text-align: center;
+  font-family: sans-serif;
+  padding: 6px 10px;
+  border-radius: 3px;
+}
+
+.method.method-GET {
+  background-color: #61affe;
+}
+
+.method.method-POST {
+  background-color: #49cc90;
+}
+
+.method.method-PUT, .method.method-PATCH {
+  background-color: #fca130;
+}
+
+.method.method-DELETE {
+  background-color: #f93e3e;
+}
+
+.method-container {
+  margin: 8px 0;
+  padding: 5px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, .19);
+  display: flex;
+  align-items: center;
+}
+
+.method-container.method-GET {
+  border-color: #61affe;
+  background: rgba(97, 175, 254, .1);
+}
+
+.method-container.method-POST {
+  border-color: #49cc90;
+  background: rgba(73, 204, 144, .1);
+}
+
+.method-container.method-PUT, .method-container.method-PATCH {
+  border-color: #fca130;
+  background: rgba(252, 161, 48, .1);
+}
+
+.method-container.method-DELETE {
+  border-color: #f93e3e;
+  background: rgba(249, 62, 62, .1);
+}
+
+.path-container {
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+  padding: 0 10px;
+  font-weight: 600;
+  color: #3b4151;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.action-name {
+  font-size: 13px;
+  font-weight: normal;
+  flex: 1 1 auto;
+  color: #3b4151;
+  word-break: break-word;
+}
+
+.group-desc {
+  font-size: 18px;
+}
+
+.action-desc {
+  font-size: 16px;
+}
+
+ul.features, ul.checks {
+  font-size: 14px;
+  margin: 4px 0
+}
+
+thead {
+  font-weight: 600;
+}
+
+.params-table {
+  width: 100%;
+}
+
+.params-table td:last-child {
+  width: 100%;
+}
+
+.params-table--group td {
+  font-size: 14px;
+  color: #5f5f5f;
+  font-weight: 600;
+}
+
+.params-table tbody :not(.params-table--group) td:first-child,
+.params-table tbody td:nth-child(2) {
+  min-width: 120px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+}
